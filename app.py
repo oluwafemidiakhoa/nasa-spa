@@ -11,13 +11,7 @@ class handler(BaseHTTPRequestHandler):
         path = parsed_path.path
         query = parse_qs(parsed_path.query)
         
-        # Set CORS headers
-        self.send_response(200)
-        self.send_header('Content-type', 'application/json')
-        self.send_header('Access-Control-Allow-Origin', '*')
-        self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
-        self.send_header('Access-Control-Allow-Headers', 'Content-Type')
-        self.end_headers()
+        # Don't set response headers yet - we'll do it per route
         
         try:
             # Route handling
@@ -72,6 +66,11 @@ class handler(BaseHTTPRequestHandler):
                     }
             
             elif path == '/api/health':
+                self.send_response(200)
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                
                 response_data = {
                     "success": True,
                     "data": {
@@ -81,6 +80,8 @@ class handler(BaseHTTPRequestHandler):
                         "timestamp": datetime.utcnow().isoformat() + "Z"
                     }
                 }
+                self.wfile.write(json.dumps(response_data, indent=2).encode())
+                return
             
             elif path == '/api/forecast':
                 # Check if we have real API keys to potentially make real calls
@@ -188,11 +189,18 @@ class handler(BaseHTTPRequestHandler):
                     "path": path
                 }
             
-            # Send JSON response
+            # Send JSON response for remaining routes
+            self.send_response(200)
+            self.send_header('Content-type', 'application/json')
+            self.send_header('Access-Control-Allow-Origin', '*')
+            self.end_headers()
             self.wfile.write(json.dumps(response_data, indent=2).encode())
         
         except Exception as e:
             self.send_response(500)
+            self.send_header('Content-type', 'application/json')
+            self.send_header('Access-Control-Allow-Origin', '*')
+            self.end_headers()
             error_response = {
                 "success": False,
                 "error": str(e),
