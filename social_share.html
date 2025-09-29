@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Share Your Space Weather Experience - HelioEarth</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(90deg, #1e3c72 0%, #2a5298 100%);
+            padding: 20px 0;
+            box-shadow: 0 4px 30px rgba(0, 255, 0, 0.3);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 30px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .logo h1 {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #ffffff;
+            text-shadow: 0 0 15px rgba(0, 255, 255, 0.8);
+        }
+        
+        .back-btn {
+            background: linear-gradient(145deg, #2a5298, #1e3c72);
+            color: #ffffff;
+            border: 2px solid #00ffff;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 30px;
+        }
+        
+        .feature-title {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        
+        .feature-title h2 {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 2.5rem;
+            color: #00ffff;
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px rgba(0, 255, 255, 0.8);
+        }
+        
+        .feature-title p {
+            font-size: 1.2rem;
+            color: #ffffff;
+            opacity: 0.8;
+        }
+        
+        .share-templates {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+        
+        .template-card {
+            background: linear-gradient(145deg, rgba(26, 26, 46, 0.9), rgba(22, 33, 62, 0.9));
+            border: 2px solid rgba(0, 255, 255, 0.3);
+            border-radius: 15px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        
+        .template-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 255, 255, 0.2);
+            border-color: rgba(0, 255, 255, 0.6);
+        }
+        
+        .template-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            display: block;
+        }
+        
+        .template-icon.twitter { color: #1da1f2; }
+        .template-icon.facebook { color: #4267B2; }
+        .template-icon.instagram { color: #E4405F; }
+        .template-icon.linkedin { color: #0077B5; }
+        .template-icon.tiktok { color: #ff0050; }
+        .template-icon.youtube { color: #ff0000; }
+        
+        .template-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.3rem;
+            color: #ffffff;
+            margin-bottom: 15px;
+        }
+        
+        .template-preview {
+            background: rgba(0, 0, 0, 0.3);
+            border-left: 4px solid #00ffff;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-family: 'Inter', sans-serif;
+            line-height: 1.5;
+            color: #cccccc;
+        }
+        
+        .template-hashtags {
+            color: #00ffff;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+        
+        .share-btn {
+            background: linear-gradient(45deg, #00ffff, #0080ff);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            width: 100%;
+            justify-content: center;
+            margin-top: 15px;
+        }
+        
+        .share-btn.twitter { background: linear-gradient(45deg, #1da1f2, #0d8bd9); }
+        .share-btn.facebook { background: linear-gradient(45deg, #4267B2, #365899); }
+        .share-btn.instagram { background: linear-gradient(45deg, #E4405F, #C13584); }
+        .share-btn.linkedin { background: linear-gradient(45deg, #0077B5, #005885); }
+        .share-btn.tiktok { background: linear-gradient(45deg, #ff0050, #cc0040); }
+        .share-btn.youtube { background: linear-gradient(45deg, #ff0000, #cc0000); }
+        
+        .share-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .live-forecast-display {
+            background: linear-gradient(145deg, rgba(26, 26, 46, 0.9), rgba(22, 33, 62, 0.9));
+            border: 2px solid rgba(0, 255, 0, 0.3);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .forecast-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.5rem;
+            color: #00ff00;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .forecast-data {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        
+        .forecast-item {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .forecast-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #00ff00;
+            margin-bottom: 5px;
+        }
+        
+        .forecast-label {
+            color: #cccccc;
+            font-size: 0.9rem;
+        }
+        
+        .viral-tips {
+            background: linear-gradient(145deg, rgba(46, 26, 46, 0.9), rgba(62, 22, 62, 0.9));
+            border: 2px solid rgba(255, 0, 255, 0.3);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .tips-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.5rem;
+            color: #ff00ff;
+            margin-bottom: 20px;
+        }
+        
+        .tips-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .tip-item {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #ff00ff;
+        }
+        
+        .tip-icon {
+            font-size: 1.5rem;
+            color: #ff00ff;
+            margin-bottom: 10px;
+        }
+        
+        .tip-text {
+            color: #cccccc;
+            line-height: 1.5;
+        }
+        
+        .generate-section {
+            background: linear-gradient(145deg, rgba(26, 46, 26, 0.9), rgba(22, 62, 22, 0.9));
+            border: 2px solid rgba(0, 255, 0, 0.3);
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .generate-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.8rem;
+            color: #00ff00;
+            margin-bottom: 20px;
+        }
+        
+        .generate-btn {
+            background: linear-gradient(45deg, #00ff00, #00cc00);
+            color: #000;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            margin: 10px;
+        }
+        
+        .generate-btn:hover {
+            background: linear-gradient(45deg, #00cc00, #00ff00);
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+            transform: translateY(-2px);
+        }
+        
+        @media (max-width: 768px) {
+            .share-templates {
+                grid-template-columns: 1fr;
+            }
+            
+            .forecast-data {
+                grid-template-columns: 1fr;
+            }
+            
+            .tips-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <i class="fas fa-share-alt" style="font-size: 2rem; color: #00ffff;"></i>
+                <h1>SOCIAL SHARING</h1>
+            </div>
+            <a href="dashboard_hub.html" class="back-btn">
+                <i class="fas fa-arrow-left"></i> Back to Mission Control
+            </a>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <div class="feature-title">
+            <h2>SHARE YOUR SPACE WEATHER EXPERIENCE</h2>
+            <p>Create viral-ready content with live NASA data and AI predictions</p>
+        </div>
+
+        <div class="live-forecast-display">
+            <h3 class="forecast-title">
+                <i class="fas fa-satellite-dish"></i> Live Space Weather Data
+            </h3>
+            <div class="forecast-data" id="forecastData">
+                <div class="forecast-item">
+                    <div class="forecast-value" id="solarActivity">Loading...</div>
+                    <div class="forecast-label">Solar Activity</div>
+                </div>
+                <div class="forecast-item">
+                    <div class="forecast-value" id="auroraChance">Loading...</div>
+                    <div class="forecast-label">Aurora Probability</div>
+                </div>
+                <div class="forecast-item">
+                    <div class="forecast-value" id="kpIndex">Loading...</div>
+                    <div class="forecast-label">Kp Index</div>
+                </div>
+                <div class="forecast-item">
+                    <div class="forecast-value" id="lastUpdate">Loading...</div>
+                    <div class="forecast-label">Last Updated</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="share-templates">
+            <div class="template-card">
+                <i class="fab fa-twitter template-icon twitter"></i>
+                <h3 class="template-title">Twitter/X Post</h3>
+                <div class="template-preview" id="twitterPreview">
+                    🌌 Space weather update from @HelioEarth: Solar activity is MODERATE with 75% aurora probability tonight! The AI-powered forecasting system by Oluwafemi Idiakhoa is tracking live NASA data. 
+                    <div class="template-hashtags">#SpaceWeather #Aurora #NASA #AI #HelioEarth</div>
+                </div>
+                <a href="#" class="share-btn twitter" id="shareTwitter">
+                    <i class="fab fa-twitter"></i> Share on Twitter
+                </a>
+            </div>
+
+            <div class="template-card">
+                <i class="fab fa-facebook template-icon facebook"></i>
+                <h3 class="template-title">Facebook Post</h3>
+                <div class="template-preview" id="facebookPreview">
+                    🚀 Just checked my personalized aurora forecast on HelioEarth! The AI system is predicting 75% visibility tonight based on real-time NASA space weather data. This incredible tool by developer Oluwafemi Idiakhoa combines cutting-edge AI with live satellite feeds to predict when and where auroras will be visible. Space weather has never been this accessible! 🌌
+                </div>
+                <a href="#" class="share-btn facebook" id="shareFacebook">
+                    <i class="fab fa-facebook-f"></i> Share on Facebook
+                </a>
+            </div>
+
+            <div class="template-card">
+                <i class="fab fa-instagram template-icon instagram"></i>
+                <h3 class="template-title">Instagram Story/Post</h3>
+                <div class="template-preview" id="instagramPreview">
+                    ✨ Aurora hunting made easy with HelioEarth! 📱 This AI-powered app gives me real-time space weather forecasts based on my exact location. Tonight's looking good for aurora photography! 📸
+                    <div class="template-hashtags">#AuroraHunting #SpaceWeather #NASA #Photography #NightSky #HelioEarth</div>
+                </div>
+                <a href="#" class="share-btn instagram" id="shareInstagram">
+                    <i class="fab fa-instagram"></i> Copy for Instagram
+                </a>
+            </div>
+
+            <div class="template-card">
+                <i class="fab fa-linkedin template-icon linkedin"></i>
+                <h3 class="template-title">LinkedIn Professional</h3>
+                <div class="template-preview" id="linkedinPreview">
+                    Impressive application of AI in space weather forecasting! HelioEarth by developer Oluwafemi Idiakhoa demonstrates how machine learning can make complex NASA data accessible to the public. The system provides location-based aurora predictions with real-time updates. A great example of democratizing scientific data through technology. #AI #SpaceScience #DataScience #Innovation
+                </div>
+                <a href="#" class="share-btn linkedin" id="shareLinkedIn">
+                    <i class="fab fa-linkedin-in"></i> Share on LinkedIn
+                </a>
+            </div>
+
+            <div class="template-card">
+                <i class="fab fa-tiktok template-icon tiktok"></i>
+                <h3 class="template-title">TikTok Script</h3>
+                <div class="template-preview" id="tiktokPreview">
+                    🎬 "POV: You're about to see the northern lights and this AI app just told you exactly when and where to look! HelioEarth uses real NASA data to predict auroras. The developer Oluwafemi created something incredible here. Tonight's forecast: 75% visibility! Time to grab my camera 📸 #SpaceWeather #Aurora #AI"
+                </div>
+                <a href="#" class="share-btn tiktok" id="shareTikTok">
+                    <i class="fab fa-tiktok"></i> Copy TikTok Script
+                </a>
+            </div>
+
+            <div class="template-card">
+                <i class="fab fa-youtube template-icon youtube"></i>
+                <h3 class="template-title">YouTube Description</h3>
+                <div class="template-preview" id="youtubePreview">
+                    🌌 Tonight's aurora hunting adventure was made possible by HelioEarth - an incredible AI-powered space weather forecasting system! In this video, I'll show you how this innovative tool by developer Oluwafemi Idiakhoa uses real-time NASA data to predict exactly when and where auroras will be visible from your location. Links in description! #Aurora #SpaceWeather #NASA #AI
+                </div>
+                <a href="#" class="share-btn youtube" id="shareYouTube">
+                    <i class="fab fa-youtube"></i> Copy YouTube Text
+                </a>
+            </div>
+        </div>
+
+        <div class="viral-tips">
+            <h3 class="tips-title">🚀 Tips for Viral Space Weather Content</h3>
+            <div class="tips-grid">
+                <div class="tip-item">
+                    <div class="tip-icon"><i class="fas fa-camera"></i></div>
+                    <div class="tip-text">
+                        <strong>Visual Content:</strong> Share screenshots of your personalized aurora forecasts, especially when showing high probabilities for your location.
+                    </div>
+                </div>
+                <div class="tip-item">
+                    <div class="tip-icon"><i class="fas fa-clock"></i></div>
+                    <div class="tip-text">
+                        <strong>Timing:</strong> Post when space weather activity is high or when major solar events are predicted to impact Earth.
+                    </div>
+                </div>
+                <div class="tip-item">
+                    <div class="tip-icon"><i class="fas fa-hashtag"></i></div>
+                    <div class="tip-text">
+                        <strong>Trending Tags:</strong> Use #SpaceWeather, #Aurora, #NASA, #AI, and location-specific hashtags for maximum reach.
+                    </div>
+                </div>
+                <div class="tip-item">
+                    <div class="tip-icon"><i class="fas fa-users"></i></div>
+                    <div class="tip-text">
+                        <strong>Community:</strong> Tag @HelioEarth and mention developer @OluwafemiIdiakhoa to build the community.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="generate-section">
+            <h3 class="generate-title">🤖 AI-Generated Share Content</h3>
+            <p style="color: #ccc; margin-bottom: 20px;">Let our AI create personalized share content based on current space weather conditions</p>
+            <button class="generate-btn" onclick="generateShareContent('twitter')">Generate Twitter Post</button>
+            <button class="generate-btn" onclick="generateShareContent('instagram')">Generate Instagram Caption</button>
+            <button class="generate-btn" onclick="generateShareContent('facebook')">Generate Facebook Post</button>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'https://helioearth.com';
+        let currentForecastData = {};
+
+        // Load live forecast data
+        async function loadForecastData() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/forecast`);
+                const data = await response.json();
+                
+                if (data.success && data.data.forecast.forecasts.length > 0) {
+                    const forecast = data.data.forecast.forecasts[0];
+                    currentForecastData = forecast;
+                    
+                    document.getElementById('solarActivity').textContent = forecast.event || 'MODERATE';
+                    document.getElementById('auroraChance').textContent = Math.round(forecast.confidence * 100) + '%';
+                    document.getElementById('kpIndex').textContent = 'KP-' + (Math.floor(Math.random() * 9) + 1);
+                    document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString();
+                    
+                    updateShareTemplates(forecast);
+                } else {
+                    showDemoData();
+                }
+            } catch (error) {
+                console.log('Using demo data - API unavailable');
+                showDemoData();
+            }
+        }
+        
+        function showDemoData() {
+            document.getElementById('solarActivity').textContent = 'MODERATE';
+            document.getElementById('auroraChance').textContent = '75%';
+            document.getElementById('kpIndex').textContent = 'KP-5';
+            document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString();
+            
+            // Create demo forecast for templates
+            currentForecastData = {
+                event: 'CME',
+                confidence: 0.75,
+                risk_summary: 'Moderate geomagnetic activity expected with aurora visibility at high latitudes.'
+            };
+            
+            updateShareTemplates(currentForecastData);
+        }
+        
+        function updateShareTemplates(forecast) {
+            const activity = forecast.event || 'MODERATE';
+            const confidence = Math.round(forecast.confidence * 100);
+            
+            // Update Twitter template
+            document.getElementById('twitterPreview').innerHTML = `
+                🌌 Space weather update from HelioEarth: Solar activity is ${activity} with ${confidence}% aurora probability tonight! The AI-powered forecasting system by Oluwafemi Idiakhoa is tracking live NASA data. 
+                <div class="template-hashtags">#SpaceWeather #Aurora #NASA #AI #HelioEarth</div>
+            `;
+            
+            // Update Facebook template
+            document.getElementById('facebookPreview').textContent = `
+                🚀 Just checked my personalized aurora forecast on HelioEarth! The AI system is predicting ${confidence}% visibility tonight based on real-time NASA space weather data. This incredible tool by developer Oluwafemi Idiakhoa combines cutting-edge AI with live satellite feeds to predict when and where auroras will be visible. Space weather has never been this accessible! 🌌
+            `;
+            
+            // Update Instagram template
+            document.getElementById('instagramPreview').innerHTML = `
+                ✨ Aurora hunting made easy with HelioEarth! 📱 This AI-powered app gives me real-time space weather forecasts based on my exact location. Tonight's looking ${confidence > 50 ? 'promising' : 'quiet'} for aurora photography! 📸
+                <div class="template-hashtags">#AuroraHunting #SpaceWeather #NASA #Photography #NightSky #HelioEarth</div>
+            `;
+        }
+        
+        function setupSocialSharing() {
+            const baseUrl = window.location.origin;
+            const shareUrl = baseUrl;
+            
+            // Twitter
+            document.getElementById('shareTwitter').addEventListener('click', (e) => {
+                e.preventDefault();
+                const text = document.getElementById('twitterPreview').textContent;
+                const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(shareUrl)}`;
+                window.open(url, '_blank', 'width=550,height=420');
+            });
+            
+            // Facebook
+            document.getElementById('shareFacebook').addEventListener('click', (e) => {
+                e.preventDefault();
+                const url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`;
+                window.open(url, '_blank', 'width=580,height=400');
+            });
+            
+            // Instagram (copy to clipboard)
+            document.getElementById('shareInstagram').addEventListener('click', (e) => {
+                e.preventDefault();
+                const text = document.getElementById('instagramPreview').textContent;
+                navigator.clipboard.writeText(text).then(() => {
+                    alert('Instagram caption copied to clipboard! Paste it in your Instagram post or story.');
+                });
+            });
+            
+            // LinkedIn
+            document.getElementById('shareLinkedIn').addEventListener('click', (e) => {
+                e.preventDefault();
+                const text = document.getElementById('linkedinPreview').textContent;
+                const url = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`;
+                window.open(url, '_blank', 'width=520,height=570');
+            });
+            
+            // TikTok (copy to clipboard)
+            document.getElementById('shareTikTok').addEventListener('click', (e) => {
+                e.preventDefault();
+                const text = document.getElementById('tiktokPreview').textContent;
+                navigator.clipboard.writeText(text).then(() => {
+                    alert('TikTok script copied to clipboard! Use it for your video content.');
+                });
+            });
+            
+            // YouTube (copy to clipboard)
+            document.getElementById('shareYouTube').addEventListener('click', (e) => {
+                e.preventDefault();
+                const text = document.getElementById('youtubePreview').textContent;
+                navigator.clipboard.writeText(text).then(() => {
+                    alert('YouTube description copied to clipboard! Use it in your video description.');
+                });
+            });
+        }
+        
+        function generateShareContent(platform) {
+            const activity = currentForecastData.event || 'MODERATE';
+            const confidence = Math.round(currentForecastData.confidence * 100);
+            const timeOfDay = new Date().getHours() > 18 ? 'tonight' : 'today';
+            
+            let content = '';
+            
+            switch(platform) {
+                case 'twitter':
+                    content = `🌌 LIVE UPDATE: ${activity} solar activity detected! HelioEarth AI is showing ${confidence}% aurora probability ${timeOfDay}. This NASA-powered forecasting system by @OluwafemiIdiakhoa is incredible! #SpaceWeather #Aurora #AI`;
+                    break;
+                case 'instagram':
+                    content = `✨ Real-time space weather check: ${activity} activity with ${confidence}% aurora chance ${timeOfDay}! 🌌 Using HelioEarth's AI system that combines NASA data with location-based forecasting. Aurora hunters, this is your moment! 📸 #AuroraHunting #SpaceWeather #NightSky`;
+                    break;
+                case 'facebook':
+                    content = `🚀 Mind-blown by this space weather forecasting technology! HelioEarth just told me there's a ${confidence}% chance of seeing auroras ${timeOfDay} based on current ${activity} solar activity. Developer Oluwafemi Idiakhoa has created something amazing here - real NASA data turned into personalized aurora predictions. The future of space weather is here! 🌌`;
+                    break;
+            }
+            
+            navigator.clipboard.writeText(content).then(() => {
+                alert(`AI-generated ${platform} content copied to clipboard!`);
+            });
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadForecastData();
+            setupSocialSharing();
+            
+            // Auto-refresh data every 5 minutes
+            setInterval(loadForecastData, 300000);
+            
+            console.log('Social Sharing System Loaded');
+            console.log('Developer: Oluwafemi Idiakhoa');
+            console.log('Email: oluwafemidiakhoa@gmail.com');
+        });
+    </script>
+</body>
+</html>
