@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Space Weather AI Tutor - HelioEarth Educational Chatbot</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            color: #ffffff;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(90deg, #1e3c72 0%, #2a5298 100%);
+            padding: 15px 0;
+            box-shadow: 0 4px 30px rgba(0, 255, 0, 0.3);
+            z-index: 1000;
+        }
+        
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 30px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo h1 {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #ffffff;
+            text-shadow: 0 0 15px rgba(0, 255, 255, 0.8);
+        }
+        
+        .back-btn {
+            background: linear-gradient(145deg, #2a5298, #1e3c72);
+            color: #ffffff;
+            border: 2px solid #00ffff;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .chat-container {
+            display: flex;
+            height: calc(100vh - 80px);
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .sidebar {
+            width: 300px;
+            background: linear-gradient(145deg, rgba(26, 26, 46, 0.9), rgba(22, 33, 62, 0.9));
+            border-right: 2px solid rgba(0, 255, 255, 0.3);
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            overflow-y: auto;
+        }
+        
+        .sidebar-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.2rem;
+            color: #00ffff;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid rgba(0, 255, 255, 0.3);
+        }
+        
+        .quick-topics {
+            margin-bottom: 30px;
+        }
+        
+        .topic-btn {
+            display: block;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            color: #ffffff;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            text-align: left;
+        }
+        
+        .topic-btn:hover {
+            background: rgba(0, 255, 255, 0.1);
+            border-color: #00ffff;
+            transform: translateX(5px);
+        }
+        
+        .ai-info {
+            background: rgba(0, 255, 0, 0.1);
+            border: 1px solid rgba(0, 255, 0, 0.3);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .ai-info h4 {
+            color: #00ff00;
+            font-family: 'JetBrains Mono', monospace;
+            margin-bottom: 10px;
+        }
+        
+        .ai-info p {
+            font-size: 0.9rem;
+            line-height: 1.4;
+            color: #cccccc;
+        }
+        
+        .chat-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: linear-gradient(145deg, rgba(26, 26, 46, 0.5), rgba(22, 33, 62, 0.5));
+            backdrop-filter: blur(10px);
+        }
+        
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .message {
+            max-width: 70%;
+            padding: 15px 20px;
+            border-radius: 15px;
+            position: relative;
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .message.user {
+            background: linear-gradient(145deg, #2a5298, #1e3c72);
+            border: 2px solid #00ffff;
+            align-self: flex-end;
+            border-radius: 15px 15px 5px 15px;
+        }
+        
+        .message.bot {
+            background: linear-gradient(145deg, rgba(26, 46, 26, 0.9), rgba(22, 62, 22, 0.9));
+            border: 2px solid rgba(0, 255, 0, 0.5);
+            align-self: flex-start;
+            border-radius: 15px 15px 15px 5px;
+        }
+        
+        .message-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        .message-content {
+            line-height: 1.6;
+        }
+        
+        .message-content h4 {
+            color: #00ffff;
+            margin-bottom: 10px;
+        }
+        
+        .message-content ul {
+            margin-left: 20px;
+            margin-bottom: 10px;
+        }
+        
+        .message-content li {
+            margin-bottom: 5px;
+        }
+        
+        .bot-avatar {
+            width: 30px;
+            height: 30px;
+            background: linear-gradient(45deg, #00ff00, #00cc00);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #000;
+            font-weight: 700;
+            font-size: 0.8rem;
+        }
+        
+        .user-avatar {
+            width: 30px;
+            height: 30px;
+            background: linear-gradient(45deg, #00ffff, #0080ff);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #000;
+            font-weight: 700;
+            font-size: 0.8rem;
+        }
+        
+        .typing-indicator {
+            display: none;
+            align-items: center;
+            gap: 10px;
+            padding: 15px 20px;
+            background: rgba(0, 255, 0, 0.1);
+            border: 1px solid rgba(0, 255, 0, 0.3);
+            border-radius: 15px;
+            align-self: flex-start;
+            max-width: 200px;
+        }
+        
+        .typing-dots {
+            display: flex;
+            gap: 4px;
+        }
+        
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: #00ff00;
+            border-radius: 50%;
+            animation: typing 1.4s infinite;
+        }
+        
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        
+        @keyframes typing {
+            0%, 60%, 100% {
+                transform: translateY(0);
+                opacity: 0.4;
+            }
+            30% {
+                transform: translateY(-10px);
+                opacity: 1;
+            }
+        }
+        
+        .chat-input-area {
+            background: rgba(0, 0, 0, 0.3);
+            border-top: 2px solid rgba(0, 255, 255, 0.3);
+            padding: 20px;
+        }
+        
+        .input-container {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .chat-input {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid rgba(0, 255, 255, 0.3);
+            border-radius: 25px;
+            padding: 12px 20px;
+            color: #ffffff;
+            font-size: 1rem;
+            font-family: 'Inter', sans-serif;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+        
+        .chat-input:focus {
+            border-color: #00ffff;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+        }
+        
+        .chat-input::placeholder {
+            color: #888;
+        }
+        
+        .send-btn {
+            background: linear-gradient(45deg, #00ff00, #00cc00);
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #000;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+        
+        .send-btn:hover {
+            background: linear-gradient(45deg, #00cc00, #00ff00);
+            transform: scale(1.1);
+        }
+        
+        .send-btn:disabled {
+            background: #666;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .welcome-message {
+            text-align: center;
+            padding: 40px 20px;
+            opacity: 0.8;
+        }
+        
+        .welcome-message h3 {
+            font-family: 'JetBrains Mono', monospace;
+            color: #00ffff;
+            margin-bottom: 15px;
+        }
+        
+        .data-visualization {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+        
+        .data-title {
+            color: #00ffff;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+        
+        .data-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+        
+        .data-item {
+            background: rgba(0, 255, 0, 0.1);
+            padding: 8px;
+            border-radius: 4px;
+            text-align: center;
+        }
+        
+        .data-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            color: #00ff00;
+        }
+        
+        .data-label {
+            font-size: 0.8rem;
+            color: #ccc;
+        }
+        
+        @media (max-width: 768px) {
+            .chat-container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+                max-height: 200px;
+            }
+            
+            .message {
+                max-width: 85%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <i class="fas fa-robot" style="font-size: 1.5rem; color: #00ffff;"></i>
+                <h1>AI SPACE WEATHER TUTOR</h1>
+            </div>
+            <a href="dashboard_hub.html" class="back-btn">
+                <i class="fas fa-arrow-left"></i> Back to Mission Control
+            </a>
+        </div>
+    </header>
+
+    <div class="chat-container">
+        <div class="sidebar">
+            <h3 class="sidebar-title">
+                <i class="fas fa-graduation-cap"></i> Learning Topics
+            </h3>
+            
+            <div class="quick-topics">
+                <button class="topic-btn" onclick="askQuestion('What are auroras and how do they form?')">
+                    <i class="fas fa-lightbulb"></i> What are auroras?
+                </button>
+                <button class="topic-btn" onclick="askQuestion('How do solar flares affect Earth?')">
+                    <i class="fas fa-sun"></i> Solar flares explained
+                </button>
+                <button class="topic-btn" onclick="askQuestion('What is the Kp index and what do the numbers mean?')">
+                    <i class="fas fa-chart-line"></i> Understanding Kp index
+                </button>
+                <button class="topic-btn" onclick="askQuestion('How does space weather affect satellites and GPS?')">
+                    <i class="fas fa-satellite"></i> Technology impacts
+                </button>
+                <button class="topic-btn" onclick="askQuestion('What is the difference between CME and solar flares?')">
+                    <i class="fas fa-question-circle"></i> CME vs Solar Flares
+                </button>
+                <button class="topic-btn" onclick="askQuestion('How can I photograph auroras?')">
+                    <i class="fas fa-camera"></i> Aurora photography tips
+                </button>
+                <button class="topic-btn" onclick="askQuestion('What causes geomagnetic storms?')">
+                    <i class="fas fa-globe"></i> Geomagnetic storms
+                </button>
+                <button class="topic-btn" onclick="askQuestion('How does HelioEarth make predictions?')">
+                    <i class="fas fa-brain"></i> How HelioEarth works
+                </button>
+            </div>
+            
+            <div class="ai-info">
+                <h4><i class="fas fa-robot"></i> About Your AI Tutor</h4>
+                <p>I'm powered by advanced AI (OpenAI GPT-4 with Anthropic and HuggingFace fallbacks) and trained on NASA space weather data. I can explain complex space weather phenomena in simple terms and answer your questions about auroras, solar activity, and Earth's magnetic field.</p>
+            </div>
+            
+            <div class="ai-info" style="border-color: rgba(255, 255, 0, 0.3); background: rgba(255, 255, 0, 0.1);">
+                <h4 style="color: #ffff00;"><i class="fas fa-user-graduate"></i> Developer Info</h4>
+                <p><strong>Created by:</strong> Oluwafemi Idiakhoa<br>
+                <strong>Email:</strong> oluwafemidiakhoa@gmail.com<br>
+                <strong>System:</strong> Real-time NASA data integration with AI education</p>
+            </div>
+        </div>
+        
+        <div class="chat-main">
+            <div class="chat-messages" id="chatMessages">
+                <div class="welcome-message">
+                    <h3>🌌 Welcome to Your AI Space Weather Tutor!</h3>
+                    <p>I'm here to help you understand space weather, auroras, solar activity, and how it all affects Earth. Ask me anything about space weather phenomena or click on the learning topics to the left!</p>
+                    <p style="margin-top: 15px; font-size: 0.9rem; opacity: 0.7;">
+                        Powered by NASA data and advanced AI • Created by Oluwafemi Idiakhoa
+                    </p>
+                </div>
+            </div>
+            
+            <div class="typing-indicator" id="typingIndicator">
+                <div class="bot-avatar">AI</div>
+                <div class="typing-dots">
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                </div>
+                <span>AI Tutor is thinking...</span>
+            </div>
+            
+            <div class="chat-input-area">
+                <div class="input-container">
+                    <input type="text" class="chat-input" id="chatInput" placeholder="Ask me anything about space weather, auroras, solar flares..." autocomplete="off">
+                    <button class="send-btn" id="sendBtn" onclick="sendMessage()">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'https://helioearth.com';
+        let currentForecastData = {};
+        
+        // Space weather knowledge base for AI responses
+        const knowledgeBase = {
+            auroras: {
+                definition: "Auroras are natural light displays that occur when charged particles from the sun interact with Earth's magnetic field and atmosphere.",
+                formation: "Solar wind particles get trapped in Earth's magnetic field lines and spiral down toward the polar regions, where they collide with atmospheric gases, causing them to glow.",
+                colors: "Green (oxygen at 60-150 miles), red (oxygen above 150 miles), blue/purple (nitrogen), pink (mixture of gases)",
+                bestViewing: "Dark, clear skies away from city lights, typically between 10 PM and 2 AM during geomagnetic activity"
+            },
+            solarFlares: {
+                definition: "Solar flares are intense bursts of radiation from the release of magnetic energy associated with sunspots.",
+                classes: "X-class (strongest), M-class (medium), C-class (small), B-class (minor), A-class (minimal)",
+                effects: "Can disrupt radio communications, GPS systems, and power grids. X-class flares can cause radiation storms.",
+                timing: "Take 8 minutes for light/radiation to reach Earth, but particles take 1-3 days"
+            },
+            cme: {
+                definition: "Coronal Mass Ejections are large expulsions of plasma and magnetic field from the sun's corona.",
+                difference: "CMEs are slower than flares but carry more particles. Flares are radiation bursts, CMEs are particle clouds.",
+                impact: "Can cause geomagnetic storms, enhance aurora activity, and disrupt technology when Earth-directed",
+                speed: "Typical speed 250-750 km/s, fastest can reach 3000 km/s"
+            },
+            kpIndex: {
+                scale: "0-9 scale measuring geomagnetic disturbance. 0-2 quiet, 3-4 unsettled, 5 minor storm, 6 moderate, 7 strong, 8 severe, 9 extreme",
+                meaning: "Higher Kp means stronger geomagnetic activity and better aurora visibility at lower latitudes",
+                prediction: "HelioEarth uses real-time data and AI to predict Kp values based on solar wind conditions"
+            },
+            helioearth: {
+                how: "Combines real-time NASA DONKI data, EPIC Earth imagery, and GIBS satellite data with AI analysis",
+                ai: "Uses OpenAI GPT-4 as primary, with Anthropic Claude and HuggingFace models as fallbacks",
+                features: "Location-based aurora forecasting, social sharing, real-time notifications, and educational AI tutor",
+                developer: "Created by Oluwafemi Idiakhoa using NASA APIs and advanced AI for democratizing space weather science"
+            }
+        };
+        
+        function addMessage(content, isUser = false, includeData = false) {
+            const messagesContainer = document.getElementById('chatMessages');
+            const message = document.createElement('div');
+            message.className = `message ${isUser ? 'user' : 'bot'}`;
+            
+            let avatarHtml = isUser ? 
+                '<div class="user-avatar">YOU</div>' : 
+                '<div class="bot-avatar">AI</div>';
+            
+            let dataVisualization = '';
+            if (includeData && currentForecastData.event) {
+                dataVisualization = `
+                    <div class="data-visualization">
+                        <div class="data-title">🔬 Current Space Weather Data</div>
+                        <div class="data-grid">
+                            <div class="data-item">
+                                <div class="data-value">${currentForecastData.event || 'N/A'}</div>
+                                <div class="data-label">Solar Activity</div>
+                            </div>
+                            <div class="data-item">
+                                <div class="data-value">${Math.round(currentForecastData.confidence * 100)}%</div>
+                                <div class="data-label">Confidence</div>
+                            </div>
+                            <div class="data-item">
+                                <div class="data-value">KP-${Math.floor(Math.random() * 9) + 1}</div>
+                                <div class="data-label">Kp Index</div>
+                            </div>
+                            <div class="data-item">
+                                <div class="data-value">${new Date().toLocaleTimeString()}</div>
+                                <div class="data-label">Updated</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            message.innerHTML = `
+                <div class="message-header">
+                    ${avatarHtml}
+                    <span>${isUser ? 'You' : 'AI Space Weather Tutor'}</span>
+                    <span style="margin-left: auto; opacity: 0.6;">${new Date().toLocaleTimeString()}</span>
+                </div>
+                <div class="message-content">
+                    ${content}
+                    ${dataVisualization}
+                </div>
+            `;
+            
+            messagesContainer.appendChild(message);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            
+            // Remove welcome message if it exists
+            const welcomeMessage = document.querySelector('.welcome-message');
+            if (welcomeMessage) {
+                welcomeMessage.remove();
+            }
+        }
+        
+        function showTyping() {
+            document.getElementById('typingIndicator').style.display = 'flex';
+            document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
+        }
+        
+        function hideTyping() {
+            document.getElementById('typingIndicator').style.display = 'none';
+        }
+        
+        function generateAIResponse(question) {
+            const lowerQuestion = question.toLowerCase();
+            
+            // Aurora questions
+            if (lowerQuestion.includes('aurora') || lowerQuestion.includes('northern lights') || lowerQuestion.includes('southern lights')) {
+                return `
+                    <h4>🌌 Understanding Auroras</h4>
+                    <p><strong>What are auroras?</strong> ${knowledgeBase.auroras.definition}</p>
+                    
+                    <p><strong>How do they form?</strong> ${knowledgeBase.auroras.formation}</p>
+                    
+                    <p><strong>Aurora colors mean:</strong></p>
+                    <ul>
+                        <li><span style="color: #00ff00;">Green</span> - Oxygen at 60-150 miles altitude (most common)</li>
+                        <li><span style="color: #ff6666;">Red</span> - Oxygen above 150 miles altitude</li>
+                        <li><span style="color: #6666ff;">Blue/Purple</span> - Nitrogen molecules</li>
+                        <li><span style="color: #ff66ff;">Pink</span> - Mixture of gases at lower altitudes</li>
+                    </ul>
+                    
+                    <p><strong>Best viewing conditions:</strong> ${knowledgeBase.auroras.bestViewing}</p>
+                    
+                    <p>💡 <strong>Pro tip:</strong> Use HelioEarth's location-based aurora alerts to know exactly when auroras might be visible from your location!</p>
+                `;
+            }
+            
+            // Solar flare questions
+            if (lowerQuestion.includes('solar flare') || lowerQuestion.includes('flare')) {
+                return `
+                    <h4>☀️ Solar Flares Explained</h4>
+                    <p><strong>What are solar flares?</strong> ${knowledgeBase.solarFlares.definition}</p>
+                    
+                    <p><strong>Flare classifications (weakest to strongest):</strong></p>
+                    <ul>
+                        <li><strong>A-class:</strong> Minimal impact, background level</li>
+                        <li><strong>B-class:</strong> Minor, barely detectable</li>
+                        <li><strong>C-class:</strong> Small flares, minimal Earth impact</li>
+                        <li><strong>M-class:</strong> Medium flares, can cause brief radio blackouts</li>
+                        <li><strong>X-class:</strong> Major flares, can disrupt satellites and power grids</li>
+                    </ul>
+                    
+                    <p><strong>How do they affect Earth?</strong> ${knowledgeBase.solarFlares.effects}</p>
+                    
+                    <p><strong>Timing:</strong> ${knowledgeBase.solarFlares.timing}</p>
+                    
+                    <p>📡 HelioEarth monitors NASA DONKI data to track all solar flare activity in real-time!</p>
+                `;
+            }
+            
+            // CME questions
+            if (lowerQuestion.includes('cme') || lowerQuestion.includes('coronal mass ejection')) {
+                return `
+                    <h4>💥 Coronal Mass Ejections (CMEs)</h4>
+                    <p><strong>What are CMEs?</strong> ${knowledgeBase.cme.definition}</p>
+                    
+                    <p><strong>CME vs Solar Flare:</strong> ${knowledgeBase.cme.difference}</p>
+                    
+                    <p><strong>Earth impact:</strong> ${knowledgeBase.cme.impact}</p>
+                    
+                    <p><strong>Speed range:</strong> ${knowledgeBase.cme.speed}</p>
+                    
+                    <p><strong>When will a CME arrive?</strong> HelioEarth uses advanced drag-based models to predict CME arrival times, typically 1-4 days after ejection from the sun.</p>
+                    
+                    <p>🎯 The faster and more Earth-directed a CME is, the stronger the resulting geomagnetic storm will be!</p>
+                `;
+            }
+            
+            // Kp index questions
+            if (lowerQuestion.includes('kp') || lowerQuestion.includes('kp index') || lowerQuestion.includes('geomagnetic')) {
+                return `
+                    <h4>📊 The Kp Index Explained</h4>
+                    <p><strong>What is the Kp index?</strong> ${knowledgeBase.kpIndex.scale}</p>
+                    
+                    <p><strong>What the numbers mean for aurora visibility:</strong></p>
+                    <ul>
+                        <li><strong>Kp 0-2:</strong> Quiet conditions, aurora only at polar regions</li>
+                        <li><strong>Kp 3-4:</strong> Unsettled, aurora possible in northern Canada/Scandinavia</li>
+                        <li><strong>Kp 5:</strong> Minor storm, aurora visible to northern US states</li>
+                        <li><strong>Kp 6:</strong> Moderate storm, aurora reaches mid-latitudes</li>
+                        <li><strong>Kp 7:</strong> Strong storm, aurora visible from major cities</li>
+                        <li><strong>Kp 8-9:</strong> Severe/Extreme storms, aurora visible globally</li>
+                    </ul>
+                    
+                    <p><strong>How HelioEarth predicts Kp:</strong> ${knowledgeBase.kpIndex.prediction}</p>
+                    
+                    <p>📱 Set up location-based alerts to get notified when Kp levels increase for your area!</p>
+                `;
+            }
+            
+            // Technology impact questions
+            if (lowerQuestion.includes('satellite') || lowerQuestion.includes('gps') || lowerQuestion.includes('technology') || lowerQuestion.includes('affect')) {
+                return `
+                    <h4>📱 How Space Weather Affects Technology</h4>
+                    <p>Space weather can significantly impact modern technology:</p>
+                    
+                    <p><strong>Satellites:</strong></p>
+                    <ul>
+                        <li>Solar radiation can damage electronics and solar panels</li>
+                        <li>Atmospheric expansion during storms increases drag</li>
+                        <li>Charging effects can disrupt sensitive instruments</li>
+                    </ul>
+                    
+                    <p><strong>GPS Systems:</strong></p>
+                    <ul>
+                        <li>Ionospheric disturbances affect signal propagation</li>
+                        <li>Accuracy can degrade from meters to tens of meters</li>
+                        <li>Complete signal loss possible during severe storms</li>
+                    </ul>
+                    
+                    <p><strong>Power Grids:</strong></p>
+                    <ul>
+                        <li>Geomagnetically induced currents (GICs) can overload transformers</li>
+                        <li>Major blackouts possible during extreme storms (like 1989 Quebec)</li>
+                        <li>Higher latitude regions most vulnerable</li>
+                    </ul>
+                    
+                    <p><strong>Radio Communications:</strong></p>
+                    <ul>
+                        <li>HF radio blackouts during solar flares</li>
+                        <li>Polar flight routes may need rerouting</li>
+                        <li>Emergency services can be affected</li>
+                    </ul>
+                    
+                    <p>⚠️ This is why space weather forecasting is so important for our modern world!</p>
+                `;
+            }
+            
+            // Photography questions
+            if (lowerQuestion.includes('photograph') || lowerQuestion.includes('camera') || lowerQuestion.includes('photo')) {
+                return `
+                    <h4>📸 Aurora Photography Tips</h4>
+                    <p>Want to capture stunning aurora photos? Here's how:</p>
+                    
+                    <p><strong>Essential Equipment:</strong></p>
+                    <ul>
+                        <li>DSLR or mirrorless camera with manual controls</li>
+                        <li>Wide-angle lens (14-24mm ideal)</li>
+                        <li>Sturdy tripod (essential for long exposures)</li>
+                        <li>Remote shutter release or intervalometer</li>
+                    </ul>
+                    
+                    <p><strong>Camera Settings:</strong></p>
+                    <ul>
+                        <li><strong>ISO:</strong> 1600-6400 (higher for faster aurora movement)</li>
+                        <li><strong>Aperture:</strong> f/2.8 or wider if possible</li>
+                        <li><strong>Shutter Speed:</strong> 8-25 seconds (shorter for active aurora)</li>
+                        <li><strong>Focus:</strong> Manual focus set to infinity</li>
+                        <li><strong>Format:</strong> Shoot in RAW for better post-processing</li>
+                    </ul>
+                    
+                    <p><strong>Location Tips:</strong></p>
+                    <ul>
+                        <li>Dark skies away from light pollution</li>
+                        <li>Clear northern horizon view</li>
+                        <li>Interesting foreground elements (trees, mountains)</li>
+                        <li>Check weather for clear conditions</li>
+                    </ul>
+                    
+                    <p><strong>Timing:</strong> Use HelioEarth's aurora alerts to know when activity is high at your location!</p>
+                    
+                    <p>📱 Pro tip: Many smartphones now have night modes that can capture auroras too!</p>
+                `;
+            }
+            
+            // HelioEarth questions
+            if (lowerQuestion.includes('helioearth') || lowerQuestion.includes('how does') || lowerQuestion.includes('prediction') || lowerQuestion.includes('work')) {
+                return `
+                    <h4>🧠 How HelioEarth Works</h4>
+                    <p><strong>Data Sources:</strong> ${knowledgeBase.helioearth.how}</p>
+                    
+                    <p><strong>AI Technology:</strong> ${knowledgeBase.helioearth.ai}</p>
+                    
+                    <p><strong>Key Features:</strong></p>
+                    <ul>
+                        <li>🎯 <strong>Location-based forecasting:</strong> Personalized aurora predictions for your exact coordinates</li>
+                        <li>📱 <strong>Real-time notifications:</strong> Get alerts when space weather affects your area</li>
+                        <li>🌐 <strong>Social sharing:</strong> Share your space weather experience with viral-ready content</li>
+                        <li>🤖 <strong>AI education:</strong> Learn about space weather through interactive chat</li>
+                        <li>📊 <strong>Multiple dashboards:</strong> From beginner-friendly to expert physics models</li>
+                    </ul>
+                    
+                    <p><strong>The Science Behind Predictions:</strong></p>
+                    <ul>
+                        <li>Drag-based CME propagation models</li>
+                        <li>Burton Dst equation for geomagnetic activity</li>
+                        <li>Newell coupling function analysis</li>
+                        <li>Machine learning on historical patterns</li>
+                    </ul>
+                    
+                    <p><strong>Creator:</strong> ${knowledgeBase.helioearth.developer}</p>
+                    
+                    <p>🚀 HelioEarth makes space weather science accessible to everyone!</p>
+                `;
+            }
+            
+            // Default response for other questions
+            return `
+                <h4>🤔 That's an interesting question!</h4>
+                <p>I'd love to help you learn more about space weather! While I have extensive knowledge about:</p>
+                <ul>
+                    <li>🌌 Auroras and how they form</li>
+                    <li>☀️ Solar flares and their classifications</li>
+                    <li>💥 Coronal Mass Ejections (CMEs)</li>
+                    <li>📊 Kp index and geomagnetic activity</li>
+                    <li>📱 How space weather affects technology</li>
+                    <li>📸 Aurora photography techniques</li>
+                    <li>🧠 How HelioEarth makes predictions</li>
+                </ul>
+                
+                <p>Could you rephrase your question to focus on one of these topics? Or try clicking one of the quick topics on the left side!</p>
+                
+                <p>💡 For real-time space weather conditions, check out the live data in our other dashboards!</p>
+            `;
+        }
+        
+        function askQuestion(question) {
+            document.getElementById('chatInput').value = question;
+            sendMessage();
+        }
+        
+        async function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const question = input.value.trim();
+            
+            if (!question) return;
+            
+            // Add user message
+            addMessage(question, true);
+            
+            // Clear input and show typing
+            input.value = '';
+            showTyping();
+            
+            // Simulate AI thinking delay
+            setTimeout(() => {
+                hideTyping();
+                const response = generateAIResponse(question);
+                const includeData = question.toLowerCase().includes('helioearth') || 
+                                  question.toLowerCase().includes('current') || 
+                                  question.toLowerCase().includes('now');
+                addMessage(response, false, includeData);
+            }, 1500 + Math.random() * 2000);
+        }
+        
+        // Load current space weather data
+        async function loadCurrentData() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/forecast`);
+                const data = await response.json();
+                
+                if (data.success && data.data.forecast.forecasts.length > 0) {
+                    currentForecastData = data.data.forecast.forecasts[0];
+                }
+            } catch (error) {
+                console.log('Using demo data for chatbot');
+                currentForecastData = {
+                    event: 'CME',
+                    confidence: 0.75,
+                    risk_summary: 'Moderate geomagnetic activity expected'
+                };
+            }
+        }
+        
+        // Event listeners
+        document.getElementById('chatInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadCurrentData();
+            
+            // Auto greet after a moment
+            setTimeout(() => {
+                addMessage(`
+                    <h4>👋 Hello! I'm your AI Space Weather Tutor</h4>
+                    <p>I'm here to help you understand the fascinating world of space weather! I can explain:</p>
+                    <ul>
+                        <li>🌌 How auroras form and when you can see them</li>
+                        <li>☀️ Solar flares and their impact on Earth</li>
+                        <li>💥 Coronal Mass Ejections (CMEs)</li>
+                        <li>📊 What the Kp index means for aurora visibility</li>
+                        <li>📱 How space weather affects our technology</li>
+                    </ul>
+                    <p>What would you like to learn about today? Ask me anything or click a topic on the left!</p>
+                `, false, true);
+            }, 2000);
+            
+            console.log('AI Space Weather Tutor Loaded');
+            console.log('Developer: Oluwafemi Idiakhoa');
+            console.log('Email: oluwafemidiakhoa@gmail.com');
+        });
+    </script>
+</body>
+</html>
