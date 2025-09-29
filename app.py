@@ -21,7 +21,31 @@ class handler(BaseHTTPRequestHandler):
         
         try:
             # Route handling
-            if path == '/' or path == '':
+            if path == '/live_dashboard.html':
+                # Serve the HTML dashboard
+                try:
+                    with open('live_dashboard.html', 'r', encoding='utf-8') as f:
+                        html_content = f.read()
+                    self.send_response(200)
+                    self.send_header('Content-type', 'text/html; charset=utf-8')
+                    self.send_header('Access-Control-Allow-Origin', '*')
+                    self.end_headers()
+                    self.wfile.write(html_content.encode('utf-8'))
+                    return
+                except FileNotFoundError:
+                    self.send_response(404)
+                    self.send_header('Content-type', 'application/json')
+                    self.send_header('Access-Control-Allow-Origin', '*')
+                    self.end_headers()
+                    error_response = {
+                        "success": False,
+                        "error": "Dashboard file not found",
+                        "path": path
+                    }
+                    self.wfile.write(json.dumps(error_response).encode())
+                    return
+            
+            elif path == '/' or path == '':
                 response_data = {
                     "name": "NASA Space Weather Forecaster",
                     "version": "2.0.0", 
@@ -30,7 +54,8 @@ class handler(BaseHTTPRequestHandler):
                     "endpoints": {
                         "health": "/api/health",
                         "forecast": "/api/forecast",
-                        "status": "/api/status"
+                        "status": "/api/status",
+                        "dashboard": "/live_dashboard.html"
                     }
                 }
             
