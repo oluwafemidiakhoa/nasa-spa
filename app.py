@@ -48,7 +48,7 @@ class handler(BaseHTTPRequestHandler):
             elif path == '/' or path == '':
                 # Serve the spectacular dashboard as the main page
                 try:
-                    with open('simple_working_dashboard.html', 'r', encoding='utf-8') as f:
+                    with open('dashboard_hub.html', 'r', encoding='utf-8') as f:
                         html_content = f.read()
                     self.send_response(200)
                     self.send_header('Content-type', 'text/html; charset=utf-8')

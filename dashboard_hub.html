@@ -264,12 +264,39 @@
             }
         }
     </style>
-    <script src="live_nasa_data.js"></script>
-    <script src="websocket_client.js"></script>
-    <script src="assets/animations.js"></script>
-    <script src="assets/keyboard-shortcuts.js"></script>
-    <script src="assets/notification-system.js"></script>
-    <script src="assets/user-system.js"></script>
+    <script>
+        // Self-contained JavaScript to make dashboard work
+        
+        // Mission time display
+        function updateMissionTime() {
+            const now = new Date();
+            const utcTime = now.toUTCString().split(' ')[4];
+            document.getElementById('mission-time').textContent = utcTime + ' UTC';
+        }
+        
+        // Dashboard opening function
+        function openDashboard(dashboardFile) {
+            window.open(dashboardFile, '_blank');
+        }
+        
+        // Initialize dashboard
+        function initDashboard() {
+            updateMissionTime();
+            setInterval(updateMissionTime, 1000);
+            
+            // Add some basic animations
+            const cards = document.querySelectorAll('.dashboard-card');
+            cards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 200);
+            });
+        }
+        
+        // Start when page loads
+        document.addEventListener('DOMContentLoaded', initDashboard);
+    </script>
 </head>
 <body>
     <header class="header">
