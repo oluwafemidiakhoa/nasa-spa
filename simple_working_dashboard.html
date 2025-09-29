@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HelioEarth - NASA Space Weather Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 3rem;
+            color: #00ffff;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.2rem;
+            color: #ccc;
+        }
+        
+        .status {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 15px;
+            background: rgba(0, 255, 0, 0.1);
+            border: 2px solid #00ff00;
+            border-radius: 10px;
+        }
+        
+        .status-dot {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            background: #00ff00;
+            border-radius: 50%;
+            margin-right: 10px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            transition: transform 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 255, 255, 0.2);
+        }
+        
+        .card h3 {
+            color: #00ffff;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+        
+        .data-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #00ff00;
+            margin: 10px 0;
+        }
+        
+        .data-label {
+            color: #ccc;
+            font-size: 0.9rem;
+        }
+        
+        .confidence-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+        
+        .confidence-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff0000, #ff8000, #ffff00, #00ff00);
+            border-radius: 4px;
+        }
+        
+        .refresh-btn {
+            background: linear-gradient(45deg, #00ffff, #0080ff);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin: 20px auto;
+            display: block;
+        }
+        
+        .refresh-btn:hover {
+            background: linear-gradient(45deg, #0080ff, #00ffff);
+        }
+        
+        .last-updated {
+            text-align: center;
+            color: #888;
+            margin-top: 20px;
+        }
+        
+        .error {
+            background: rgba(255, 0, 0, 0.2);
+            border: 1px solid #ff0000;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+        }
+        
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(0, 255, 255, 0.3);
+            border-left: 4px solid #00ffff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🌌 HELIOEARTH</h1>
+        <p>NASA Space Weather Live Dashboard</p>
+        <p><small>Developer: Oluwafemi Idiakhoa</small></p>
+    </div>
+    
+    <div class="status">
+        <span class="status-dot"></span>
+        <span id="connectionStatus">Connecting...</span>
+    </div>
+    
+    <div id="content">
+        <div class="loading">
+            <div class="spinner"></div>
+            <p>Loading space weather data...</p>
+        </div>
+    </div>
+    
+    <button class="refresh-btn" onclick="loadData()">🔄 Refresh Data</button>
+    
+    <div class="last-updated" id="lastUpdated"></div>
+    
+    <script>
+        const API_BASE_URL = 'https://helioearth.com';
+        
+        function updateStatus(message, isConnected) {
+            const statusElement = document.getElementById('connectionStatus');
+            statusElement.textContent = message;
+            
+            const dot = document.querySelector('.status-dot');
+            dot.style.background = isConnected ? '#00ff00' : '#ff0000';
+        }
+        
+        function updateLastUpdated() {
+            const now = new Date();
+            document.getElementById('lastUpdated').textContent = 
+                `Last updated: ${now.toLocaleTimeString()}`;
+        }
+        
+        async function loadData() {
+            try {
+                updateStatus('Connecting...', false);
+                
+                // Try to fetch real data
+                const forecastResponse = await fetch(`${API_BASE_URL}/api/forecast`);
+                const forecastData = await forecastResponse.json();
+                
+                const statusResponse = await fetch(`${API_BASE_URL}/api/status`);
+                const statusData = await statusResponse.json();
+                
+                displayData(forecastData, statusData);
+                updateStatus('Connected', true);
+                updateLastUpdated();
+                
+            } catch (error) {
+                console.log('API unavailable, showing demo data');
+                showDemoData();
+                updateStatus('Demo Mode (API Offline)', true);
+                updateLastUpdated();
+            }
+        }
+        
+        function showDemoData() {
+            const demoForecast = {
+                success: true,
+                data: {
+                    forecast: {
+                        forecasts: [
+                            {
+                                event: "CME",
+                                risk_summary: "Moderate geomagnetic activity expected. Aurora possible at high latitudes.",
+                                impacts: ["aurora_visibility", "gps_accuracy", "hf_radio_disruption"],
+                                confidence: 0.75,
+                                solar_timestamp: new Date().toISOString()
+                            },
+                            {
+                                event: "FLARE",
+                                risk_summary: "Minor X-ray flux enhancement detected. Minimal Earth impact expected.",
+                                impacts: ["hf_radio_minor"],
+                                confidence: 0.85,
+                                solar_timestamp: new Date().toISOString()
+                            }
+                        ]
+                    },
+                    generated_at: new Date().toISOString(),
+                    source: "demo_mode",
+                    note: "Demo data - API offline"
+                }
+            };
+            
+            const demoStatus = {
+                success: true,
+                data: {
+                    version: "2.0.0",
+                    deployment: "local-demo",
+                    services: {
+                        nasa_api: "configured",
+                        anthropic_ai: "configured",
+                        openai: "configured"
+                    },
+                    capabilities: {
+                        forecasting: true,
+                        email_notifications: true
+                    }
+                }
+            };
+            
+            displayData(demoForecast, demoStatus);
+        }
+        
+        function displayData(forecastData, statusData) {
+            const content = document.getElementById('content');
+            
+            if (!forecastData.success) {
+                content.innerHTML = `
+                    <div class="error">
+                        <h3>⚠️ Error Loading Data</h3>
+                        <p>Could not load space weather data: ${forecastData.error || 'Unknown error'}</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            const forecasts = forecastData.data.forecast.forecasts || [];
+            
+            content.innerHTML = `
+                <div class="dashboard">
+                    <div class="card">
+                        <h3>🚀 System Status</h3>
+                        <div class="data-value">ONLINE</div>
+                        <div class="data-label">API Version: ${statusData.data.version}</div>
+                        <div class="data-label">Deployment: ${statusData.data.deployment}</div>
+                        <div class="data-label">NASA API: ${statusData.data.services.nasa_api}</div>
+                        <div class="data-label">AI Services: ${statusData.data.services.openai}</div>
+                    </div>
+                    
+                    ${forecasts.map((forecast, index) => `
+                        <div class="card">
+                            <h3>${getEventIcon(forecast.event)} ${forecast.event} Event</h3>
+                            <div class="data-value">${Math.round(forecast.confidence * 100)}%</div>
+                            <div class="data-label">Confidence Level</div>
+                            <div class="confidence-bar">
+                                <div class="confidence-fill" style="width: ${forecast.confidence * 100}%"></div>
+                            </div>
+                            <p style="margin-top: 15px; color: #ccc;">${forecast.risk_summary}</p>
+                            <div style="margin-top: 10px;">
+                                <strong>Impacts:</strong> ${forecast.impacts.join(', ')}
+                            </div>
+                            <div style="margin-top: 5px; font-size: 0.8rem; color: #888;">
+                                Solar Time: ${new Date(forecast.solar_timestamp).toLocaleString()}
+                            </div>
+                        </div>
+                    `).join('')}
+                    
+                    <div class="card">
+                        <h3>📊 Data Sources</h3>
+                        <div class="data-value">${forecastData.data.source.toUpperCase()}</div>
+                        <div class="data-label">Current Data Source</div>
+                        <p style="margin-top: 15px; color: #ccc;">${forecastData.data.note}</p>
+                        <div style="margin-top: 10px; font-size: 0.9rem;">
+                            <strong>Generated:</strong> ${new Date(forecastData.data.generated_at).toLocaleString()}
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>🌍 Earth Impact Monitor</h3>
+                        <div class="data-value">ACTIVE</div>
+                        <div class="data-label">Monitoring Status</div>
+                        <div style="margin-top: 15px;">
+                            <div style="display: flex; justify-content: space-between; margin: 5px 0;">
+                                <span>Aurora Activity:</span>
+                                <span style="color: #00ff00;">Moderate</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin: 5px 0;">
+                                <span>GNSS Accuracy:</span>
+                                <span style="color: #ffff00;">Minor Impact</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin: 5px 0;">
+                                <span>HF Radio:</span>
+                                <span style="color: #00ff00;">Normal</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function getEventIcon(eventType) {
+            const icons = {
+                'CME': '💥',
+                'FLARE': '🔥',
+                'SEP': '⚡',
+                'GEO_STORM': '🌪️'
+            };
+            return icons[eventType] || '🌌';
+        }
+        
+        // Initialize dashboard
+        loadData();
+        
+        // Auto-refresh every 30 seconds
+        setInterval(loadData, 30000);
+        
+        console.log('HelioEarth Dashboard Loaded Successfully!');
+        console.log('Developer: Oluwafemi Idiakhoa');
+        console.log('Email: oluwafemidiakhoa@gmail.com');
+    </script>
+</body>
+</html>
