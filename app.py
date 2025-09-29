@@ -46,18 +46,30 @@ class handler(BaseHTTPRequestHandler):
                     return
             
             elif path == '/' or path == '':
-                response_data = {
-                    "name": "NASA Space Weather Forecaster",
-                    "version": "2.0.0", 
-                    "status": "online",
-                    "description": "Real-time space weather forecasting using NASA data and AI analysis",
-                    "endpoints": {
-                        "health": "/api/health",
-                        "forecast": "/api/forecast",
-                        "status": "/api/status",
-                        "dashboard": "/live_dashboard.html"
+                # Serve the spectacular dashboard as the main page
+                try:
+                    with open('spectacular_dashboard.html', 'r', encoding='utf-8') as f:
+                        html_content = f.read()
+                    self.send_response(200)
+                    self.send_header('Content-type', 'text/html; charset=utf-8')
+                    self.send_header('Access-Control-Allow-Origin', '*')
+                    self.end_headers()
+                    self.wfile.write(html_content.encode('utf-8'))
+                    return
+                except FileNotFoundError:
+                    # Fallback to API info if dashboard not found
+                    response_data = {
+                        "name": "NASA Space Weather Forecaster",
+                        "version": "2.0.0", 
+                        "status": "online",
+                        "description": "Real-time space weather forecasting using NASA data and AI analysis",
+                        "endpoints": {
+                            "health": "/api/health",
+                            "forecast": "/api/forecast",
+                            "status": "/api/status",
+                            "dashboard": "/live_dashboard.html"
+                        }
                     }
-                }
             
             elif path == '/api/health':
                 response_data = {
