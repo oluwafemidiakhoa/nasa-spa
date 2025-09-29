@@ -1,0 +1,62 @@
+# NASA Space Weather System - Git Ignore File
+
+# Environment variables and secrets
+.env
+.env.local
+.env.production
+.env.development
+*.key
+*secret*
+
+# Node.js dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Python cache and virtual environments
+__pycache__/
+*.py[cod]
+*.class
+.venv/
+venv/
+env/
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Logs
+*.log
+logs/
+
+# Operating System files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+nul
+
+# Build outputs
+dist/
+build/
+coverage/
+
+# Test outputs
+test-results/
+playwright-report/
+
+# Cache directories
+.cache/
+.next/
+.nuxt/

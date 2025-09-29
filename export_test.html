@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Export Features Test</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a1a3a, #2d2d5f);
+            color: #ffffff;
+            font-family: 'Arial', sans-serif;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 15px;
+            border: 2px solid #00bfff;
+        }
+        
+        .test-card {
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid #00ff88;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .test-card h3 {
+            color: #00ff88;
+            margin-bottom: 15px;
+        }
+        
+        .test-button {
+            background: linear-gradient(45deg, #00bfff, #0080ff);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            margin: 5px;
+            transition: transform 0.3s ease;
+        }
+        
+        .test-button:hover {
+            transform: scale(1.05);
+        }
+        
+        .results {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            padding: 15px;
+            margin-top: 15px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .success { color: #00ff88; }
+        .error { color: #ff8888; }
+        .info { color: #00bfff; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 Export Features Test</h1>
+            <p>Test space weather data export functionality</p>
+        </div>
+        
+        <div class="test-card">
+            <h3>🎯 Export UI Test</h3>
+            <p>Test the export modal and user interface components.</p>
+            <button class="test-button" onclick="testExportUI()">Open Export Modal</button>
+            <button class="test-button" onclick="testDirectExport('csv')">Test CSV Export</button>
+            <button class="test-button" onclick="testDirectExport('json')">Test JSON Export</button>
+            <div class="results" id="test-results">
+                Export test results will appear here...
+            </div>
+        </div>
+        
+        <div class="test-card">
+            <h3>📋 System Status</h3>
+            <p>Check export system components:</p>
+            <button class="test-button" onclick="checkSystemStatus()">Check Status</button>
+            <div class="results" id="status-results">
+                System status will be checked here...
+            </div>
+        </div>
+    </div>
+    
+    <script src="live_nasa_data.js"></script>
+    <script src="export_ui.js"></script>
+    <script>
+        function addResult(containerId, message, type = 'info') {
+            const container = document.getElementById(containerId);
+            if (container) {
+                const timestamp = new Date().toLocaleTimeString();
+                const line = document.createElement('div');
+                line.className = type;
+                line.textContent = `[${timestamp}] ${message}`;
+                container.appendChild(line);
+                container.scrollTop = container.scrollHeight;
+            }
+        }
+        
+        function testExportUI() {
+            addResult('test-results', 'Testing export UI components...', 'info');
+            
+            try {
+                if (window.spaceWeatherExporter) {
+                    window.spaceWeatherExporter.openExportModal();
+                    addResult('test-results', 'Export modal opened successfully', 'success');
+                } else {
+                    addResult('test-results', 'Export UI not initialized', 'error');
+                }
+            } catch (error) {
+                addResult('test-results', `UI test error: ${error.message}`, 'error');
+            }
+        }
+        
+        function testDirectExport(format) {
+            addResult('test-results', `Testing direct ${format.toUpperCase()} export...`, 'info');
+            
+            if (window.spaceWeatherExporter) {
+                try {
+                    window.spaceWeatherExporter.exportData(format);
+                    addResult('test-results', `${format.toUpperCase()} export initiated`, 'success');
+                } catch (error) {
+                    addResult('test-results', `${format.toUpperCase()} export error: ${error.message}`, 'error');
+                }
+            } else {
+                addResult('test-results', 'Export system not available', 'error');
+            }
+        }
+        
+        function checkSystemStatus() {
+            addResult('status-results', 'Checking export system status...', 'info');
+            
+            // Check if export UI is loaded
+            if (window.SpaceWeatherExporter) {
+                addResult('status-results', 'Export UI library loaded', 'success');
+            } else {
+                addResult('status-results', 'Export UI library missing', 'error');
+            }
+            
+            // Check if exporter instance exists
+            if (window.spaceWeatherExporter) {
+                addResult('status-results', 'Export instance initialized', 'success');
+            } else {
+                addResult('status-results', 'Export instance not found', 'error');
+            }
+            
+            // Check live NASA data
+            if (window.LIVE_NASA_DATA) {
+                addResult('status-results', `Live NASA data available: ${window.LIVE_NASA_DATA.summary?.total_events || 0} events`, 'success');
+            } else {
+                addResult('status-results', 'Live NASA data not available', 'error');
+            }
+            
+            // Check export modal
+            const modal = document.getElementById('export-modal');
+            if (modal) {
+                addResult('status-results', 'Export modal ready', 'success');
+            } else {
+                addResult('status-results', 'Export modal not found', 'error');
+            }
+        }
+        
+        // Auto-check system status on load
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                addResult('test-results', 'Export test page loaded successfully', 'success');
+                console.log('Export test page initialized');
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

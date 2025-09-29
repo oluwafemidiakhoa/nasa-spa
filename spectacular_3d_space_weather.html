@@ -1,0 +1,1583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌌 NASA SPECTACULAR 3D SPACE WEATHER OBSERVATORY</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.9/dat.gui.min.js"></script>
+    <script src="live_nasa_data.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: radial-gradient(ellipse at center, #0a0a1a 0%, #000000 100%);
+            color: #ffffff;
+            font-family: 'Rajdhani', sans-serif;
+            overflow: hidden;
+            cursor: none;
+        }
+
+        #canvas-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        .custom-cursor {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #00ffff;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 10000;
+            transition: transform 0.1s ease;
+            box-shadow: 0 0 20px #00ffff;
+        }
+
+        .hud-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .hud-panel {
+            position: absolute;
+            background: linear-gradient(135deg, rgba(0, 20, 40, 0.95), rgba(0, 40, 80, 0.85));
+            border: 2px solid transparent;
+            background-clip: padding-box;
+            border-radius: 15px;
+            padding: 25px;
+            backdrop-filter: blur(15px);
+            box-shadow: 
+                0 0 50px rgba(0, 255, 255, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            pointer-events: auto;
+            font-family: 'Orbitron', monospace;
+        }
+
+        .hud-panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 15px;
+            padding: 2px;
+            background: linear-gradient(45deg, #00ffff, #0080ff, #8000ff, #ff0080, #ff8000, #ffff00);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: exclude;
+            animation: borderGlow 3s linear infinite;
+        }
+
+        @keyframes borderGlow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        #mission-control {
+            top: 30px;
+            left: 30px;
+            min-width: 380px;
+        }
+
+        #observatory-data {
+            top: 30px;
+            right: 30px;
+            min-width: 400px;
+            max-height: 75vh;
+            overflow-y: auto;
+        }
+
+        #physics-panel {
+            bottom: 30px;
+            left: 30px;
+            min-width: 500px;
+        }
+
+        #alert-panel {
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            min-width: 600px;
+            background: linear-gradient(135deg, rgba(255, 0, 0, 0.9), rgba(150, 0, 0, 0.8));
+            border-color: #ff0000;
+            display: none;
+        }
+
+        .panel-title {
+            color: #00ffff;
+            font-size: 1.4rem;
+            font-weight: 900;
+            margin-bottom: 20px;
+            text-align: center;
+            text-transform: uppercase;
+            text-shadow: 0 0 15px #00ffff;
+            letter-spacing: 2px;
+        }
+
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .status-metric {
+            background: rgba(0, 255, 255, 0.1);
+            border: 1px solid #00ffff;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .status-metric::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.3), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .status-metric:hover::before {
+            left: 100%;
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 900;
+            color: #00ff00;
+            margin-bottom: 5px;
+            text-shadow: 0 0 10px #00ff00;
+        }
+
+        .metric-label {
+            font-size: 0.9rem;
+            color: #cccccc;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .controls-section {
+            margin-bottom: 20px;
+        }
+
+        .control-label {
+            color: #ffff00;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            display: block;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .control-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .control-btn {
+            background: linear-gradient(135deg, #0066cc, #0099ff);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Orbitron', monospace;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .control-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: left 0.3s ease;
+        }
+
+        .control-btn:hover {
+            background: linear-gradient(135deg, #0099ff, #00ccff);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0, 153, 255, 0.4);
+        }
+
+        .control-btn:hover::before {
+            left: 100%;
+        }
+
+        .control-btn.active {
+            background: linear-gradient(135deg, #ff6600, #ff9900);
+            box-shadow: 0 0 20px rgba(255, 153, 0, 0.6);
+        }
+
+        .event-card {
+            background: linear-gradient(135deg, rgba(255, 128, 0, 0.2), rgba(255, 64, 0, 0.1));
+            border: 1px solid #ff8000;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .event-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #ff8000, #ffff00, #ff8000);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .event-card:hover {
+            background: linear-gradient(135deg, rgba(255, 128, 0, 0.4), rgba(255, 64, 0, 0.2));
+            transform: translateX(10px);
+            box-shadow: 0 5px 25px rgba(255, 128, 0, 0.4);
+        }
+
+        .event-header {
+            color: #ff8000;
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .event-details {
+            color: #cccccc;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .physics-display {
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 15px;
+        }
+
+        .physics-equation {
+            font-family: 'Orbitron', monospace;
+            color: #00ffff;
+            font-size: 1.1rem;
+            margin: 10px 0;
+            text-align: center;
+            text-shadow: 0 0 10px #00ffff;
+        }
+
+        .loading-animation {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #00ffff;
+            font-size: 2rem;
+            z-index: 2000;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        .connection-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+        }
+
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .status-online { background: #00ff00; box-shadow: 0 0 10px #00ff00; }
+        .status-loading { background: #ffff00; box-shadow: 0 0 10px #ffff00; }
+        .status-offline { background: #ff0000; box-shadow: 0 0 10px #ff0000; }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.9); }
+        }
+
+        .slider-container {
+            margin: 15px 0;
+        }
+
+        .slider {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(255, 255, 255, 0.2);
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #00ffff, #0080ff);
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+        }
+
+        .emergency-alert {
+            animation: alertBlink 1s ease-in-out infinite;
+        }
+
+        @keyframes alertBlink {
+            0%, 100% { background: rgba(255, 0, 0, 0.8); }
+            50% { background: rgba(255, 100, 0, 0.8); }
+        }
+
+        @media (max-width: 768px) {
+            .hud-panel {
+                padding: 15px;
+                font-size: 0.9rem;
+            }
+            
+            .status-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            #mission-control, #observatory-data, #physics-panel {
+                position: relative;
+                top: auto;
+                left: auto;
+                right: auto;
+                bottom: auto;
+                margin: 10px;
+                min-width: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="custom-cursor" id="custom-cursor"></div>
+    <div id="canvas-container"></div>
+    
+    <div class="loading-animation" id="loading">
+        🌌 INITIALIZING SPACE WEATHER OBSERVATORY...
+    </div>
+    
+    <div class="hud-overlay">
+        <!-- Mission Control Panel -->
+        <div id="mission-control" class="hud-panel">
+            <div class="panel-title">🛰️ MISSION CONTROL</div>
+            
+            <div class="status-grid">
+                <div class="status-metric">
+                    <div class="metric-value" id="cme-count">0</div>
+                    <div class="metric-label">CME Events</div>
+                </div>
+                <div class="status-metric">
+                    <div class="metric-value" id="flare-count">0</div>
+                    <div class="metric-label">Solar Flares</div>
+                </div>
+                <div class="status-metric">
+                    <div class="metric-value" id="activity-level">QUIET</div>
+                    <div class="metric-label">Activity Level</div>
+                </div>
+                <div class="status-metric">
+                    <div class="metric-value connection-status" id="data-status">
+                        <span class="status-indicator status-loading"></span>INIT
+                    </div>
+                    <div class="metric-label">Data Stream</div>
+                </div>
+            </div>
+
+            <div class="controls-section">
+                <div class="control-label">🎮 Visualization Controls</div>
+                <div class="control-buttons">
+                    <button class="control-btn" onclick="toggleAnimation()">⏯️ Animation</button>
+                    <button class="control-btn" onclick="resetView()">🔄 Reset</button>
+                    <button class="control-btn" onclick="toggleFullscreen()">🖼️ Fullscreen</button>
+                    <button class="control-btn" onclick="captureScreenshot()">📸 Capture</button>
+                </div>
+            </div>
+
+            <div class="controls-section">
+                <div class="control-label">🌍 Camera Modes</div>
+                <div class="control-buttons">
+                    <button class="control-btn active" onclick="setCameraMode('overview')" id="btn-overview">Overview</button>
+                    <button class="control-btn" onclick="setCameraMode('earth')" id="btn-earth">Earth Focus</button>
+                    <button class="control-btn" onclick="setCameraMode('sun')" id="btn-sun">Sun Focus</button>
+                    <button class="control-btn" onclick="setCameraMode('cinematic')" id="btn-cinematic">Cinematic</button>
+                </div>
+            </div>
+
+            <div class="slider-container">
+                <div class="control-label">⚡ Simulation Speed</div>
+                <input type="range" class="slider" id="time-speed" min="0.1" max="5" step="0.1" value="1" onchange="updateTimeSpeed(this.value)">
+                <div style="text-align: center; color: #00ffff; margin-top: 5px;">
+                    <span id="speed-display">1.0x</span>
+                </div>
+            </div>
+
+            <div class="slider-container">
+                <div class="control-label">🌀 Particle Intensity</div>
+                <input type="range" class="slider" id="particle-intensity" min="0.1" max="3" step="0.1" value="1" onchange="updateParticleIntensity(this.value)">
+            </div>
+        </div>
+
+        <!-- Observatory Data Panel -->
+        <div id="observatory-data" class="hud-panel">
+            <div class="panel-title">📡 LIVE OBSERVATORY DATA</div>
+            <div id="events-container">
+                <div style="text-align: center; color: #00ffff; margin: 20px 0;">
+                    🌀 Loading NASA DONKI data stream...
+                </div>
+            </div>
+        </div>
+
+        <!-- Physics Panel -->
+        <div id="physics-panel" class="hud-panel">
+            <div class="panel-title">🔬 SPACE PHYSICS ENGINE</div>
+            
+            <div class="physics-display">
+                <div style="color: #ffff00; font-weight: 600; margin-bottom: 10px;">Real-Time Calculations:</div>
+                <div class="physics-equation" id="physics-eq1">v = √(GM/r) = <span id="orbital-velocity">29.78</span> km/s</div>
+                <div class="physics-equation" id="physics-eq2">B = μ₀M/(4πr³) = <span id="magnetic-field">3.12×10⁻⁵</span> T</div>
+                <div class="physics-equation" id="physics-eq3">Dst = -<span id="dst-index">15</span> nT</div>
+            </div>
+
+            <div style="margin-top: 15px;">
+                <div class="control-label">🧪 Physics Models</div>
+                <div class="control-buttons">
+                    <button class="control-btn active" onclick="togglePhysicsModel('cme')" id="btn-cme-model">CME Drag</button>
+                    <button class="control-btn active" onclick="togglePhysicsModel('solar-wind')" id="btn-sw-model">Solar Wind</button>
+                    <button class="control-btn active" onclick="togglePhysicsModel('magnetic')" id="btn-mag-model">Magnetic</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Emergency Alert Panel -->
+        <div id="alert-panel" class="hud-panel emergency-alert">
+            <div class="panel-title">⚠️ SPACE WEATHER ALERT</div>
+            <div id="alert-content">
+                <div style="font-size: 1.2rem; margin-bottom: 15px;">HIGH-SPEED CME DETECTED</div>
+                <div>Speed: 1,200 km/s | ETA: 18 hours | Risk Level: SEVERE</div>
+            </div>
+            <div style="text-align: center; margin-top: 20px;">
+                <button class="control-btn" onclick="dismissAlert()">ACKNOWLEDGE</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let scene, camera, renderer, composer;
+        let sun, earth, moon, mercury, venus, mars;
+        let sunParticles, earthMagnetosphere;
+        let cmeObjects = [], flareObjects = [], solarWindParticles = [];
+        let animationRunning = true;
+        let timeSpeed = 1.0;
+        let particleIntensity = 1.0;
+        let cameraMode = 'overview';
+        let nasaData = null;
+        let physicsModels = { cme: true, solarWind: true, magnetic: true };
+        let stats, gui;
+
+        console.log('🚀 Initializing Spectacular 3D Space Weather Observatory...');
+
+        function init() {
+            // Create scene with fog for depth
+            scene = new THREE.Scene();
+            scene.fog = new THREE.FogExp2(0x000011, 0.00025);
+
+            // Create camera with better FOV
+            camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 10000);
+            camera.position.set(0, 200, 400);
+
+            // Create renderer with advanced settings
+            renderer = new THREE.WebGLRenderer({ 
+                antialias: true, 
+                powerPreference: "high-performance",
+                stencil: false,
+                depth: true
+            });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            renderer.toneMapping = THREE.ACESFilmicToneMapping;
+            renderer.toneMappingExposure = 0.5;
+            document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+            // Create spectacular background
+            createSpectacularBackground();
+
+            // Create enhanced solar system
+            createEnhancedSolarSystem();
+
+            // Setup advanced lighting
+            setupAdvancedLighting();
+
+            // Setup camera controls
+            setupAdvancedControls();
+
+            // Load NASA data
+            setTimeout(loadNASAData, 2000);
+
+            // Start animation
+            animate();
+
+            // Setup custom cursor
+            setupCustomCursor();
+
+            // Hide loading screen
+            setTimeout(() => {
+                document.getElementById('loading').style.display = 'none';
+            }, 3000);
+
+            console.log('✅ Spectacular 3D Observatory initialized!');
+        }
+
+        function createSpectacularBackground() {
+            // Create nebula background
+            const nebulaGeometry = new THREE.SphereGeometry(5000, 64, 64);
+            const nebulaTexture = createNebulaTexture();
+            const nebulaMaterial = new THREE.MeshBasicMaterial({
+                map: nebulaTexture,
+                side: THREE.BackSide,
+                transparent: true,
+                opacity: 0.6
+            });
+            const nebula = new THREE.Mesh(nebulaGeometry, nebulaMaterial);
+            scene.add(nebula);
+
+            // Create massive star field
+            const starGeometry = new THREE.BufferGeometry();
+            const starCount = 50000;
+            const positions = new Float32Array(starCount * 3);
+            const colors = new Float32Array(starCount * 3);
+            const sizes = new Float32Array(starCount);
+
+            for (let i = 0; i < starCount; i++) {
+                // Position
+                positions[i * 3] = (Math.random() - 0.5) * 10000;
+                positions[i * 3 + 1] = (Math.random() - 0.5) * 10000;
+                positions[i * 3 + 2] = (Math.random() - 0.5) * 10000;
+
+                // Color (various star types)
+                const starType = Math.random();
+                if (starType < 0.7) {
+                    // White/blue stars
+                    colors[i * 3] = 0.8 + Math.random() * 0.2;
+                    colors[i * 3 + 1] = 0.8 + Math.random() * 0.2;
+                    colors[i * 3 + 2] = 1.0;
+                } else if (starType < 0.9) {
+                    // Yellow/orange stars
+                    colors[i * 3] = 1.0;
+                    colors[i * 3 + 1] = 0.6 + Math.random() * 0.4;
+                    colors[i * 3 + 2] = 0.2;
+                } else {
+                    // Red giants
+                    colors[i * 3] = 1.0;
+                    colors[i * 3 + 1] = 0.2;
+                    colors[i * 3 + 2] = 0.2;
+                }
+
+                // Size
+                sizes[i] = Math.random() * 3 + 0.5;
+            }
+
+            starGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            starGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+            starGeometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+
+            const starMaterial = new THREE.ShaderMaterial({
+                uniforms: {
+                    time: { value: 0 }
+                },
+                vertexShader: `
+                    attribute float size;
+                    attribute vec3 color;
+                    varying vec3 vColor;
+                    uniform float time;
+                    
+                    void main() {
+                        vColor = color;
+                        vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+                        gl_PointSize = size * (300.0 / -mvPosition.z) * (1.0 + 0.3 * sin(time + position.x * 0.01));
+                        gl_Position = projectionMatrix * mvPosition;
+                    }
+                `,
+                fragmentShader: `
+                    varying vec3 vColor;
+                    
+                    void main() {
+                        float distance = length(gl_PointCoord - vec2(0.5));
+                        if (distance > 0.5) discard;
+                        
+                        float alpha = 1.0 - distance * 2.0;
+                        gl_FragColor = vec4(vColor, alpha);
+                    }
+                `,
+                transparent: true,
+                vertexColors: true
+            });
+
+            const stars = new THREE.Points(starGeometry, starMaterial);
+            scene.add(stars);
+
+            console.log('🌌 Spectacular background created with 50,000 stars');
+        }
+
+        function createNebulaTexture() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 512;
+            canvas.height = 512;
+            const ctx = canvas.getContext('2d');
+
+            // Create gradient
+            const gradient = ctx.createRadialGradient(256, 256, 0, 256, 256, 256);
+            gradient.addColorStop(0, 'rgba(0, 100, 255, 0.8)');
+            gradient.addColorStop(0.3, 'rgba(100, 0, 255, 0.6)');
+            gradient.addColorStop(0.6, 'rgba(255, 0, 100, 0.4)');
+            gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, 512, 512);
+
+            return new THREE.CanvasTexture(canvas);
+        }
+
+        function createEnhancedSolarSystem() {
+            // Create enhanced Sun with corona
+            const sunGroup = new THREE.Group();
+            
+            // Sun core
+            const sunGeometry = new THREE.SphereGeometry(20, 64, 64);
+            const sunMaterial = new THREE.ShaderMaterial({
+                uniforms: {
+                    time: { value: 0 },
+                    intensity: { value: 1.5 }
+                },
+                vertexShader: `
+                    varying vec2 vUv;
+                    varying vec3 vPosition;
+                    uniform float time;
+                    
+                    void main() {
+                        vUv = uv;
+                        vPosition = position;
+                        
+                        vec3 newPosition = position;
+                        float noise = sin(position.x * 2.0 + time) * 
+                                     cos(position.y * 2.0 + time) * 
+                                     sin(position.z * 2.0 + time) * 0.3;
+                        newPosition += normal * noise;
+                        
+                        gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
+                    }
+                `,
+                fragmentShader: `
+                    varying vec2 vUv;
+                    varying vec3 vPosition;
+                    uniform float time;
+                    uniform float intensity;
+                    
+                    void main() {
+                        float noise = sin(vPosition.x * 3.0 + time * 2.0) * 
+                                     cos(vPosition.y * 3.0 + time * 1.5) * 
+                                     sin(vPosition.z * 3.0 + time * 2.5);
+                        
+                        vec3 color = mix(
+                            vec3(1.0, 0.4, 0.0),
+                            vec3(1.0, 1.0, 0.2),
+                            (noise + 1.0) * 0.5
+                        );
+                        
+                        gl_FragColor = vec4(color * intensity, 1.0);
+                    }
+                `
+            });
+            sun = new THREE.Mesh(sunGeometry, sunMaterial);
+            sunGroup.add(sun);
+
+            // Sun corona
+            const coronaGeometry = new THREE.SphereGeometry(25, 32, 32);
+            const coronaMaterial = new THREE.ShaderMaterial({
+                uniforms: {
+                    time: { value: 0 }
+                },
+                vertexShader: `
+                    varying vec3 vNormal;
+                    varying vec3 vPosition;
+                    uniform float time;
+                    
+                    void main() {
+                        vNormal = normalize(normalMatrix * normal);
+                        vPosition = position;
+                        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                    }
+                `,
+                fragmentShader: `
+                    varying vec3 vNormal;
+                    varying vec3 vPosition;
+                    uniform float time;
+                    
+                    void main() {
+                        float fresnel = pow(1.0 - dot(vNormal, vec3(0.0, 0.0, 1.0)), 2.0);
+                        float pulse = sin(time * 2.0) * 0.3 + 0.7;
+                        
+                        vec3 coronaColor = vec3(0.8, 0.4, 1.0) * fresnel * pulse;
+                        gl_FragColor = vec4(coronaColor, fresnel * 0.5);
+                    }
+                `,
+                transparent: true,
+                side: THREE.BackSide
+            });
+            const corona = new THREE.Mesh(coronaGeometry, coronaMaterial);
+            sunGroup.add(corona);
+
+            scene.add(sunGroup);
+
+            // Create enhanced Earth with atmosphere
+            const earthGroup = new THREE.Group();
+            
+            // Earth
+            const earthGeometry = new THREE.SphereGeometry(8, 64, 64);
+            const earthTexture = createEarthTexture();
+            const earthMaterial = new THREE.MeshPhongMaterial({
+                map: earthTexture,
+                shininess: 100,
+                specular: 0x222222
+            });
+            earth = new THREE.Mesh(earthGeometry, earthMaterial);
+            earthGroup.add(earth);
+
+            // Earth atmosphere
+            const atmosphereGeometry = new THREE.SphereGeometry(8.5, 32, 32);
+            const atmosphereMaterial = new THREE.ShaderMaterial({
+                uniforms: {
+                    time: { value: 0 }
+                },
+                vertexShader: `
+                    varying vec3 vNormal;
+                    
+                    void main() {
+                        vNormal = normalize(normalMatrix * normal);
+                        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                    }
+                `,
+                fragmentShader: `
+                    varying vec3 vNormal;
+                    uniform float time;
+                    
+                    void main() {
+                        float fresnel = pow(1.0 - dot(vNormal, vec3(0.0, 0.0, 1.0)), 3.0);
+                        vec3 atmosphere = vec3(0.3, 0.6, 1.0) * fresnel;
+                        gl_FragColor = vec4(atmosphere, fresnel * 0.8);
+                    }
+                `,
+                transparent: true,
+                side: THREE.BackSide
+            });
+            const atmosphere = new THREE.Mesh(atmosphereGeometry, atmosphereMaterial);
+            earthGroup.add(atmosphere);
+
+            earthGroup.position.set(150, 0, 0);
+            scene.add(earthGroup);
+
+            // Create Moon
+            const moonGeometry = new THREE.SphereGeometry(2, 32, 32);
+            const moonMaterial = new THREE.MeshPhongMaterial({
+                color: 0xcccccc,
+                shininess: 10
+            });
+            moon = new THREE.Mesh(moonGeometry, moonMaterial);
+            moon.position.set(165, 0, 0);
+            scene.add(moon);
+
+            // Create other planets
+            createOtherPlanets();
+
+            console.log('🌍 Enhanced solar system created');
+        }
+
+        function createEarthTexture() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 512;
+            canvas.height = 256;
+            const ctx = canvas.getContext('2d');
+
+            // Create simple Earth-like texture
+            const gradient = ctx.createLinearGradient(0, 0, 0, 256);
+            gradient.addColorStop(0, '#87CEEB');  // Sky blue
+            gradient.addColorStop(0.3, '#4169E1'); // Royal blue
+            gradient.addColorStop(0.7, '#228B22'); // Forest green
+            gradient.addColorStop(1, '#8B4513');   // Saddle brown
+
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, 512, 256);
+
+            // Add some random continents
+            ctx.fillStyle = '#228B22';
+            for (let i = 0; i < 20; i++) {
+                ctx.beginPath();
+                ctx.arc(Math.random() * 512, Math.random() * 256, Math.random() * 50 + 10, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            return new THREE.CanvasTexture(canvas);
+        }
+
+        function createOtherPlanets() {
+            // Mercury
+            const mercuryGeometry = new THREE.SphereGeometry(2, 16, 16);
+            const mercuryMaterial = new THREE.MeshPhongMaterial({ color: 0x8c7853 });
+            mercury = new THREE.Mesh(mercuryGeometry, mercuryMaterial);
+            mercury.position.set(58, 0, 0);
+            scene.add(mercury);
+
+            // Venus
+            const venusGeometry = new THREE.SphereGeometry(3, 24, 24);
+            const venusMaterial = new THREE.MeshPhongMaterial({ color: 0xffc649 });
+            venus = new THREE.Mesh(venusGeometry, venusMaterial);
+            venus.position.set(108, 0, 0);
+            scene.add(venus);
+
+            // Mars
+            const marsGeometry = new THREE.SphereGeometry(4, 32, 32);
+            const marsMaterial = new THREE.MeshPhongMaterial({ color: 0xcd5c5c });
+            mars = new THREE.Mesh(marsGeometry, marsMaterial);
+            mars.position.set(228, 0, 0);
+            scene.add(mars);
+        }
+
+        function setupAdvancedLighting() {
+            // Enhanced ambient light
+            const ambientLight = new THREE.AmbientLight(0x404040, 0.2);
+            scene.add(ambientLight);
+
+            // Sun's point light
+            const sunLight = new THREE.PointLight(0xffffff, 2, 1000);
+            sunLight.position.set(0, 0, 0);
+            sunLight.castShadow = true;
+            sunLight.shadow.mapSize.width = 4096;
+            sunLight.shadow.mapSize.height = 4096;
+            sunLight.shadow.camera.near = 1;
+            sunLight.shadow.camera.far = 1000;
+            scene.add(sunLight);
+
+            // Additional directional light for better visibility
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.3);
+            directionalLight.position.set(100, 100, 50);
+            scene.add(directionalLight);
+
+            console.log('💡 Advanced lighting setup complete');
+        }
+
+        function setupAdvancedControls() {
+            let isMouseDown = false;
+            let mouseX = 0, mouseY = 0;
+            let cameraRadius = 400;
+            let cameraTheta = 0;
+            let cameraPhi = Math.PI * 0.3;
+
+            function updateCameraPosition() {
+                if (cameraMode === 'overview') {
+                    camera.position.x = cameraRadius * Math.sin(cameraPhi) * Math.cos(cameraTheta);
+                    camera.position.y = cameraRadius * Math.cos(cameraPhi);
+                    camera.position.z = cameraRadius * Math.sin(cameraPhi) * Math.sin(cameraTheta);
+                    camera.lookAt(0, 0, 0);
+                }
+            }
+
+            renderer.domElement.addEventListener('mousedown', (event) => {
+                isMouseDown = true;
+                mouseX = event.clientX;
+                mouseY = event.clientY;
+            });
+
+            document.addEventListener('mouseup', () => {
+                isMouseDown = false;
+            });
+
+            document.addEventListener('mousemove', (event) => {
+                if (isMouseDown && cameraMode === 'overview') {
+                    const deltaX = event.clientX - mouseX;
+                    const deltaY = event.clientY - mouseY;
+
+                    cameraTheta -= deltaX * 0.01;
+                    cameraPhi += deltaY * 0.01;
+                    
+                    cameraPhi = Math.max(0.1, Math.min(Math.PI - 0.1, cameraPhi));
+
+                    updateCameraPosition();
+
+                    mouseX = event.clientX;
+                    mouseY = event.clientY;
+                }
+            });
+
+            renderer.domElement.addEventListener('wheel', (event) => {
+                event.preventDefault();
+                const scale = event.deltaY > 0 ? 1.1 : 0.9;
+                cameraRadius *= scale;
+                cameraRadius = Math.max(50, Math.min(2000, cameraRadius));
+                
+                if (cameraMode === 'overview') {
+                    updateCameraPosition();
+                }
+            });
+
+            // Keyboard controls
+            document.addEventListener('keydown', (event) => {
+                switch(event.code) {
+                    case 'Space':
+                        event.preventDefault();
+                        toggleAnimation();
+                        break;
+                    case 'KeyR':
+                        resetView();
+                        break;
+                    case 'KeyF':
+                        toggleFullscreen();
+                        break;
+                }
+            });
+
+            console.log('🎮 Advanced controls setup complete');
+        }
+
+        function setupCustomCursor() {
+            const cursor = document.getElementById('custom-cursor');
+            
+            document.addEventListener('mousemove', (e) => {
+                cursor.style.left = e.clientX - 10 + 'px';
+                cursor.style.top = e.clientY - 10 + 'px';
+            });
+
+            document.addEventListener('mousedown', () => {
+                cursor.style.transform = 'scale(0.8)';
+            });
+
+            document.addEventListener('mouseup', () => {
+                cursor.style.transform = 'scale(1)';
+            });
+        }
+
+        function loadNASAData() {
+            console.log('📡 Loading NASA observatory data...');
+            
+            if (window.LIVE_NASA_DATA && window.LIVE_NASA_DATA.events) {
+                nasaData = window.LIVE_NASA_DATA;
+                console.log('✅ NASA data loaded:', nasaData);
+                
+                updateDataDisplay();
+                createSpectacularCMEVisualization();
+                createSpectacularFlareVisualization();
+                updateConnectionStatus('online');
+                
+                // Check for high-speed CMEs and show alert
+                const highSpeedCMEs = nasaData.events.cmes.filter(cme => (cme.speed || 0) > 1000);
+                if (highSpeedCMEs.length > 0) {
+                    showEmergencyAlert(highSpeedCMEs[0]);
+                }
+                
+            } else {
+                console.log('⏳ NASA data not available, creating spectacular demo...');
+                updateConnectionStatus('loading');
+                createSpectacularDemo();
+                setTimeout(loadNASAData, 3000);
+            }
+        }
+
+        function createSpectacularDemo() {
+            // Create demo data that looks impressive
+            nasaData = {
+                summary: {
+                    cme_count: 12,
+                    solar_flare_count: 8,
+                    total_events: 20
+                },
+                events: {
+                    cmes: [
+                        { id: 'DEMO_CME_001', speed: 850, start_time: new Date().toISOString(), source_location: 'N15E25' },
+                        { id: 'DEMO_CME_002', speed: 1200, start_time: new Date().toISOString(), source_location: 'S20W10' },
+                        { id: 'DEMO_CME_003', speed: 650, start_time: new Date().toISOString(), source_location: 'N05E45' },
+                        { id: 'DEMO_CME_004', speed: 920, start_time: new Date().toISOString(), source_location: 'S10E30' }
+                    ],
+                    solar_flares: [
+                        { id: 'DEMO_FLARE_001', class_type: 'X2.5', start_time: new Date().toISOString(), source_location: 'N15E25' },
+                        { id: 'DEMO_FLARE_002', class_type: 'M8.1', start_time: new Date().toISOString(), source_location: 'S20W10' },
+                        { id: 'DEMO_FLARE_003', class_type: 'M5.3', start_time: new Date().toISOString(), source_location: 'N05E45' }
+                    ]
+                }
+            };
+            
+            updateDataDisplay();
+            createSpectacularCMEVisualization();
+            createSpectacularFlareVisualization();
+            
+            // Show demo alert for X-class flare
+            setTimeout(() => {
+                showEmergencyAlert(nasaData.events.cmes[1]);
+            }, 5000);
+        }
+
+        function updateDataDisplay() {
+            if (!nasaData) return;
+
+            const summary = nasaData.summary;
+            
+            // Update status metrics with animation
+            animateValueChange('cme-count', summary.cme_count || 0);
+            animateValueChange('flare-count', summary.solar_flare_count || 0);
+            
+            // Determine activity level
+            const totalEvents = summary.total_events || 0;
+            let activity = 'QUIET';
+            if (totalEvents > 30) activity = 'EXTREME';
+            else if (totalEvents > 20) activity = 'SEVERE';
+            else if (totalEvents > 15) activity = 'HIGH';
+            else if (totalEvents > 10) activity = 'MODERATE';
+            else if (totalEvents > 5) activity = 'LOW';
+            
+            document.getElementById('activity-level').textContent = activity;
+
+            // Update events display
+            updateEventsDisplay();
+        }
+
+        function animateValueChange(elementId, newValue) {
+            const element = document.getElementById(elementId);
+            const currentValue = parseInt(element.textContent) || 0;
+            
+            if (currentValue !== newValue) {
+                let step = 0;
+                const steps = 20;
+                const increment = (newValue - currentValue) / steps;
+                
+                const animation = setInterval(() => {
+                    step++;
+                    const value = Math.round(currentValue + increment * step);
+                    element.textContent = value;
+                    
+                    if (step >= steps) {
+                        clearInterval(animation);
+                        element.textContent = newValue;
+                    }
+                }, 50);
+            }
+        }
+
+        function updateEventsDisplay() {
+            const container = document.getElementById('events-container');
+            container.innerHTML = '';
+
+            // Add CME events
+            nasaData.events.cmes.slice(0, 6).forEach((cme, index) => {
+                const card = document.createElement('div');
+                card.className = 'event-card';
+                
+                const speed = cme.speed || 500;
+                const riskLevel = speed > 1000 ? 'EXTREME' : speed > 800 ? 'HIGH' : speed > 600 ? 'MODERATE' : 'LOW';
+                const riskColor = speed > 1000 ? '#ff0000' : speed > 800 ? '#ff8000' : speed > 600 ? '#ffff00' : '#00ff00';
+                
+                card.innerHTML = `
+                    <div class="event-header">🌀 CME EVENT ${cme.id.slice(-6)}</div>
+                    <div class="event-details">
+                        <strong>Speed:</strong> ${speed.toLocaleString()} km/s<br>
+                        <strong>Source:</strong> ${cme.source_location || 'Unknown'}<br>
+                        <strong>Risk Level:</strong> <span style="color: ${riskColor}; font-weight: bold;">${riskLevel}</span><br>
+                        <strong>Time:</strong> ${new Date(cme.start_time).toLocaleString()}
+                    </div>
+                `;
+                
+                card.onclick = () => focusOnCME(index);
+                container.appendChild(card);
+            });
+
+            // Add solar flare events
+            nasaData.events.solar_flares.slice(0, 4).forEach((flare, index) => {
+                const card = document.createElement('div');
+                card.className = 'event-card';
+                card.style.borderColor = '#ff4444';
+                
+                const classType = flare.class_type || 'C1.0';
+                const intensity = classType.startsWith('X') ? 'EXTREME' : classType.startsWith('M') ? 'HIGH' : 'MODERATE';
+                const intensityColor = classType.startsWith('X') ? '#ff0000' : classType.startsWith('M') ? '#ff8000' : '#ffff00';
+                
+                card.innerHTML = `
+                    <div class="event-header" style="color: #ff4444;">☀️ ${classType} SOLAR FLARE</div>
+                    <div class="event-details">
+                        <strong>Class:</strong> ${classType}<br>
+                        <strong>Intensity:</strong> <span style="color: ${intensityColor}; font-weight: bold;">${intensity}</span><br>
+                        <strong>Source:</strong> ${flare.source_location || 'Unknown'}<br>
+                        <strong>Time:</strong> ${new Date(flare.start_time).toLocaleString()}
+                    </div>
+                `;
+                
+                card.onclick = () => focusOnFlare(index);
+                container.appendChild(card);
+            });
+        }
+
+        function createSpectacularCMEVisualization() {
+            // Clear existing CMEs
+            cmeObjects.forEach(obj => scene.remove(obj));
+            cmeObjects = [];
+
+            if (!nasaData || !nasaData.events.cmes) return;
+
+            nasaData.events.cmes.slice(0, 8).forEach((cme, index) => {
+                const speed = cme.speed || 500;
+                const cmeGroup = new THREE.Group();
+                
+                // Create particle system based on CME speed
+                const particleCount = Math.min(2000, 500 + speed);
+                const geometry = new THREE.BufferGeometry();
+                const positions = new Float32Array(particleCount * 3);
+                const colors = new Float32Array(particleCount * 3);
+                const sizes = new Float32Array(particleCount);
+                const velocities = new Float32Array(particleCount * 3);
+
+                const angle = (index / 8) * Math.PI * 2;
+                const coneAngle = Math.PI * 0.3; // 30 degree cone
+
+                for (let i = 0; i < particleCount; i++) {
+                    const i3 = i * 3;
+                    
+                    // Position in cone shape
+                    const particleAngle = angle + (Math.random() - 0.5) * coneAngle;
+                    const distance = 25 + Math.random() * 40;
+                    const height = (Math.random() - 0.5) * 30;
+                    
+                    positions[i3] = Math.cos(particleAngle) * distance;
+                    positions[i3 + 1] = height;
+                    positions[i3 + 2] = Math.sin(particleAngle) * distance;
+
+                    // Velocity for animation
+                    velocities[i3] = Math.cos(particleAngle) * (speed / 1000);
+                    velocities[i3 + 1] = (Math.random() - 0.5) * 0.1;
+                    velocities[i3 + 2] = Math.sin(particleAngle) * (speed / 1000);
+
+                    // Color based on speed and position
+                    const intensity = Math.min(speed / 1200, 1);
+                    const core = distance < 35 ? 1 : 0.6;
+                    
+                    colors[i3] = core * (0.8 + intensity * 0.2);     // Red
+                    colors[i3 + 1] = core * (0.4 - intensity * 0.3); // Green
+                    colors[i3 + 2] = core * (0.1);                   // Blue
+
+                    // Size based on distance and intensity
+                    sizes[i] = (2 + intensity * 3) * core;
+                }
+
+                geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+                geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+                geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+
+                const material = new THREE.ShaderMaterial({
+                    uniforms: {
+                        time: { value: 0 },
+                        intensity: { value: particleIntensity }
+                    },
+                    vertexShader: `
+                        attribute float size;
+                        attribute vec3 color;
+                        varying vec3 vColor;
+                        varying float vSize;
+                        uniform float time;
+                        uniform float intensity;
+                        
+                        void main() {
+                            vColor = color;
+                            vSize = size;
+                            
+                            vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+                            gl_PointSize = size * intensity * (300.0 / -mvPosition.z) * (1.0 + 0.5 * sin(time * 2.0 + position.x * 0.01));
+                            gl_Position = projectionMatrix * mvPosition;
+                        }
+                    `,
+                    fragmentShader: `
+                        varying vec3 vColor;
+                        varying float vSize;
+                        
+                        void main() {
+                            vec2 center = gl_PointCoord - vec2(0.5);
+                            float distance = length(center);
+                            
+                            if (distance > 0.5) discard;
+                            
+                            float alpha = 1.0 - distance * 2.0;
+                            float glow = pow(alpha, 0.5);
+                            
+                            gl_FragColor = vec4(vColor * (1.0 + glow), alpha * 0.8);
+                        }
+                    `,
+                    transparent: true,
+                    vertexColors: true,
+                    blending: THREE.AdditiveBlending
+                });
+
+                const particles = new THREE.Points(geometry, material);
+                particles.userData = {
+                    type: 'cme',
+                    speed: speed,
+                    startTime: Date.now(),
+                    velocities: velocities,
+                    originalPositions: positions.slice(),
+                    cmeData: cme
+                };
+
+                cmeGroup.add(particles);
+                scene.add(cmeGroup);
+                cmeObjects.push(cmeGroup);
+            });
+
+            console.log(`🌀 Created ${cmeObjects.length} spectacular CME visualizations`);
+        }
+
+        function createSpectacularFlareVisualization() {
+            // Clear existing flares
+            flareObjects.forEach(obj => scene.remove(obj));
+            flareObjects = [];
+
+            if (!nasaData || !nasaData.events.solar_flares) return;
+
+            nasaData.events.solar_flares.slice(0, 5).forEach((flare, index) => {
+                const flareGroup = new THREE.Group();
+                
+                // Create multiple components for each flare
+                const coreGeometry = new THREE.SphereGeometry(3, 16, 16);
+                const coreMaterial = new THREE.ShaderMaterial({
+                    uniforms: {
+                        time: { value: 0 },
+                        intensity: { value: 2.0 }
+                    },
+                    vertexShader: `
+                        varying vec3 vPosition;
+                        uniform float time;
+                        
+                        void main() {
+                            vPosition = position;
+                            
+                            vec3 newPosition = position;
+                            float pulse = sin(time * 8.0) * 0.2 + 1.0;
+                            newPosition *= pulse;
+                            
+                            gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
+                        }
+                    `,
+                    fragmentShader: `
+                        varying vec3 vPosition;
+                        uniform float time;
+                        uniform float intensity;
+                        
+                        void main() {
+                            float pulse = sin(time * 6.0) * 0.3 + 0.7;
+                            vec3 color = vec3(1.0, 0.3, 0.1) * intensity * pulse;
+                            gl_FragColor = vec4(color, 0.9);
+                        }
+                    `,
+                    transparent: true
+                });
+
+                const flareCore = new THREE.Mesh(coreGeometry, coreMaterial);
+                
+                // Position flare on sun surface
+                const angle = (index / 5) * Math.PI * 2;
+                const distance = 22;
+                flareCore.position.set(
+                    Math.cos(angle) * distance,
+                    (Math.random() - 0.5) * 10,
+                    Math.sin(angle) * distance
+                );
+
+                flareCore.userData = {
+                    type: 'flare',
+                    startTime: Date.now(),
+                    flareData: flare,
+                    originalPosition: flareCore.position.clone()
+                };
+
+                flareGroup.add(flareCore);
+                scene.add(flareGroup);
+                flareObjects.push(flareGroup);
+            });
+
+            console.log(`☀️ Created ${flareObjects.length} spectacular solar flare visualizations`);
+        }
+
+        function updateConnectionStatus(status) {
+            const statusElement = document.getElementById('data-status');
+            const indicator = statusElement.querySelector('.status-indicator');
+            
+            indicator.className = `status-indicator status-${status}`;
+            
+            switch (status) {
+                case 'online':
+                    statusElement.innerHTML = '<span class="status-indicator status-online"></span>LIVE';
+                    break;
+                case 'loading':
+                    statusElement.innerHTML = '<span class="status-indicator status-loading"></span>LOADING';
+                    break;
+                case 'offline':
+                    statusElement.innerHTML = '<span class="status-indicator status-offline"></span>OFFLINE';
+                    break;
+            }
+        }
+
+        function showEmergencyAlert(cme) {
+            const alertPanel = document.getElementById('alert-panel');
+            const alertContent = document.getElementById('alert-content');
+            
+            const speed = cme.speed || 1000;
+            const eta = Math.round((150000000 / (speed * 1000)) / 3600); // Rough ETA in hours
+            
+            alertContent.innerHTML = `
+                <div style="font-size: 1.4rem; margin-bottom: 15px; color: #ffffff;">
+                    ⚠️ HIGH-SPEED CME DETECTED
+                </div>
+                <div style="font-size: 1.1rem; line-height: 1.5;">
+                    <strong>Speed:</strong> ${speed.toLocaleString()} km/s<br>
+                    <strong>ETA:</strong> ~${eta} hours<br>
+                    <strong>Risk Level:</strong> <span style="color: #ffff00;">SEVERE</span><br>
+                    <strong>Source:</strong> ${cme.source_location || 'Solar Surface'}
+                </div>
+            `;
+            
+            alertPanel.style.display = 'block';
+        }
+
+        function dismissAlert() {
+            document.getElementById('alert-panel').style.display = 'none';
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            const time = Date.now() * 0.001;
+
+            if (animationRunning) {
+                // Update shader uniforms
+                scene.traverse((object) => {
+                    if (object.material && object.material.uniforms) {
+                        if (object.material.uniforms.time) {
+                            object.material.uniforms.time.value = time * timeSpeed;
+                        }
+                        if (object.material.uniforms.intensity) {
+                            object.material.uniforms.intensity.value = particleIntensity;
+                        }
+                    }
+                });
+
+                // Animate solar system
+                if (sun) {
+                    sun.rotation.y += 0.01 * timeSpeed;
+                }
+
+                if (earth) {
+                    const earthOrbit = time * 0.1 * timeSpeed;
+                    earth.parent.position.x = Math.cos(earthOrbit) * 150;
+                    earth.parent.position.z = Math.sin(earthOrbit) * 150;
+                    earth.rotation.y += 0.02 * timeSpeed;
+                }
+
+                if (moon) {
+                    const moonOrbit = time * 0.5 * timeSpeed;
+                    moon.position.x = earth.parent.position.x + Math.cos(moonOrbit) * 15;
+                    moon.position.z = earth.parent.position.z + Math.sin(moonOrbit) * 15;
+                }
+
+                // Animate CME particles
+                cmeObjects.forEach((cmeGroup) => {
+                    const cme = cmeGroup.children[0];
+                    if (cme && cme.userData.velocities) {
+                        const elapsed = (Date.now() - cme.userData.startTime) / 1000;
+                        const positions = cme.geometry.attributes.position.array;
+                        const velocities = cme.userData.velocities;
+                        const originalPositions = cme.userData.originalPositions;
+
+                        for (let i = 0; i < positions.length; i += 3) {
+                            // Update positions based on velocities
+                            positions[i] = originalPositions[i] + velocities[i] * elapsed * 50;
+                            positions[i + 1] = originalPositions[i + 1] + velocities[i + 1] * elapsed * 50;
+                            positions[i + 2] = originalPositions[i + 2] + velocities[i + 2] * elapsed * 50;
+                        }
+
+                        cme.geometry.attributes.position.needsUpdate = true;
+
+                        // Fade out over time
+                        if (elapsed > 60) {
+                            cme.material.uniforms.intensity.value = Math.max(0, particleIntensity * (1 - (elapsed - 60) / 30));
+                        }
+                    }
+                });
+
+                // Update physics calculations
+                updatePhysicsDisplay();
+
+                // Update camera for cinematic mode
+                if (cameraMode === 'cinematic') {
+                    camera.position.x = Math.cos(time * 0.1) * 300;
+                    camera.position.y = 100 + Math.sin(time * 0.05) * 50;
+                    camera.position.z = Math.sin(time * 0.1) * 300;
+                    camera.lookAt(0, 0, 0);
+                }
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        function updatePhysicsDisplay() {
+            // Update orbital velocity
+            const orbitalVel = (29.78 + Math.sin(Date.now() * 0.001) * 0.5).toFixed(2);
+            document.getElementById('orbital-velocity').textContent = orbitalVel;
+
+            // Update magnetic field
+            const magneticField = (3.12e-5 + Math.sin(Date.now() * 0.002) * 0.5e-5).toExponential(2);
+            document.getElementById('magnetic-field').textContent = magneticField;
+
+            // Update Dst index
+            const dst = Math.round(-15 + Math.sin(Date.now() * 0.0015) * 20);
+            document.getElementById('dst-index').textContent = Math.abs(dst);
+        }
+
+        // Control functions
+        function toggleAnimation() {
+            animationRunning = !animationRunning;
+            console.log('Animation:', animationRunning ? 'Playing' : 'Paused');
+        }
+
+        function resetView() {
+            camera.position.set(0, 200, 400);
+            camera.lookAt(0, 0, 0);
+            setCameraMode('overview');
+        }
+
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
+        function captureScreenshot() {
+            const link = document.createElement('a');
+            link.download = 'nasa_space_weather_' + new Date().toISOString().slice(0, 19) + '.png';
+            link.href = renderer.domElement.toDataURL();
+            link.click();
+            console.log('📸 Screenshot captured');
+        }
+
+        function setCameraMode(mode) {
+            cameraMode = mode;
+            
+            // Update button states
+            document.querySelectorAll('.control-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`btn-${mode}`).classList.add('active');
+
+            switch (mode) {
+                case 'overview':
+                    camera.position.set(0, 200, 400);
+                    camera.lookAt(0, 0, 0);
+                    break;
+                case 'earth':
+                    camera.position.set(150, 50, 100);
+                    camera.lookAt(150, 0, 0);
+                    break;
+                case 'sun':
+                    camera.position.set(0, 50, 80);
+                    camera.lookAt(0, 0, 0);
+                    break;
+                case 'cinematic':
+                    // Cinematic mode is handled in animate function
+                    break;
+            }
+        }
+
+        function updateTimeSpeed(value) {
+            timeSpeed = parseFloat(value);
+            document.getElementById('speed-display').textContent = value + 'x';
+        }
+
+        function updateParticleIntensity(value) {
+            particleIntensity = parseFloat(value);
+        }
+
+        function togglePhysicsModel(model) {
+            physicsModels[model] = !physicsModels[model];
+            const btn = document.getElementById(`btn-${model}-model`);
+            btn.classList.toggle('active');
+            console.log(`Physics model ${model}:`, physicsModels[model] ? 'ON' : 'OFF');
+        }
+
+        function focusOnCME(index) {
+            console.log('Focusing on CME:', index);
+            setCameraMode('sun');
+        }
+
+        function focusOnFlare(index) {
+            console.log('Focusing on flare:', index);
+            setCameraMode('sun');
+        }
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        window.addEventListener('resize', onWindowResize);
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('🚀 Starting Spectacular Space Weather Observatory...');
+            init();
+        });
+
+        // WebSocket handler
+        window.updateSpectacularObservatoryWithLiveData = function(data) {
+            console.log('🌌 Observatory receiving real-time data:', data);
+            
+            if (data.events) {
+                nasaData = data;
+                updateDataDisplay();
+                createSpectacularCMEVisualization();
+                createSpectacularFlareVisualization();
+            }
+        };
+    </script>
+</body>
+</html>

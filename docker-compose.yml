@@ -1,0 +1,80 @@
+version: '3.8'
+
+services:
+  # Main Space Weather Application
+  spaceweather-app:
+    build: .
+    container_name: nasa-spaceweather-app
+    ports:
+      - "9001:9001"  # API Server
+      - "8765:8765"  # WebSocket Server
+      - "8080:8080"  # Web Interface
+    environment:
+      - NASA_API_KEY=${NASA_API_KEY}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - DATABASE_URL=sqlite:///data/spaceweather.db
+      - REDIS_URL=redis://redis:6379
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+    depends_on:
+      - redis
+      - nginx
+    restart: unless-stopped
+    networks:
+      - spaceweather-network
+
+  # Redis for caching and session management
+  redis:
+    image: redis:7-alpine
+    container_name: nasa-spaceweather-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    networks:
+      - spaceweather-network
+
+  # Nginx reverse proxy and static file serving
+  nginx:
+    image: nginx:alpine
+    container_name: nasa-spaceweather-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
+      - ./static:/usr/share/nginx/html:ro
+    depends_on:
+      - spaceweather-app
+    restart: unless-stopped
+    networks:
+      - spaceweather-network
+
+  # Background task scheduler
+  scheduler:
+    build: .
+    container_name: nasa-spaceweather-scheduler
+    command: python scheduler.py
+    environment:
+      - NASA_API_KEY=${NASA_API_KEY}
+      - DATABASE_URL=sqlite:///data/spaceweather.db
+      - REDIS_URL=redis://redis:6379
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+    depends_on:
+      - redis
+    restart: unless-stopped
+    networks:
+      - spaceweather-network
+
+volumes:
+  redis_data:
+  spaceweather_data:
+
+networks:
+  spaceweather-network:
+    driver: bridge

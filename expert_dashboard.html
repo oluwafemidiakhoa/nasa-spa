@@ -1,0 +1,1496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NASA Expert Space Weather Forecaster - Scientific Analysis Center</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            color: #ffffff;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+        
+        /* Header */
+        .header {
+            background: linear-gradient(90deg, #1e3c72 0%, #2a5298 100%);
+            padding: 20px 0;
+            box-shadow: 0 4px 30px rgba(0, 255, 0, 0.3);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .header-content {
+            max-width: 1800px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 30px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .logo h1 {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #ffffff;
+            text-shadow: 0 0 15px rgba(0, 255, 255, 0.8);
+        }
+        
+        .expert-badge {
+            background: linear-gradient(45deg, #ff6b35, #f7931e);
+            color: #000;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .status-bar {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .status-light {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        
+        .status-light.green { background: #00ff00; }
+        .status-light.yellow { background: #ffff00; }
+        .status-light.red { background: #ff0000; }
+        
+        /* Main Dashboard */
+        .dashboard {
+            max-width: 1800px;
+            margin: 0 auto;
+            padding: 30px;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            grid-template-rows: auto auto auto auto auto;
+            gap: 25px;
+            grid-template-areas:
+                "physics-summary realtime-data forecast-confidence"
+                "solar-wind-chart magnetic-field-chart kp-dst-chart"
+                "cme-timeline particle-flux aurora-map"
+                "expert-analysis expert-analysis physics-models"
+                "sep-forecast substorm-forecast satellite-drag"
+                "scintillation-map advanced-summary alerts";
+        }
+        
+        /* Card Styling */
+        .card {
+            background: linear-gradient(145deg, rgba(26, 26, 46, 0.9), rgba(22, 33, 62, 0.9));
+            border: 2px solid rgba(0, 255, 255, 0.3);
+            border-radius: 15px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+            box-shadow: 
+                0 8px 32px rgba(0, 255, 255, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #00ff00, #00ffff, #0080ff, #8000ff);
+            animation: scan 4s linear infinite;
+        }
+        
+        .card h2 {
+            font-family: 'JetBrains Mono', monospace;
+            color: #00ffff;
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        /* Physics Summary */
+        .physics-summary {
+            grid-area: physics-summary;
+        }
+        
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 12px 0;
+            padding: 10px;
+            background: rgba(0, 255, 0, 0.1);
+            border-radius: 8px;
+            border-left: 4px solid #00ff00;
+        }
+        
+        .metric-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            color: #00ffff;
+        }
+        
+        /* Real-time Data */
+        .realtime-data {
+            grid-area: realtime-data;
+        }
+        
+        .data-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .data-point {
+            background: rgba(0, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            border: 1px solid rgba(0, 255, 255, 0.3);
+        }
+        
+        .data-point .label {
+            font-size: 0.8rem;
+            color: #00ffff;
+            margin-bottom: 8px;
+        }
+        
+        .data-point .value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #ffffff;
+        }
+        
+        .data-point .unit {
+            font-size: 0.9rem;
+            color: #888;
+        }
+        
+        /* Forecast Confidence */
+        .forecast-confidence {
+            grid-area: forecast-confidence;
+        }
+        
+        .confidence-display {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .confidence-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            margin: 0 auto 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: conic-gradient(from 0deg, #ff0000 0%, #ffff00 40%, #00ff00 100%);
+            position: relative;
+        }
+        
+        .confidence-inner {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            background: #1a1a2e;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #00ffff;
+        }
+        
+        /* Chart Containers */
+        .chart-container {
+            height: 300px;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 10px;
+        }
+        
+        .solar-wind-chart { grid-area: solar-wind-chart; }
+        .magnetic-field-chart { grid-area: magnetic-field-chart; }
+        .kp-dst-chart { grid-area: kp-dst-chart; }
+        .cme-timeline { grid-area: cme-timeline; }
+        .particle-flux { grid-area: particle-flux; }
+        .aurora-map { grid-area: aurora-map; }
+        
+        /* Expert Analysis */
+        .expert-analysis {
+            grid-area: expert-analysis;
+        }
+        
+        .analysis-text {
+            background: rgba(0, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #00ffff;
+            line-height: 1.6;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        /* Physics Models */
+        .physics-models {
+            grid-area: physics-models;
+        }
+        
+        .model-item {
+            background: rgba(255, 165, 0, 0.1);
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border-left: 3px solid #ff8000;
+        }
+        
+        .model-name {
+            font-weight: 700;
+            color: #ff8000;
+            margin-bottom: 5px;
+        }
+        
+        .model-result {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+        }
+        
+        /* Controls */
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            background: linear-gradient(145deg, #2a5298, #1e3c72);
+            color: #ffffff;
+            border: 2px solid #00ffff;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+        }
+        
+        .btn:hover {
+            background: linear-gradient(145deg, #1e3c72, #2a5298);
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+            transform: translateY(-2px);
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .btn.expert {
+            border-color: #ff8000;
+            background: linear-gradient(145deg, #8B4513, #A0522D);
+        }
+        
+        .btn.expert:hover {
+            box-shadow: 0 0 20px rgba(255, 128, 0, 0.5);
+        }
+        
+        /* Animations */
+        @keyframes scan {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(300%); }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+        
+        /* Responsive */
+        @media (max-width: 1400px) {
+            .dashboard {
+                grid-template-columns: 1fr 1fr;
+                grid-template-areas:
+                    "physics-summary realtime-data"
+                    "forecast-confidence solar-wind-chart"
+                    "magnetic-field-chart kp-dst-chart"
+                    "cme-timeline particle-flux"
+                    "aurora-map expert-analysis"
+                    "physics-models physics-models"
+                    "sep-forecast substorm-forecast"
+                    "satellite-drag scintillation-map"
+                    "advanced-summary alerts";
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+                grid-template-areas:
+                    "physics-summary"
+                    "realtime-data"
+                    "forecast-confidence"
+                    "solar-wind-chart"
+                    "magnetic-field-chart"
+                    "kp-dst-chart"
+                    "cme-timeline"
+                    "particle-flux"
+                    "aurora-map"
+                    "expert-analysis"
+                    "physics-models"
+                    "sep-forecast"
+                    "substorm-forecast"
+                    "satellite-drag"
+                    "scintillation-map"
+                    "advanced-summary"
+                    "alerts";
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <i class="fas fa-satellite" style="font-size: 2rem; color: #00ffff;"></i>
+                <h1>NASA EXPERT SPACE WEATHER</h1>
+                <div class="expert-badge">PHYSICS ENGINE</div>
+            </div>
+            <div class="status-bar">
+                <div class="status-item">
+                    <div class="status-light green" id="physics-status"></div>
+                    <span>PHYSICS</span>
+                </div>
+                <div class="status-item">
+                    <div class="status-light green" id="realtime-status"></div>
+                    <span>REAL-TIME</span>
+                </div>
+                <div class="status-item">
+                    <div class="status-light green" id="ai-status"></div>
+                    <span>AI ENGINE</span>
+                </div>
+                <div class="status-item">
+                    <span id="mission-time">LOADING...</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Dashboard -->
+    <div class="dashboard">
+        
+        <!-- Physics Summary -->
+        <div class="card physics-summary">
+            <h2><i class="fas fa-atom"></i> PHYSICS ANALYSIS</h2>
+            <div class="metric">
+                <span>CME Geoeffectiveness</span>
+                <span class="metric-value" id="cme-geo-score">--</span>
+            </div>
+            <div class="metric">
+                <span>Predicted Dst Index</span>
+                <span class="metric-value" id="dst-prediction">-- nT</span>
+            </div>
+            <div class="metric">
+                <span>Aurora Boundary</span>
+                <span class="metric-value" id="aurora-boundary">--°</span>
+            </div>
+            <div class="metric">
+                <span>Transit Time Model</span>
+                <span class="metric-value" id="transit-model">DRAG-BASED</span>
+            </div>
+        </div>
+
+        <!-- Real-time Data -->
+        <div class="card realtime-data">
+            <h2><i class="fas fa-satellite-dish"></i> REAL-TIME DATA</h2>
+            <div class="data-grid">
+                <div class="data-point">
+                    <div class="label">Solar Wind Speed</div>
+                    <div class="value" id="sw-velocity">--</div>
+                    <div class="unit">km/s</div>
+                </div>
+                <div class="data-point">
+                    <div class="label">Bz Component</div>
+                    <div class="value" id="sw-bz">--</div>
+                    <div class="unit">nT</div>
+                </div>
+                <div class="data-point">
+                    <div class="label">Kp Index</div>
+                    <div class="value" id="kp-index">--</div>
+                    <div class="unit"></div>
+                </div>
+                <div class="data-point">
+                    <div class="label">X-ray Flux</div>
+                    <div class="value" id="xray-class">--</div>
+                    <div class="unit">class</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Forecast Confidence -->
+        <div class="card forecast-confidence">
+            <h2><i class="fas fa-chart-pie"></i> FORECAST CONFIDENCE</h2>
+            <div class="confidence-display">
+                <div class="confidence-circle">
+                    <div class="confidence-inner" id="confidence-value">--</div>
+                </div>
+                <div style="color: #00ffff; font-size: 0.9rem;">Physics + AI Consensus</div>
+            </div>
+            <div class="controls" style="margin-top: 15px;">
+                <button class="btn expert" onclick="runExpertForecast()" id="expert-btn">
+                    <i class="fas fa-brain"></i> EXPERT ANALYSIS
+                </button>
+            </div>
+        </div>
+
+        <!-- Solar Wind Chart -->
+        <div class="card solar-wind-chart">
+            <h2><i class="fas fa-wind"></i> SOLAR WIND</h2>
+            <div class="chart-container" id="solar-wind-plot"></div>
+        </div>
+
+        <!-- Magnetic Field Chart -->
+        <div class="card magnetic-field-chart">
+            <h2><i class="fas fa-magnet"></i> MAGNETIC FIELD</h2>
+            <div class="chart-container" id="magnetic-field-plot"></div>
+        </div>
+
+        <!-- Kp/Dst Chart -->
+        <div class="card kp-dst-chart">
+            <h2><i class="fas fa-globe"></i> GEOMAGNETIC INDICES</h2>
+            <div class="chart-container" id="kp-dst-plot"></div>
+        </div>
+
+        <!-- CME Timeline -->
+        <div class="card cme-timeline">
+            <h2><i class="fas fa-timeline"></i> CME TIMELINE</h2>
+            <div class="chart-container" id="cme-timeline-plot"></div>
+        </div>
+
+        <!-- Particle Flux -->
+        <div class="card particle-flux">
+            <h2><i class="fas fa-radiation"></i> PARTICLE FLUX</h2>
+            <div class="chart-container" id="particle-flux-plot"></div>
+        </div>
+
+        <!-- Aurora Map -->
+        <div class="card aurora-map">
+            <h2><i class="fas fa-map"></i> AURORA VISIBILITY</h2>
+            <div class="chart-container" id="aurora-map-plot"></div>
+        </div>
+
+        <!-- Expert Analysis -->
+        <div class="card expert-analysis">
+            <h2><i class="fas fa-user-graduate"></i> EXPERT INTERPRETATION</h2>
+            <div class="analysis-text" id="expert-analysis-text">
+                <div style="text-align: center; color: #00ffff; padding: 40px;">
+                    <i class="fas fa-brain" style="font-size: 3rem; margin-bottom: 20px; opacity: 0.5;"></i>
+                    <div>Expert physics-based analysis ready</div>
+                    <div style="font-size: 0.9rem; margin-top: 10px; opacity: 0.7;">
+                        Click "EXPERT ANALYSIS" to generate comprehensive forecast
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Physics Models -->
+        <div class="card physics-models">
+            <h2><i class="fas fa-calculator"></i> PHYSICS MODELS</h2>
+            <div class="model-item">
+                <div class="model-name">Drag-Based CME Propagation</div>
+                <div class="model-result">Vršnak et al. (2013) - NASA ENLIL calibrated</div>
+            </div>
+            <div class="model-item">
+                <div class="model-name">Burton Dst Equation</div>
+                <div class="model-result">Real-time geomagnetic storm prediction</div>
+            </div>
+            <div class="model-item">
+                <div class="model-name">Newell Coupling Function</div>
+                <div class="model-result">Kp index and aurora boundary calculation</div>
+            </div>
+        </div>
+
+        <!-- Data Validation -->
+        <div class="card" style="grid-area: data-validation;">
+            <h2><i class="fas fa-check-double"></i> DATA VALIDATION</h2>
+            <div id="validation-results">
+                <div style="text-align: center; color: #888; padding: 20px;">
+                    Awaiting expert analysis...
+                </div>
+            </div>
+        </div>
+
+        <!-- Recommendations -->
+        <div class="card" style="grid-area: recommendations;">
+            <h2><i class="fas fa-clipboard-list"></i> OPERATIONAL RECOMMENDATIONS</h2>
+            <div id="recommendations-list">
+                <div style="text-align: center; color: #888; padding: 20px;">
+                    No active recommendations
+                </div>
+            </div>
+        </div>
+
+        <!-- Solar Particle Event Forecast -->
+        <div class="card" style="grid-area: sep-forecast;">
+            <h2><i class="fas fa-radiation"></i> SOLAR PARTICLE FORECAST</h2>
+            <div id="sep-forecast-content">
+                <div class="metric">
+                    <span>S-Scale Rating</span>
+                    <span class="metric-value" id="s-scale-rating">S0</span>
+                </div>
+                <div class="metric">
+                    <span>Radiation Risk</span>
+                    <span class="metric-value" id="radiation-risk">Minimal</span>
+                </div>
+                <div class="metric">
+                    <span>Peak Flux (>10 MeV)</span>
+                    <span class="metric-value" id="peak-flux">-- pfu</span>
+                </div>
+                <div class="metric">
+                    <span>Event Duration</span>
+                    <span class="metric-value" id="event-duration">-- hours</span>
+                </div>
+                <div style="margin-top: 15px; font-size: 0.9rem; color: #ffff00;">
+                    <div id="affected-systems">No systems affected</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Substorm Forecast -->
+        <div class="card" style="grid-area: substorm-forecast;">
+            <h2><i class="fas fa-bolt"></i> SUBSTORM FORECAST</h2>
+            <div id="substorm-forecast-content">
+                <div class="metric">
+                    <span>Substorm Expected</span>
+                    <span class="metric-value" id="substorm-expected">No</span>
+                </div>
+                <div class="metric">
+                    <span>Intensity Level</span>
+                    <span class="metric-value" id="substorm-intensity">Quiet</span>
+                </div>
+                <div class="metric">
+                    <span>AE Index Prediction</span>
+                    <span class="metric-value" id="ae-index-pred">-- nT</span>
+                </div>
+                <div class="metric">
+                    <span>Probability</span>
+                    <span class="metric-value" id="substorm-probability">--%</span>
+                </div>
+                <div style="margin-top: 15px; font-size: 0.9rem; color: #00ffff;">
+                    <div id="auroral-activity">Quiet auroral conditions</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Satellite Drag Analysis -->
+        <div class="card" style="grid-area: satellite-drag;">
+            <h2><i class="fas fa-satellite"></i> SATELLITE DRAG</h2>
+            <div id="satellite-drag-content">
+                <div class="metric">
+                    <span>Atmospheric Density</span>
+                    <span class="metric-value" id="atm-density">-- kg/m³</span>
+                </div>
+                <div class="metric">
+                    <span>Altitude Loss Rate</span>
+                    <span class="metric-value" id="altitude-loss">-- km/day</span>
+                </div>
+                <div class="metric">
+                    <span>Drag Risk Level</span>
+                    <span class="metric-value" id="drag-risk">Low</span>
+                </div>
+                <div class="metric">
+                    <span>Estimated Lifetime</span>
+                    <span class="metric-value" id="satellite-lifetime">-- days</span>
+                </div>
+                <div style="margin-top: 15px; font-size: 0.9rem; color: #ff8000;">
+                    <div>ISS-class orbit (400 km altitude)</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ionospheric Scintillation Map -->
+        <div class="card" style="grid-area: scintillation-map;">
+            <h2><i class="fas fa-globe-americas"></i> IONOSPHERIC SCINTILLATION</h2>
+            <div id="scintillation-content">
+                <div style="margin-bottom: 15px;">
+                    <div class="metric">
+                        <span>High-Risk Regions</span>
+                        <span class="metric-value" id="high-risk-regions">None</span>
+                    </div>
+                </div>
+                <div id="scintillation-locations">
+                    <div class="data-point" style="margin: 8px 0; padding: 10px; background: rgba(0,255,0,0.1);">
+                        <div class="label">Singapore</div>
+                        <div class="value" id="singapore-s4">--</div>
+                        <div class="unit">S4 Index</div>
+                    </div>
+                    <div class="data-point" style="margin: 8px 0; padding: 10px; background: rgba(0,255,255,0.1);">
+                        <div class="label">Brazil</div>
+                        <div class="value" id="brazil-s4">--</div>
+                        <div class="unit">S4 Index</div>
+                    </div>
+                    <div class="data-point" style="margin: 8px 0; padding: 10px; background: rgba(255,255,0,0.1);">
+                        <div class="label">Nigeria</div>
+                        <div class="value" id="nigeria-s4">--</div>
+                        <div class="unit">S4 Index</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Advanced Physics Summary -->
+        <div class="card" style="grid-area: advanced-summary;">
+            <h2><i class="fas fa-atom"></i> ADVANCED PHYSICS</h2>
+            <div id="advanced-physics-summary">
+                <div class="model-item">
+                    <div class="model-name">Solar Particle Events</div>
+                    <div class="model-result" id="sep-summary">SEPEM-inspired forecasting active</div>
+                </div>
+                <div class="model-item">
+                    <div class="model-name">Magnetospheric Substorms</div>
+                    <div class="model-result" id="substorm-summary">AE index modeling operational</div>
+                </div>
+                <div class="model-item">
+                    <div class="model-name">Satellite Drag</div>
+                    <div class="model-result" id="drag-summary">NRLMSISE-00 atmospheric model</div>
+                </div>
+                <div class="model-item">
+                    <div class="model-name">Ionospheric Scintillation</div>
+                    <div class="model-result" id="scint-summary">SCINDA-inspired global monitoring</div>
+                </div>
+                <div class="model-item">
+                    <div class="model-name">Shock Arrival Refinement</div>
+                    <div class="model-result" id="shock-summary">WSA-ENLIL enhancement methods</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Alerts -->
+        <div class="card" style="grid-area: alerts;">
+            <h2><i class="fas fa-exclamation-triangle"></i> ACTIVE ALERTS</h2>
+            <div id="alerts-list">
+                <div style="text-align: center; color: #00ff00; padding: 20px;">
+                    <i class="fas fa-check-circle" style="font-size: 2rem; margin-bottom: 10px;"></i>
+                    <div>NO ACTIVE ALERTS</div>
+                    <div style="font-size: 0.8rem; margin-top: 5px;">All systems nominal</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:9001';
+        let isLoading = false;
+        
+        // Mission Time Display
+        function updateMissionTime() {
+            const now = new Date();
+            const timeString = now.toISOString().replace('T', ' ').substring(0, 19) + ' UTC';
+            document.getElementById('mission-time').textContent = timeString;
+        }
+        
+        updateMissionTime();
+        setInterval(updateMissionTime, 1000);
+        
+        // Initialize professional scientific charts
+        function initializeCharts() {
+            // Solar Wind Multi-Parameter Chart
+            const solarWindData = [
+                {
+                    x: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00'],
+                    y: [420, 450, 380, 520, 480, 460],
+                    type: 'scatter',
+                    mode: 'lines+markers',
+                    name: 'Velocity (km/s)',
+                    line: { color: '#00ffff', width: 3 },
+                    marker: { size: 8, color: '#00ffff' }
+                },
+                {
+                    x: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00'],
+                    y: [5.2, 4.8, 6.1, 3.9, 5.5, 4.7],
+                    type: 'scatter',
+                    mode: 'lines+markers',
+                    name: 'Density (p/cm³)',
+                    yaxis: 'y2',
+                    line: { color: '#ff8000', width: 3 },
+                    marker: { size: 8, color: '#ff8000' }
+                }
+            ];
+
+            Plotly.newPlot('solar-wind-plot', solarWindData, {
+                paper_bgcolor: 'rgba(0,0,0,0)',
+                plot_bgcolor: 'rgba(0,0,0,0.3)',
+                font: { color: '#ffffff', family: 'JetBrains Mono', size: 12 },
+                title: { text: 'Solar Wind Parameters (24h)', font: { color: '#00ffff', size: 16 } },
+                xaxis: { 
+                    gridcolor: '#333',
+                    title: 'Time (UTC)',
+                    tickfont: { color: '#ffffff' }
+                },
+                yaxis: { 
+                    gridcolor: '#333',
+                    title: 'Velocity (km/s)',
+                    tickfont: { color: '#00ffff' },
+                    titlefont: { color: '#00ffff' }
+                },
+                yaxis2: {
+                    title: 'Density (p/cm³)',
+                    titlefont: { color: '#ff8000' },
+                    tickfont: { color: '#ff8000' },
+                    overlaying: 'y',
+                    side: 'right'
+                },
+                legend: { 
+                    font: { color: '#ffffff' },
+                    bgcolor: 'rgba(0,0,0,0.5)'
+                },
+                margin: { t: 40, r: 60, b: 40, l: 60 }
+            });
+
+            // Magnetic Field Components Chart
+            const magneticFieldData = [
+                {
+                    x: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00'],
+                    y: [2.1, -1.5, 3.2, -0.8, 1.9, -2.3],
+                    type: 'scatter',
+                    mode: 'lines+markers',
+                    name: 'Bx (nT)',
+                    line: { color: '#ff0000', width: 2 },
+                    marker: { size: 6 }
+                },
+                {
+                    x: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00'],
+                    y: [1.8, 2.9, -1.2, 3.5, -0.7, 2.1],
+                    type: 'scatter',
+                    mode: 'lines+markers',
+                    name: 'By (nT)',
+                    line: { color: '#00ff00', width: 2 },
+                    marker: { size: 6 }
+                },
+                {
+                    x: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00'],
+                    y: [-2.0, -8.5, -1.8, -12.3, -3.2, -6.7],
+                    type: 'scatter',
+                    mode: 'lines+markers',
+                    name: 'Bz (nT)',
+                    line: { color: '#ffff00', width: 3 },
+                    marker: { size: 8, color: '#ffff00' }
+                }
+            ];
+
+            Plotly.newPlot('magnetic-field-plot', magneticFieldData, {
+                paper_bgcolor: 'rgba(0,0,0,0)',
+                plot_bgcolor: 'rgba(0,0,0,0.3)',
+                font: { color: '#ffffff', family: 'JetBrains Mono', size: 12 },
+                title: { text: 'Interplanetary Magnetic Field', font: { color: '#00ffff', size: 16 } },
+                xaxis: { 
+                    gridcolor: '#333',
+                    title: 'Time (UTC)',
+                    tickfont: { color: '#ffffff' }
+                },
+                yaxis: { 
+                    gridcolor: '#333',
+                    title: 'Magnetic Field (nT)',
+                    tickfont: { color: '#ffffff' },
+                    zeroline: true,
+                    zerolinecolor: '#666',
+                    zerolinewidth: 2
+                },
+                legend: { 
+                    font: { color: '#ffffff' },
+                    bgcolor: 'rgba(0,0,0,0.5)'
+                },
+                shapes: [{
+                    type: 'line',
+                    x0: '00:00', x1: '20:00',
+                    y0: 0, y1: 0,
+                    line: { color: '#666', width: 1, dash: 'dash' }
+                }],
+                annotations: [{
+                    x: '16:00',
+                    y: -12.3,
+                    text: 'Strong Southward Bz',
+                    showarrow: true,
+                    arrowcolor: '#ffff00',
+                    font: { color: '#ffff00', size: 10 }
+                }],
+                margin: { t: 40, r: 40, b: 40, l: 60 }
+            });
+
+            // Kp/Dst Geomagnetic Indices Chart
+            const geomagneticData = [
+                {
+                    x: ['Day-2', 'Day-1', 'Today', 'Day+1', 'Day+2'],
+                    y: [2, 4, 6, 8, 5],
+                    type: 'bar',
+                    name: 'Kp Index',
+                    marker: { 
+                        color: ['#00ff00', '#ffff00', '#ff8000', '#ff0000', '#ff0000'],
+                        line: { color: '#ffffff', width: 1 }
+                    },
+                    yaxis: 'y'
+                },
+                {
+                    x: ['Day-2', 'Day-1', 'Today', 'Day+1', 'Day+2'],
+                    y: [-25, -45, -80, -150, -90],
+                    type: 'scatter',
+                    mode: 'lines+markers',
+                    name: 'Dst Index (nT)',
+                    line: { color: '#00ffff', width: 3 },
+                    marker: { size: 10, color: '#00ffff' },
+                    yaxis: 'y2'
+                }
+            ];
+
+            Plotly.newPlot('kp-dst-plot', geomagneticData, {
+                paper_bgcolor: 'rgba(0,0,0,0)',
+                plot_bgcolor: 'rgba(0,0,0,0.3)',
+                font: { color: '#ffffff', family: 'JetBrains Mono', size: 12 },
+                title: { text: 'Geomagnetic Activity Forecast', font: { color: '#00ffff', size: 16 } },
+                xaxis: { 
+                    gridcolor: '#333',
+                    title: 'Time Period',
+                    tickfont: { color: '#ffffff' }
+                },
+                yaxis: { 
+                    gridcolor: '#333',
+                    title: 'Kp Index',
+                    tickfont: { color: '#ffffff' },
+                    range: [0, 9],
+                    dtick: 1
+                },
+                yaxis2: {
+                    title: 'Dst Index (nT)',
+                    titlefont: { color: '#00ffff' },
+                    tickfont: { color: '#00ffff' },
+                    overlaying: 'y',
+                    side: 'right',
+                    range: [-200, 0]
+                },
+                legend: { 
+                    font: { color: '#ffffff' },
+                    bgcolor: 'rgba(0,0,0,0.5)'
+                },
+                annotations: [
+                    {
+                        x: 'Day+1',
+                        y: 8,
+                        text: 'Severe Storm',
+                        showarrow: true,
+                        arrowcolor: '#ff0000',
+                        font: { color: '#ff0000', size: 10 }
+                    },
+                    {
+                        x: 'Day+1',
+                        y: -150,
+                        text: 'Intense Storm',
+                        showarrow: true,
+                        arrowcolor: '#00ffff',
+                        font: { color: '#00ffff', size: 10 },
+                        yref: 'y2'
+                    }
+                ],
+                margin: { t: 40, r: 60, b: 40, l: 60 }
+            });
+
+            // CME Timeline Chart
+            const cmeTimelineData = [
+                {
+                    x: ['2025-09-24', '2025-09-25', '2025-09-26', '2025-09-27', '2025-09-28'],
+                    y: [800, 0, 650, 0, 920],
+                    type: 'bar',
+                    name: 'CME Velocity (km/s)',
+                    marker: { 
+                        color: ['#ff6b35', 'rgba(0,0,0,0)', '#ff8000', 'rgba(0,0,0,0)', '#ff0000'],
+                        line: { color: '#ffffff', width: 1 }
+                    },
+                    text: ['M1.0 Flare', '', 'C5.2 Flare', '', 'X1.5 Flare'],
+                    textposition: 'outside'
+                }
+            ];
+
+            Plotly.newPlot('cme-timeline-plot', cmeTimelineData, {
+                paper_bgcolor: 'rgba(0,0,0,0)',
+                plot_bgcolor: 'rgba(0,0,0,0.3)',
+                font: { color: '#ffffff', family: 'JetBrains Mono', size: 12 },
+                title: { text: 'CME Events Timeline', font: { color: '#00ffff', size: 16 } },
+                xaxis: { 
+                    gridcolor: '#333',
+                    title: 'Date',
+                    tickfont: { color: '#ffffff' }
+                },
+                yaxis: { 
+                    gridcolor: '#333',
+                    title: 'CME Velocity (km/s)',
+                    tickfont: { color: '#ffffff' },
+                    range: [0, 1000]
+                },
+                annotations: [
+                    {
+                        x: '2025-09-28',
+                        y: 920,
+                        text: 'Earth-Directed',
+                        showarrow: true,
+                        arrowcolor: '#ff0000',
+                        font: { color: '#ff0000', size: 10 }
+                    }
+                ],
+                margin: { t: 40, r: 40, b: 40, l: 60 }
+            });
+
+            // Particle Flux Chart
+            const particleFluxData = [
+                {
+                    x: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00'],
+                    y: [1.2, 2.8, 15.6, 45.2, 12.3, 3.1],
+                    type: 'scatter',
+                    mode: 'lines+markers',
+                    name: '>10 MeV Protons',
+                    line: { color: '#ff0000', width: 3 },
+                    marker: { size: 8, color: '#ff0000' },
+                    fill: 'tonexty'
+                },
+                {
+                    x: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00'],
+                    y: [0.3, 0.8, 4.2, 12.1, 3.6, 0.9],
+                    type: 'scatter',
+                    mode: 'lines+markers',
+                    name: '>50 MeV Protons',
+                    line: { color: '#ffff00', width: 2 },
+                    marker: { size: 6, color: '#ffff00' }
+                },
+                {
+                    x: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00'],
+                    y: [0.1, 0.2, 1.1, 3.8, 1.2, 0.3],
+                    type: 'scatter',
+                    mode: 'lines+markers',
+                    name: '>100 MeV Protons',
+                    line: { color: '#00ff00', width: 2 },
+                    marker: { size: 6, color: '#00ff00' }
+                }
+            ];
+
+            Plotly.newPlot('particle-flux-plot', particleFluxData, {
+                paper_bgcolor: 'rgba(0,0,0,0)',
+                plot_bgcolor: 'rgba(0,0,0,0.3)',
+                font: { color: '#ffffff', family: 'JetBrains Mono', size: 12 },
+                title: { text: 'Solar Energetic Particles', font: { color: '#00ffff', size: 16 } },
+                xaxis: { 
+                    gridcolor: '#333',
+                    title: 'Time (UTC)',
+                    tickfont: { color: '#ffffff' }
+                },
+                yaxis: { 
+                    gridcolor: '#333',
+                    title: 'Particle Flux (pfu)',
+                    tickfont: { color: '#ffffff' },
+                    type: 'log',
+                    range: [-1, 2]
+                },
+                legend: { 
+                    font: { color: '#ffffff' },
+                    bgcolor: 'rgba(0,0,0,0.5)'
+                },
+                shapes: [{
+                    type: 'line',
+                    x0: '00:00', x1: '20:00',
+                    y0: 10, y1: 10,
+                    line: { color: '#ff0000', width: 2, dash: 'dash' }
+                }],
+                annotations: [{
+                    x: '12:00',
+                    y: 45.2,
+                    text: 'S1 Storm Level',
+                    showarrow: true,
+                    arrowcolor: '#ff0000',
+                    font: { color: '#ff0000', size: 10 }
+                }],
+                margin: { t: 40, r: 40, b: 40, l: 60 }
+            });
+
+            // Aurora Visibility Map (Polar Projection Simulation)
+            const auroraData = [
+                {
+                    r: [90, 75, 60, 45, 30, 15],
+                    theta: ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'],
+                    type: 'scatterpolar',
+                    mode: 'lines+markers',
+                    name: 'Aurora Boundary',
+                    line: { color: '#00ff00', width: 4 },
+                    marker: { size: 8, color: '#00ff00' },
+                    fill: 'toself',
+                    fillcolor: 'rgba(0, 255, 0, 0.2)'
+                },
+                {
+                    r: [65, 65, 65, 65, 65, 65, 65, 65],
+                    theta: ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'],
+                    type: 'scatterpolar',
+                    mode: 'lines',
+                    name: 'Current Boundary (65°)',
+                    line: { color: '#ffff00', width: 2, dash: 'dash' }
+                },
+                {
+                    r: [31, 31, 31, 31, 31, 31, 31, 31],
+                    theta: ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'],
+                    type: 'scatterpolar',
+                    mode: 'lines',
+                    name: 'Predicted Boundary (31°)',
+                    line: { color: '#ff0000', width: 3 }
+                }
+            ];
+
+            Plotly.newPlot('aurora-map-plot', auroraData, {
+                paper_bgcolor: 'rgba(0,0,0,0)',
+                plot_bgcolor: 'rgba(0,0,0,0.3)',
+                font: { color: '#ffffff', family: 'JetBrains Mono', size: 12 },
+                title: { text: 'Aurora Visibility Forecast', font: { color: '#00ffff', size: 16 } },
+                polar: {
+                    bgcolor: 'rgba(0,0,0,0.3)',
+                    radialaxis: {
+                        visible: true,
+                        range: [0, 90],
+                        tickfont: { color: '#ffffff', size: 10 },
+                        gridcolor: '#333'
+                    },
+                    angularaxis: {
+                        tickfont: { color: '#ffffff', size: 10 },
+                        gridcolor: '#333'
+                    }
+                },
+                legend: { 
+                    font: { color: '#ffffff', size: 10 },
+                    bgcolor: 'rgba(0,0,0,0.5)'
+                },
+                annotations: [{
+                    text: 'Visible to<br>Northern Europe',
+                    x: 0.5,
+                    y: 0.2,
+                    xref: 'paper',
+                    yref: 'paper',
+                    showarrow: false,
+                    font: { color: '#00ffff', size: 12 }
+                }],
+                margin: { t: 40, r: 40, b: 40, l: 40 }
+            });
+        }
+        
+        // Run Expert Forecast
+        async function runExpertForecast() {
+            if (isLoading) return;
+            
+            isLoading = true;
+            const btn = document.getElementById('expert-btn');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-cog fa-spin"></i> ANALYZING...';
+            
+            try {
+                // Update status lights
+                document.getElementById('physics-status').className = 'status-light yellow';
+                document.getElementById('realtime-status').className = 'status-light yellow';
+                document.getElementById('ai-status').className = 'status-light yellow';
+                
+                // Call expert forecast API
+                const response = await fetch(`${API_BASE}/api/v1/forecasts/expert`, {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    displayExpertResults(result.data);
+                    
+                    // Update status lights to green
+                    document.getElementById('physics-status').className = 'status-light green';
+                    document.getElementById('realtime-status').className = 'status-light green';
+                    document.getElementById('ai-status').className = 'status-light green';
+                } else {
+                    throw new Error(result.error || 'Expert analysis failed');
+                }
+                
+            } catch (error) {
+                console.error('Expert forecast error:', error);
+                
+                // Update status lights to red
+                document.getElementById('physics-status').className = 'status-light red';
+                document.getElementById('realtime-status').className = 'status-light red';
+                document.getElementById('ai-status').className = 'status-light red';
+                
+                document.getElementById('expert-analysis-text').innerHTML = `
+                    <div style="color: #ff0000; text-align: center; padding: 20px;">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 2rem; margin-bottom: 10px;"></i>
+                        <div>Expert Analysis Failed</div>
+                        <div style="font-size: 0.9rem; margin-top: 10px;">
+                            Error: ${error.message}
+                        </div>
+                    </div>
+                `;
+                
+            } finally {
+                isLoading = false;
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-brain"></i> EXPERT ANALYSIS';
+            }
+        }
+        
+        function displayExpertResults(data) {
+            // Update physics metrics
+            if (data.physics_analysis) {
+                const physics = data.physics_analysis;
+                
+                if (physics.cme_analyses && physics.cme_analyses.length > 0) {
+                    const topCME = physics.cme_analyses[0];
+                    document.getElementById('cme-geo-score').textContent = 
+                        topCME.geoeffectiveness.geoeffectiveness_score.toFixed(2);
+                }
+                
+                if (physics.geomagnetic_predictions && physics.geomagnetic_predictions.dst) {
+                    document.getElementById('dst-prediction').textContent = 
+                        Math.round(physics.geomagnetic_predictions.dst.dst_index) + ' nT';
+                }
+                
+                if (physics.aurora_predictions) {
+                    document.getElementById('aurora-boundary').textContent = 
+                        physics.aurora_predictions.geographic_latitude_boundary.toFixed(1) + '°';
+                }
+            }
+            
+            // Update real-time data
+            if (data.realtime_data) {
+                const rt = data.realtime_data;
+                
+                if (rt.solar_wind) {
+                    document.getElementById('sw-velocity').textContent = Math.round(rt.solar_wind.velocity);
+                    document.getElementById('sw-bz').textContent = rt.solar_wind.bz_gsm.toFixed(1);
+                }
+                
+                if (rt.geomagnetic) {
+                    document.getElementById('kp-index').textContent = rt.geomagnetic.kp_index.toFixed(1);
+                }
+                
+                if (rt.xray_flux) {
+                    document.getElementById('xray-class').textContent = rt.xray_flux.flare_class;
+                }
+            }
+            
+            // Update confidence
+            if (data.forecast && data.forecast.forecasts && data.forecast.forecasts.length > 0) {
+                const avgConfidence = data.forecast.forecasts.reduce((sum, f) => sum + f.confidence, 0) / data.forecast.forecasts.length;
+                document.getElementById('confidence-value').textContent = Math.round(avgConfidence * 100) + '%';
+            }
+            
+            // Update expert analysis text
+            if (data.forecast && data.forecast.forecasts) {
+                let analysisText = `<h3 style="color: #00ffff; margin-bottom: 15px;">Expert Physics-Based Analysis</h3>`;
+                
+                data.forecast.forecasts.forEach((forecast, i) => {
+                    analysisText += `
+                        <div style="margin: 15px 0; padding: 15px; background: rgba(0,255,0,0.1); border-radius: 8px;">
+                            <h4 style="color: #00ff00;">Forecast ${i+1}: ${forecast.event}</h4>
+                            <p><strong>Risk:</strong> ${forecast.risk_summary}</p>
+                            <p><strong>Confidence:</strong> ${(forecast.confidence * 100).toFixed(0)}%</p>
+                            <p><strong>Impacts:</strong> ${forecast.impacts.join(', ')}</p>
+                        </div>
+                    `;
+                });
+                
+                document.getElementById('expert-analysis-text').innerHTML = analysisText;
+            }
+            
+            // Update advanced physics panels
+            updateAdvancedPhysicsPanels(data);
+            
+            // Update charts with real data
+            updateChartsWithRealData(data);
+        }
+        
+        function updateAdvancedPhysicsPanels(data) {
+            // Update Solar Particle Event forecast
+            const advancedPhysics = data.physics_analysis?.advanced_physics;
+            if (advancedPhysics) {
+                // Solar Particle Events
+                const sepEvents = advancedPhysics.solar_particle_events || [];
+                if (sepEvents.length > 0) {
+                    const sep = sepEvents[0];
+                    document.getElementById('s-scale-rating').textContent = sep.s_scale_rating || 'S0';
+                    document.getElementById('radiation-risk').textContent = sep.radiation_risk || 'Minimal';
+                    document.getElementById('peak-flux').textContent = `${sep.peak_flux_10mev?.toFixed(1) || '--'} pfu`;
+                    document.getElementById('event-duration').textContent = `${sep.duration_hours?.toFixed(1) || '--'} hours`;
+                    
+                    const affectedSystems = sep.affected_systems || [];
+                    document.getElementById('affected-systems').textContent = 
+                        affectedSystems.length > 0 ? affectedSystems.join(', ') : 'No systems affected';
+                    
+                    document.getElementById('sep-summary').textContent = 
+                        `${sep.s_scale_rating} radiation storm predicted`;
+                } else {
+                    document.getElementById('sep-summary').textContent = 'No significant SEP events expected';
+                }
+                
+                // Substorm Predictions
+                const substorm = advancedPhysics.substorm_predictions || {};
+                document.getElementById('substorm-expected').textContent = 
+                    substorm.substorm_expected ? 'Yes' : 'No';
+                document.getElementById('substorm-intensity').textContent = 
+                    (substorm.intensity || 'quiet').charAt(0).toUpperCase() + (substorm.intensity || 'quiet').slice(1);
+                document.getElementById('ae-index-pred').textContent = 
+                    `${substorm.predicted_ae_index?.toFixed(0) || '--'} nT`;
+                document.getElementById('substorm-probability').textContent = 
+                    `${((substorm.probability || 0) * 100).toFixed(0)}%`;
+                
+                const aurorActivity = substorm.auroral_activity || {};
+                document.getElementById('auroral-activity').textContent = 
+                    `${aurorActivity.intensity || 'quiet'} auroral activity, ${aurorActivity.visibility || 'polar'} visibility`;
+                
+                document.getElementById('substorm-summary').textContent = 
+                    substorm.substorm_expected ? 
+                    `${substorm.intensity} substorm (${substorm.predicted_ae_index?.toFixed(0)} nT AE)` :
+                    'Quiet magnetospheric conditions';
+                
+                // Satellite Drag Analysis
+                const drag = advancedPhysics.satellite_drag_analysis || {};
+                document.getElementById('atm-density').textContent = 
+                    drag.atmospheric_density ? `${drag.atmospheric_density.toExponential(2)} kg/m³` : '-- kg/m³';
+                document.getElementById('altitude-loss').textContent = 
+                    `${drag.altitude_loss_per_day?.toFixed(4) || '--'} km/day`;
+                document.getElementById('drag-risk').textContent = 
+                    (drag.risk_assessment || 'low').charAt(0).toUpperCase() + (drag.risk_assessment || 'low').slice(1);
+                document.getElementById('satellite-lifetime').textContent = 
+                    `${drag.estimated_lifetime_days?.toFixed(0) || '--'} days`;
+                
+                document.getElementById('drag-summary').textContent = 
+                    `${drag.risk_assessment || 'low'} drag risk, ${drag.altitude_loss_per_day?.toFixed(4) || 0} km/day loss`;
+                
+                // Ionospheric Scintillation
+                const scint = advancedPhysics.ionospheric_scintillation || {};
+                const highRiskRegions = scint.high_risk_regions || [];
+                document.getElementById('high-risk-regions').textContent = 
+                    highRiskRegions.length > 0 ? highRiskRegions.join(', ') : 'None';
+                
+                const globalForecast = scint.global_forecast || [];
+                globalForecast.forEach(location => {
+                    const elementId = location.location.toLowerCase().replace(/[^a-z]/g, '') + '-s4';
+                    const element = document.getElementById(elementId);
+                    if (element) {
+                        element.textContent = location.s4_index?.toFixed(2) || '--';
+                        
+                        // Color code based on severity
+                        const parent = element.closest('.data-point');
+                        if (location.severity === 'severe') {
+                            parent.style.background = 'rgba(255,0,0,0.2)';
+                        } else if (location.severity === 'active') {
+                            parent.style.background = 'rgba(255,255,0,0.2)';
+                        } else {
+                            parent.style.background = 'rgba(0,255,0,0.1)';
+                        }
+                    }
+                });
+                
+                document.getElementById('scint-summary').textContent = 
+                    highRiskRegions.length > 0 ? 
+                    `High scintillation risk in ${highRiskRegions.length} regions` :
+                    'Low global scintillation activity';
+                
+                // Shock Arrival Refinement
+                const shockRefine = advancedPhysics.shock_arrival_refinement || {};
+                const refinedPredictions = shockRefine.refined_predictions || [];
+                if (refinedPredictions.length > 0) {
+                    const refined = refinedPredictions[0];
+                    document.getElementById('shock-summary').textContent = 
+                        `Arrival refined by ${refined.correction_hours > 0 ? '+' : ''}${refined.correction_hours?.toFixed(1) || 0}h (${((refined.confidence_improvement || 0) * 100).toFixed(0)}% confidence boost)`;
+                } else {
+                    document.getElementById('shock-summary').textContent = 'No shock arrival refinements needed';
+                }
+            }
+        }
+        
+        function updateChartsWithRealData(data) {
+            // Update solar wind chart with real-time data
+            if (data.realtime_data && data.realtime_data.solar_wind) {
+                const sw = data.realtime_data.solar_wind;
+                const currentTime = new Date().getHours().toString().padStart(2, '0') + ':00';
+                
+                // Add real data point to solar wind chart
+                Plotly.extendTraces('solar-wind-plot', {
+                    x: [[currentTime]],
+                    y: [[sw.velocity]]
+                }, [0]);
+                
+                Plotly.extendTraces('solar-wind-plot', {
+                    x: [[currentTime]],
+                    y: [[sw.density]]
+                }, [1]);
+            }
+            
+            // Update magnetic field chart
+            if (data.realtime_data && data.realtime_data.solar_wind) {
+                const sw = data.realtime_data.solar_wind;
+                const currentTime = new Date().getHours().toString().padStart(2, '0') + ':00';
+                
+                // Update Bz component (most important for geomagnetic activity)
+                Plotly.extendTraces('magnetic-field-plot', {
+                    x: [[currentTime]],
+                    y: [[sw.bz_gsm]]
+                }, [2]);
+            }
+            
+            // Update geomagnetic indices with physics predictions
+            if (data.physics_analysis && data.physics_analysis.geomagnetic_predictions) {
+                const geo = data.physics_analysis.geomagnetic_predictions;
+                
+                // Update Kp forecast
+                const newKpData = {
+                    x: [['Day-2', 'Day-1', 'Today', 'Day+1', 'Day+2']],
+                    y: [[2, 4, geo.kp.kp_index, geo.kp.kp_index + 1, geo.kp.kp_index - 1]]
+                };
+                
+                Plotly.restyle('kp-dst-plot', newKpData, [0]);
+                
+                // Update Dst forecast
+                const newDstData = {
+                    x: [['Day-2', 'Day-1', 'Today', 'Day+1', 'Day+2']],
+                    y: [[-25, -45, geo.dst.dst_index, geo.dst.dst_index - 20, geo.dst.dst_index + 30]]
+                };
+                
+                Plotly.restyle('kp-dst-plot', newDstData, [1]);
+            }
+            
+            // Add animation effects to show data updates
+            document.querySelectorAll('.chart-container').forEach(chart => {
+                chart.style.animation = 'pulse 0.5s ease-in-out';
+                setTimeout(() => {
+                    chart.style.animation = '';
+                }, 500);
+            });
+        }
+        
+        // Auto-refresh functionality
+        function startAutoRefresh() {
+            // Refresh every 5 minutes (300,000 ms)
+            setInterval(() => {
+                if (!isLoading) {
+                    console.log('Auto-refreshing space weather data...');
+                    runExpertForecast();
+                }
+            }, 300000);
+        }
+        
+        // Data quality indicator
+        function showDataQuality(data) {
+            const qualityIndicator = document.createElement('div');
+            qualityIndicator.id = 'data-quality-indicator';
+            qualityIndicator.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: rgba(0, 255, 0, 0.8);
+                color: #000;
+                padding: 10px 15px;
+                border-radius: 5px;
+                font-family: 'JetBrains Mono', monospace;
+                font-size: 0.9rem;
+                z-index: 10000;
+                animation: fadeInOut 3s ease-in-out;
+            `;
+            
+            const dataCount = (data.realtime_data ? 1 : 0) + 
+                             (data.physics_analysis ? 1 : 0) + 
+                             (data.forecast ? 1 : 0);
+            
+            qualityIndicator.textContent = `DATA UPDATED: ${dataCount}/3 SOURCES`;
+            document.body.appendChild(qualityIndicator);
+            
+            setTimeout(() => {
+                if (qualityIndicator.parentNode) {
+                    qualityIndicator.parentNode.removeChild(qualityIndicator);
+                }
+            }, 3000);
+        }
+        
+        // Add CSS animation for data quality indicator
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeInOut {
+                0% { opacity: 0; transform: translateX(100%); }
+                20% { opacity: 1; transform: translateX(0); }
+                80% { opacity: 1; transform: translateX(0); }
+                100% { opacity: 0; transform: translateX(100%); }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // Enhanced displayExpertResults function
+        const originalDisplayExpertResults = displayExpertResults;
+        displayExpertResults = function(data) {
+            originalDisplayExpertResults(data);
+            showDataQuality(data);
+        };
+        
+        // Initialize dashboard
+        initializeCharts();
+        
+        // Auto-run expert analysis on load (for demo)
+        setTimeout(() => {
+            if (!isLoading) {
+                runExpertForecast();
+            }
+        }, 2000);
+        
+        // Start auto-refresh after initial load
+        setTimeout(() => {
+            startAutoRefresh();
+        }, 10000); // Start auto-refresh after 10 seconds
+    </script>
+</body>
+</html>

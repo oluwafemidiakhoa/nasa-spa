@@ -1,0 +1,26 @@
+# NASA Space Weather Forecaster Configuration Template
+# Copy this file to .env and configure your settings
+
+# NASA API Configuration
+NASA_API_KEY=DEMO_KEY
+
+# Email Alert Configuration
+EMAIL_USER=your_email@example.com
+EMAIL_PASSWORD=your_app_password
+TEST_ALERT_EMAIL=recipient@example.com
+
+# SMTP Settings (Default: Zoho)
+SMTP_SERVER=smtp.zoho.com
+SMTP_PORT=587
+SMTP_TLS=true
+
+# Alternative SMTP Providers:
+# Gmail: smtp.gmail.com:587
+# Outlook: smtp-mail.outlook.com:587
+# Yahoo: smtp.mail.yahoo.com:587
+
+# OpenAI Configuration (Optional)
+OPENAI_API_KEY=your_openai_key_here
+
+# Anthropic Configuration (Optional)  
+ANTHROPIC_API_KEY=your_anthropic_key_here

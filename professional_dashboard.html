@@ -1,0 +1,1166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NASA Space Weather AI Forecaster - Mission Control Dashboard</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Orbitron:wght@400;700;900&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Space Mono', monospace;
+            background: #000000;
+            color: #00ff00;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+        
+        /* NASA Mission Control Styling */
+        .mission-control {
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            min-height: 100vh;
+            position: relative;
+        }
+        
+        /* Header */
+        .header {
+            background: linear-gradient(90deg, #1e3c72 0%, #2a5298 100%);
+            padding: 15px 0;
+            box-shadow: 0 2px 20px rgba(0, 255, 0, 0.3);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .header-content {
+            max-width: 1800px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 30px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo h1 {
+            font-family: 'Orbitron', monospace;
+            font-size: 2rem;
+            font-weight: 900;
+            color: #ffffff;
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.8);
+        }
+        
+        .mission-time {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.2rem;
+            color: #00ffff;
+            text-shadow: 0 0 5px rgba(0, 255, 255, 0.8);
+        }
+        
+        /* Main Dashboard Grid */
+        .dashboard {
+            max-width: 1800px;
+            margin: 0 auto;
+            padding: 30px;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            grid-template-rows: auto auto auto auto;
+            gap: 20px;
+            grid-template-areas:
+                "status forecast risk"
+                "ai-analysis ai-analysis space-weather"
+                "evidence impacts recommendations"
+                "data-sources data-sources alerts";
+        }
+        
+        /* Card Styling */
+        .card {
+            background: linear-gradient(145deg, #1a1a2e, #16213e);
+            border: 1px solid #00ff00;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 
+                0 0 20px rgba(0, 255, 0, 0.3),
+                inset 0 0 20px rgba(0, 255, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #00ff00, #00ffff, #0080ff);
+            animation: scan 3s linear infinite;
+        }
+        
+        .card h2 {
+            font-family: 'Orbitron', monospace;
+            color: #00ffff;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        /* Status Panel */
+        .status-panel {
+            grid-area: status;
+        }
+        
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin: 15px 0;
+            padding: 15px;
+            background: rgba(0, 255, 0, 0.1);
+            border-radius: 8px;
+            border-left: 4px solid #00ff00;
+        }
+        
+        .status-light {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        
+        .status-light.green { background: #00ff00; }
+        .status-light.yellow { background: #ffff00; }
+        .status-light.orange { background: #ff8000; }
+        .status-light.red { background: #ff0000; }
+        
+        /* Forecast Panel */
+        .forecast-panel {
+            grid-area: forecast;
+        }
+        
+        .confidence-meter {
+            width: 100%;
+            height: 20px;
+            background: #333;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 15px 0;
+            position: relative;
+        }
+        
+        .confidence-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff0000, #ffff00, #00ff00);
+            transition: width 1s ease;
+            position: relative;
+        }
+        
+        .confidence-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #000;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+        
+        /* Risk Assessment */
+        .risk-panel {
+            grid-area: risk;
+        }
+        
+        .risk-level {
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin: 15px 0;
+            text-transform: uppercase;
+        }
+        
+        .risk-minimal { background: #00ff00; color: #000; }
+        .risk-low { background: #80ff00; color: #000; }
+        .risk-moderate { background: #ffff00; color: #000; }
+        .risk-high { background: #ff8000; color: #000; }
+        .risk-extreme { background: #ff0000; color: #fff; }
+        
+        /* AI Analysis Panel */
+        .ai-analysis {
+            grid-area: ai-analysis;
+        }
+        
+        .ai-text {
+            background: rgba(0, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #00ffff;
+            line-height: 1.6;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        /* Space Weather Index */
+        .space-weather {
+            grid-area: space-weather;
+        }
+        
+        .weather-gauge {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            margin: 20px auto;
+        }
+        
+        .gauge-circle {
+            width: 100%;
+            height: 100%;
+            border: 5px solid #333;
+            border-radius: 50%;
+            position: relative;
+            background: conic-gradient(from 0deg, #00ff00 0%, #ffff00 40%, #ff8000 70%, #ff0000 100%);
+        }
+        
+        .gauge-needle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 3px;
+            height: 80px;
+            background: #fff;
+            transform-origin: bottom center;
+            transform: translate(-50%, -100%) rotate(0deg);
+            transition: transform 1s ease;
+        }
+        
+        .gauge-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 20px;
+            height: 20px;
+            background: #fff;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+        
+        .gauge-value {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #00ffff;
+        }
+        
+        /* Evidence Chain */
+        .evidence-panel {
+            grid-area: evidence;
+        }
+        
+        .evidence-item {
+            background: rgba(0, 255, 0, 0.1);
+            padding: 10px;
+            margin: 8px 0;
+            border-radius: 5px;
+            border-left: 3px solid #00ff00;
+            font-size: 0.9rem;
+        }
+        
+        /* Impact Assessment */
+        .impacts-panel {
+            grid-area: impacts;
+        }
+        
+        .impact-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            margin: 8px 0;
+            background: rgba(255, 165, 0, 0.1);
+            border-radius: 5px;
+        }
+        
+        .impact-severity {
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        
+        .severity-high { background: #ff0000; color: #fff; }
+        .severity-moderate { background: #ff8000; color: #fff; }
+        .severity-low { background: #ffff00; color: #000; }
+        
+        /* Recommendations */
+        .recommendations-panel {
+            grid-area: recommendations;
+        }
+        
+        .recommendation {
+            background: rgba(0, 255, 255, 0.1);
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 5px;
+            border-left: 3px solid #00ffff;
+            font-size: 0.9rem;
+        }
+        
+        /* Data Sources */
+        .data-sources {
+            grid-area: data-sources;
+        }
+        
+        .source-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .source-item {
+            background: rgba(0, 255, 0, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid #00ff00;
+        }
+        
+        /* Alerts Panel */
+        .alerts-panel {
+            grid-area: alerts;
+            border-color: #ff0000 !important;
+        }
+        
+        .alert-item {
+            background: rgba(255, 0, 0, 0.2);
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border-left: 4px solid #ff0000;
+            animation: alertBlink 2s infinite;
+        }
+        
+        /* Control Buttons */
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            justify-content: center;
+        }
+        
+        .btn {
+            background: linear-gradient(145deg, #2a5298, #1e3c72);
+            color: #ffffff;
+            border: 2px solid #00ffff;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Orbitron', monospace;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+        
+        .btn:hover {
+            background: linear-gradient(145deg, #1e3c72, #2a5298);
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+            transform: translateY(-2px);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        /* Loading States */
+        .loading {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .loading::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.4), transparent);
+            animation: loading 2s infinite;
+        }
+        
+        /* Animations */
+        @keyframes scan {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(200%); }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+        
+        @keyframes alertBlink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        @keyframes loading {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 1400px) {
+            .dashboard {
+                grid-template-columns: 1fr 1fr;
+                grid-template-areas:
+                    "status forecast"
+                    "risk space-weather"
+                    "ai-analysis ai-analysis"
+                    "evidence impacts"
+                    "recommendations recommendations"
+                    "data-sources alerts";
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+                grid-template-areas:
+                    "status"
+                    "forecast"
+                    "risk"
+                    "space-weather"
+                    "ai-analysis"
+                    "evidence"
+                    "impacts"
+                    "recommendations"
+                    "data-sources"
+                    "alerts";
+            }
+            
+            .header-content {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .logo h1 {
+                font-size: 1.5rem;
+            }
+        }
+    
+        
+        /* Mobile-Responsive Design */
+        @media screen and (max-width: 768px) {
+            .dashboard-container {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto auto 1fr auto;
+                grid-template-areas:
+                    "header"
+                    "controls"
+                    "main"
+                    "footer";
+                gap: 10px;
+                padding: 10px;
+            }
+            
+            .forecast-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .forecast-card {
+                padding: 15px;
+            }
+            
+            .forecast-card h3 {
+                font-size: 1.1rem;
+            }
+            
+            .forecast-details {
+                font-size: 0.9rem;
+            }
+            
+            .control-panel {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+                padding: 15px;
+            }
+            
+            .control-group {
+                margin-bottom: 10px;
+            }
+            
+            .control-group button {
+                width: 100%;
+                padding: 12px;
+                font-size: 0.9rem;
+            }
+            
+            .header h1 {
+                font-size: 1.6rem;
+            }
+            
+            .status-bar {
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
+            }
+            
+            .status-item {
+                margin: 0;
+            }
+        }
+        
+        @media screen and (max-width: 480px) {
+            .dashboard-container {
+                padding: 8px;
+                gap: 8px;
+            }
+            
+            .control-panel {
+                grid-template-columns: 1fr;
+                padding: 12px;
+            }
+            
+            .forecast-card {
+                padding: 12px;
+            }
+            
+            .forecast-card h3 {
+                font-size: 1rem;
+            }
+            
+            .forecast-details {
+                font-size: 0.8rem;
+            }
+            
+            .header h1 {
+                font-size: 1.4rem;
+            }
+            
+            .header p {
+                font-size: 0.9rem;
+            }
+        }
+        
+        /* Touch-friendly controls */
+        @media (hover: none) and (pointer: coarse) {
+            .control-group button {
+                min-height: 44px;
+                font-size: 1rem;
+            }
+            
+            .forecast-card {
+                cursor: pointer;
+            }
+            
+            .forecast-card:active {
+                transform: scale(0.98);
+                transition: transform 0.1s ease;
+            }
+        }
+        </style>
+    <script src="websocket_client.js"></script>
+    <script src="export_ui.js"></script>
+</head>
+<body>
+    <div class="mission-control">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-satellite" style="font-size: 2rem; color: #00ffff;"></i>
+                    <h1>NASA SPACE WEATHER AI</h1>
+                    <div style="background: #ff0000; color: #fff; padding: 5px 10px; border-radius: 5px; font-size: 0.8rem;">MISSION CONTROL</div>
+                </div>
+                <div class="mission-time" id="mission-time">
+                    MISSION TIME: LOADING...
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Dashboard -->
+        <div class="dashboard">
+            
+            <!-- System Status -->
+            <div class="card status-panel">
+                <h2><i class="fas fa-heartbeat"></i> SYSTEM STATUS</h2>
+                <div class="status-indicator">
+                    <div class="status-light green" id="api-status"></div>
+                    <span>API CONNECTION</span>
+                </div>
+                <div class="status-indicator">
+                    <div class="status-light green" id="ai-status"></div>
+                    <span>AI ANALYSIS ENGINE</span>
+                </div>
+                <div class="status-indicator">
+                    <div class="status-light green" id="data-status"></div>
+                    <span>NASA DATA FEED</span>
+                </div>
+                <div class="controls">
+                    <button class="btn" onclick="refreshAllData()" id="refresh-btn">
+                        <i class="fas fa-sync"></i> REFRESH
+                    </button>
+                    <button class="btn" onclick="generateForecast()" id="generate-btn">
+                        <i class="fas fa-brain"></i> ANALYZE
+                    </button>
+                </div>
+                <div class="controls" style="margin-top: 10px;">
+                    <button class="btn" onclick="sendEmailAlert()" id="email-btn" style="border-color: #ff8000;">
+                        <i class="fas fa-envelope"></i> EMAIL ALERT
+                    </button>
+                    <button class="btn" onclick="testEmail()" id="test-email-btn" style="border-color: #ffff00;">
+                        <i class="fas fa-paper-plane"></i> TEST EMAIL
+                    </button>
+                </div>
+            </div>
+
+            <!-- Forecast Summary -->
+            <div class="card forecast-panel">
+                <h2><i class="fas fa-chart-line"></i> AI FORECAST</h2>
+                <div id="forecast-title" style="font-size: 1.1rem; color: #00ffff; margin: 15px 0;">
+                    INITIALIZING ANALYSIS...
+                </div>
+                <div id="forecast-summary" style="color: #ffffff; line-height: 1.5; margin: 15px 0;">
+                    Standing by for space weather data...
+                </div>
+                <div>
+                    <label style="color: #00ffff; margin-bottom: 5px; display: block;">CONFIDENCE LEVEL</label>
+                    <div class="confidence-meter">
+                        <div class="confidence-fill" id="confidence-fill" style="width: 0%;">
+                            <div class="confidence-text" id="confidence-text">0%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Risk Assessment -->
+            <div class="card risk-panel">
+                <h2><i class="fas fa-exclamation-triangle"></i> RISK ASSESSMENT</h2>
+                <div class="risk-level risk-minimal" id="risk-level">
+                    MINIMAL RISK
+                </div>
+                <div id="risk-details" style="color: #ffffff; font-size: 0.9rem;">
+                    Current space weather conditions are within normal parameters.
+                </div>
+            </div>
+
+            <!-- AI Analysis -->
+            <div class="card ai-analysis">
+                <h2><i class="fas fa-robot"></i> OPENAI AI ANALYSIS</h2>
+                <div class="ai-text" id="ai-analysis-text">
+                    <div style="text-align: center; color: #00ffff;">
+                        <i class="fas fa-brain" style="font-size: 2rem; margin-bottom: 10px;"></i>
+                        <div>AI analysis engine standing by...</div>
+                        <div style="font-size: 0.8rem; margin-top: 10px;">OpenAI GPT-4 ready for space weather assessment</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Space Weather Index -->
+            <div class="card space-weather">
+                <h2><i class="fas fa-tachometer-alt"></i> SPACE WEATHER INDEX</h2>
+                <div class="weather-gauge">
+                    <div class="gauge-circle">
+                        <div class="gauge-needle" id="gauge-needle"></div>
+                        <div class="gauge-center"></div>
+                    </div>
+                    <div class="gauge-value" id="gauge-value">0</div>
+                </div>
+                <div style="text-align: center; margin-top: 15px;">
+                    <div style="color: #00ffff; font-size: 0.9rem;">ACTIVITY LEVEL</div>
+                    <div id="activity-level" style="color: #ffffff; font-size: 1.1rem; font-weight: bold;">MINIMAL</div>
+                </div>
+            </div>
+
+            <!-- Evidence Chain -->
+            <div class="card evidence-panel">
+                <h2><i class="fas fa-link"></i> EVIDENCE CHAIN</h2>
+                <div id="evidence-list">
+                    <div class="evidence-item">
+                        <strong>SYSTEM INITIALIZED</strong><br>
+                        Awaiting space weather data collection...
+                    </div>
+                </div>
+            </div>
+
+            <!-- Impact Assessment -->
+            <div class="card impacts-panel">
+                <h2><i class="fas fa-satellite-dish"></i> IMPACT ASSESSMENT</h2>
+                <div id="impacts-list">
+                    <div style="text-align: center; color: #00ffff; padding: 20px;">
+                        <i class="fas fa-shield-alt" style="font-size: 2rem; margin-bottom: 10px;"></i>
+                        <div>No active threats detected</div>
+                        <div style="font-size: 0.8rem; margin-top: 5px;">All systems nominal</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recommendations -->
+            <div class="card recommendations-panel">
+                <h2><i class="fas fa-clipboard-list"></i> MISSION RECOMMENDATIONS</h2>
+                <div id="recommendations-list">
+                    <div class="recommendation">
+                        <strong>ROUTINE MONITORING:</strong> Continue standard space weather surveillance protocols
+                    </div>
+                    <div class="recommendation">
+                        <strong>DATA VALIDATION:</strong> Verify NASA DONKI data feeds are operational
+                    </div>
+                </div>
+            </div>
+
+            <!-- Data Sources -->
+            <div class="card data-sources">
+                <h2><i class="fas fa-database"></i> DATA SOURCES</h2>
+                <div class="source-grid">
+                    <div class="source-item">
+                        <i class="fas fa-rocket" style="font-size: 1.5rem; color: #00ffff; margin-bottom: 8px;"></i>
+                        <div><strong>NASA DONKI</strong></div>
+                        <div style="font-size: 0.8rem;">CME & Flare Data</div>
+                    </div>
+                    <div class="source-item">
+                        <i class="fas fa-globe" style="font-size: 1.5rem; color: #00ffff; margin-bottom: 8px;"></i>
+                        <div><strong>NASA EPIC</strong></div>
+                        <div style="font-size: 0.8rem;">Earth Imagery</div>
+                    </div>
+                    <div class="source-item">
+                        <i class="fas fa-brain" style="font-size: 1.5rem; color: #00ffff; margin-bottom: 8px;"></i>
+                        <div><strong>OPENAI GPT-4</strong></div>
+                        <div style="font-size: 0.8rem;">Analysis Engine</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active Alerts -->
+            <div class="card alerts-panel">
+                <h2><i class="fas fa-bell"></i> ACTIVE ALERTS</h2>
+                <div id="alerts-list">
+                    <div style="text-align: center; color: #00ff00; padding: 20px;">
+                        <i class="fas fa-check-circle" style="font-size: 2rem; margin-bottom: 10px;"></i>
+                        <div>NO ACTIVE ALERTS</div>
+                        <div style="font-size: 0.8rem; margin-top: 5px;">All systems operating normally</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:9001';
+        let isLoading = false;
+        
+        // Mission Time Display
+        function updateMissionTime() {
+            const now = new Date();
+            const timeString = now.toISOString().replace('T', ' ').substring(0, 19) + ' UTC';
+            document.getElementById('mission-time').textContent = `MISSION TIME: ${timeString}`;
+        }
+        
+        // Initialize
+        updateMissionTime();
+        setInterval(updateMissionTime, 1000);
+        
+        // Status Light Management
+        function setStatusLight(elementId, status) {
+            const light = document.getElementById(elementId);
+            light.className = `status-light ${status}`;
+        }
+        
+        // Update Risk Level Display
+        function updateRiskLevel(level) {
+            const riskElement = document.getElementById('risk-level');
+            riskElement.className = `risk-level risk-${level.toLowerCase()}`;
+            riskElement.textContent = `${level} RISK`;
+        }
+        
+        // Update Confidence Meter
+        function updateConfidence(confidence) {
+            const percentage = Math.round(confidence * 100);
+            document.getElementById('confidence-fill').style.width = `${percentage}%`;
+            document.getElementById('confidence-text').textContent = `${percentage}%`;
+        }
+        
+        // Update Space Weather Gauge
+        function updateSpaceWeatherGauge(value, level) {
+            const needle = document.getElementById('gauge-needle');
+            const rotation = (value / 100) * 180; // 0-180 degrees
+            needle.style.transform = `translate(-50%, -100%) rotate(${rotation}deg)`;
+            
+            document.getElementById('gauge-value').textContent = value.toFixed(1);
+            document.getElementById('activity-level').textContent = level;
+        }
+        
+        // Loading State Management
+        function setLoadingState(isLoading) {
+            document.getElementById('refresh-btn').disabled = isLoading;
+            document.getElementById('generate-btn').disabled = isLoading;
+            
+            if (isLoading) {
+                document.getElementById('refresh-btn').innerHTML = '<i class="fas fa-spinner fa-spin"></i> PROCESSING';
+                document.getElementById('generate-btn').innerHTML = '<i class="fas fa-cog fa-spin"></i> ANALYZING';
+            } else {
+                document.getElementById('refresh-btn').innerHTML = '<i class="fas fa-sync"></i> REFRESH';
+                document.getElementById('generate-btn').innerHTML = '<i class="fas fa-brain"></i> ANALYZE';
+            }
+        }
+        
+        // Display Advanced Forecast
+        function displayAdvancedForecast(data) {
+            console.log('displayAdvancedForecast called with data:', data);
+            
+            if (!data || !data.forecast) {
+                console.error('Invalid data structure:', data);
+                document.getElementById('forecast-title').textContent = 'Data Error';
+                document.getElementById('forecast-summary').textContent = 'Invalid forecast data structure';
+                return;
+            }
+            
+            const forecast = data.forecast;
+            const rawData = data.raw_data_summary || {};
+            
+            // Update main forecast display with null checks
+            document.getElementById('forecast-title').textContent = forecast.title || 'Space Weather Forecast';
+            document.getElementById('forecast-summary').textContent = forecast.executive_summary || 'No summary available';
+            
+            // Fix confidence parsing - ensure it's a valid number
+            const confidence = parseFloat(forecast.confidence_score);
+            if (!isNaN(confidence)) {
+                updateConfidence(confidence);
+            } else {
+                updateConfidence(0);
+                console.warn('Invalid confidence score:', forecast.confidence_score);
+            }
+            
+            updateRiskLevel(forecast.risk_level || 'MINIMAL');
+            
+            // Update AI analysis with proper date handling
+            const validUntilDate = forecast.valid_until ? new Date(forecast.valid_until) : null;
+            const generatedDate = rawData.generated_at ? new Date(rawData.generated_at) : null;
+            
+            document.getElementById('ai-analysis-text').innerHTML = `
+                <div style="margin-bottom: 15px;">
+                    <strong style="color: #00ffff;">AI MODEL:</strong> ${forecast.ai_model || 'Unknown'}<br>
+                    <strong style="color: #00ffff;">METHODOLOGY:</strong> ${forecast.methodology || 'AI Analysis'}<br>
+                    <strong style="color: #00ffff;">GENERATED:</strong> ${generatedDate && !isNaN(generatedDate) ? generatedDate.toLocaleString() : 'Unknown'}<br>
+                    <strong style="color: #00ffff;">VALID UNTIL:</strong> ${validUntilDate && !isNaN(validUntilDate) ? validUntilDate.toLocaleString() : 'Unknown'}<br>
+                    <strong style="color: #00ffff;">EVENTS ANALYZED:</strong> ${rawData.forecast_count || 0}
+                </div>
+                <div style="border-top: 1px solid #00ffff; padding-top: 15px;">
+                    ${forecast.detailed_analysis || 'No detailed analysis available'}
+                </div>
+            `;
+            
+            // Update space weather index
+            if (rawData && rawData.space_weather_index) {
+                const index = rawData.space_weather_index;
+                updateSpaceWeatherGauge(index.score || 0, index.level || 'MINIMAL');
+            } else {
+                updateSpaceWeatherGauge(0, 'MINIMAL');
+            }
+            
+            // Update evidence chain
+            const evidenceList = document.getElementById('evidence-list');
+            evidenceList.innerHTML = '';
+            forecast.evidence_chain.forEach(evidence => {
+                const div = document.createElement('div');
+                div.className = 'evidence-item';
+                div.innerHTML = `
+                    <strong>${evidence.evidence_type.toUpperCase()}</strong><br>
+                    ${evidence.description}<br>
+                    <small style="color: #00ffff;">Source: ${evidence.source} | Confidence: ${Math.round(evidence.confidence * 100)}%</small>
+                `;
+                evidenceList.appendChild(div);
+            });
+            
+            // Update impacts
+            const impactsList = document.getElementById('impacts-list');
+            impactsList.innerHTML = '';
+            forecast.predicted_impacts.forEach(impact => {
+                const div = document.createElement('div');
+                div.className = 'impact-item';
+                div.innerHTML = `
+                    <span>${impact.category}</span>
+                    <span class="impact-severity severity-${impact.severity.toLowerCase()}">${impact.severity}</span>
+                `;
+                impactsList.appendChild(div);
+            });
+            
+            // Update recommendations
+            const recList = document.getElementById('recommendations-list');
+            recList.innerHTML = '';
+            forecast.recommendations.forEach(rec => {
+                const div = document.createElement('div');
+                div.className = 'recommendation';
+                div.innerHTML = `<strong>MISSION DIRECTIVE:</strong> ${rec}`;
+                recList.appendChild(div);
+            });
+            
+            // Check for alerts
+            const alertsList = document.getElementById('alerts-list');
+            if (forecast.risk_level === 'HIGH' || forecast.risk_level === 'EXTREME') {
+                alertsList.innerHTML = `
+                    <div class="alert-item">
+                        <strong>⚠️ SPACE WEATHER ALERT</strong><br>
+                        Risk Level: ${forecast.risk_level}<br>
+                        Confidence: ${Math.round(forecast.confidence_score * 100)}%
+                    </div>
+                `;
+            } else {
+                alertsList.innerHTML = `
+                    <div style="text-align: center; color: #00ff00; padding: 20px;">
+                        <i class="fas fa-check-circle" style="font-size: 2rem; margin-bottom: 10px;"></i>
+                        <div>NO ACTIVE ALERTS</div>
+                        <div style="font-size: 0.8rem; margin-top: 5px;">All systems operating normally</div>
+                    </div>
+                `;
+            }
+        }
+        
+        // Fetch Advanced Forecast
+        async function refreshAllData() {
+            if (isLoading) return;
+            
+            isLoading = true;
+            setLoadingState(true);
+            setStatusLight('api-status', 'yellow');
+            setStatusLight('ai-status', 'yellow');
+            setStatusLight('data-status', 'yellow');
+            
+            try {
+                console.log('Fetching forecast from:', `${API_BASE}/api/v1/forecasts/advanced`);
+                const response = await fetch(`${API_BASE}/api/v1/forecasts/advanced`);
+                console.log('Response status:', response.status, response.statusText);
+                
+                const result = await response.json();
+                console.log('API result:', result);
+                
+                if (result.success && result.data) {
+                    displayAdvancedForecast(result.data);
+                    setStatusLight('api-status', 'green');
+                    setStatusLight('ai-status', 'green');
+                    setStatusLight('data-status', 'green');
+                } else {
+                    console.error('API returned error:', result);
+                    throw new Error(result.error || 'Forecast generation failed');
+                }
+            } catch (error) {
+                console.error('Fetch error:', error);
+                setStatusLight('api-status', 'red');
+                setStatusLight('ai-status', 'red');
+                setStatusLight('data-status', 'red');
+                
+                document.getElementById('forecast-title').textContent = 'CONNECTION ERROR';
+                document.getElementById('forecast-summary').textContent = `Failed to connect to AI analysis system: ${error.message}`;
+                
+                // Show error details in AI analysis panel
+                document.getElementById('ai-analysis-text').innerHTML = `
+                    <div style="color: #ff0000; text-align: center; padding: 20px;">
+                        <strong>⚠️ CONNECTION ERROR</strong><br><br>
+                        Unable to fetch forecast data from API server.<br>
+                        Error: ${error.message}<br><br>
+                        <small>Make sure the API server is running on port 9001</small>
+                    </div>
+                `;
+            } finally {
+                isLoading = false;
+                setLoadingState(false);
+            }
+        }
+        
+        // Generate New Forecast
+        async function generateForecast() {
+            await refreshAllData(); // Same as refresh for now
+        }
+        
+        // Send Email Alert
+        async function sendEmailAlert() {
+            if (isLoading) return;
+            
+            const btn = document.getElementById('email-btn');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> SENDING...';
+            
+            try {
+                // Check if API server is running
+                const healthCheck = await fetch(`${API_BASE}/`).catch(() => null);
+                if (!healthCheck) {
+                    alert(`❌ API Server Not Running!\n\nPlease start the API server first:\n1. Close this browser\n2. Run: start_dashboard_with_api.bat\n\nOr manually run: python dashboard_api.py`);
+                    return;
+                }
+                
+                const response = await fetch(`${API_BASE}/api/v1/alerts/email`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'}
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert(`Email Alert Sent Successfully!\n\nRecipient: ${result.data.recipient}\nForecasts: ${result.data.forecast_count}\n\nCheck your email inbox for the space weather alert.`);
+                } else {
+                    alert(`Email Alert Failed!\n\nError: ${result.error}\n\nCheck your email configuration in .env file.`);
+                }
+            } catch (error) {
+                alert(`Email Alert Error!\n\nError: ${error.message}\n\nMake sure the API server is running on port 9001.`);
+                console.error('Email alert error:', error);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-envelope"></i> EMAIL ALERT';
+            }
+        }
+        
+        // Test Email
+        async function testEmail() {
+            const btn = document.getElementById('test-email-btn');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> TESTING...';
+            
+            try {
+                // Check if API server is running
+                const healthCheck = await fetch(`${API_BASE}/`).catch(() => null);
+                if (!healthCheck) {
+                    alert(`❌ API Server Not Running!\n\nPlease start the API server first:\n1. Close this browser\n2. Run: start_dashboard_with_api.bat\n\nOr manually run: python dashboard_api.py`);
+                    return;
+                }
+                
+                const response = await fetch(`${API_BASE}/api/v1/alerts/test`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'}
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert(`Email Test Successful!\n\nTest email sent to: ${result.data.recipient}\n\nCheck your email inbox for the test message.`);
+                } else {
+                    alert(`Email Test Failed!\n\nError: ${result.error}\n\nCheck your Zoho email configuration in .env file.`);
+                }
+            } catch (error) {
+                alert(`Email Test Error!\n\nError: ${error.message}\n\nMake sure the API server is running on port 9001.`);
+                console.error('Email test error:', error);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-paper-plane"></i> TEST EMAIL';
+            }
+        }
+        
+        // Initialize dashboard
+        refreshAllData();
+        
+        // Auto-refresh every 5 minutes
+        setInterval(refreshAllData, 5 * 60 * 1000);
+    
+        
+        // WebSocket real-time data update handler
+        window.updateDashboardWithLiveData = function(data) {
+            console.log('Updating dashboard with real-time WebSocket data:', data);
+            
+            // Update live NASA data
+            if (window.LIVE_NASA_DATA) {
+                window.LIVE_NASA_DATA.events = data.events;
+                window.LIVE_NASA_DATA.summary = data.summary;
+                window.LIVE_NASA_DATA.summary.data_source = 'WebSocket Real-Time';
+            }
+            
+            // Trigger dashboard updates
+            if (typeof updateTimeline === 'function') {
+                updateTimeline(data);
+            }
+            
+            if (typeof updateForecastDisplay === 'function') {
+                updateForecastDisplay(data);
+            }
+            
+            if (typeof updateCMEVisualization === 'function') {
+                updateCMEVisualization(data.events.cmes);
+            }
+            
+            // Update event counts in ensemble dashboard
+            const eventsCountEl = document.getElementById('events-count');
+            if (eventsCountEl && data.summary) {
+                const newCount = data.summary.total_events;
+                eventsCountEl.style.transition = 'transform 0.3s ease, color 0.3s ease';
+                eventsCountEl.style.transform = 'scale(1.1)';
+                eventsCountEl.style.color = '#00ffff';
+                
+                setTimeout(() => {
+                    eventsCountEl.textContent = newCount;
+                    eventsCountEl.style.transform = 'scale(1)';
+                    eventsCountEl.style.color = '';
+                }, 200);
+            }
+            
+            // Show update notification
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: rgba(0, 255, 136, 0.9);
+                color: black;
+                padding: 10px 15px;
+                border-radius: 5px;
+                font-size: 0.9rem;
+                z-index: 1000;
+                animation: fadeInOut 3s ease-in-out;
+            `;
+            notification.textContent = `📡 Live update: ${data.summary.total_events} events`;
+            
+            // Add fade animation
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes fadeInOut {
+                    0% { opacity: 0; transform: translateX(100%); }
+                    20% { opacity: 1; transform: translateX(0); }
+                    80% { opacity: 1; transform: translateX(0); }
+                    100% { opacity: 0; transform: translateX(100%); }
+                }
+            `;
+            document.head.appendChild(style);
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 3000);
+        };
+</script>
+</body>
+</html>

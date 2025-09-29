@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Real-Time Test</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a1a3a, #2d2d5f);
+            color: #ffffff;
+            font-family: 'Arial', sans-serif;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 15px;
+            border: 2px solid #00bfff;
+        }
+        
+        .test-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .test-card {
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid #00ff88;
+            border-radius: 10px;
+            padding: 20px;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            background: linear-gradient(45deg, #00bfff, #0080ff);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        
+        .btn:hover {
+            background: linear-gradient(45deg, #0080ff, #0060ff);
+        }
+        
+        .btn:disabled {
+            background: #666;
+            cursor: not-allowed;
+        }
+        
+        .status {
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+        
+        .status.connected {
+            background: rgba(0, 255, 136, 0.2);
+            border: 1px solid #00ff88;
+        }
+        
+        .status.disconnected {
+            background: rgba(255, 136, 136, 0.2);
+            border: 1px solid #ff8888;
+        }
+        
+        .status.reconnecting {
+            background: rgba(255, 170, 68, 0.2);
+            border: 1px solid #ffaa44;
+        }
+        
+        .log {
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid #666;
+            border-radius: 5px;
+            padding: 15px;
+            height: 200px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 0.8rem;
+            line-height: 1.4;
+        }
+        
+        .log-entry {
+            margin-bottom: 5px;
+        }
+        
+        .log-entry.info {
+            color: #00ffff;
+        }
+        
+        .log-entry.success {
+            color: #00ff88;
+        }
+        
+        .log-entry.error {
+            color: #ff8888;
+        }
+        
+        .log-entry.warning {
+            color: #ffaa44;
+        }
+        
+        .data-display {
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid #00ff88;
+            border-radius: 5px;
+            padding: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            padding: 5px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+        }
+        
+        @media screen and (max-width: 768px) {
+            .test-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .controls {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 WebSocket Real-Time Test</h1>
+            <p>Test real-time space weather data streaming</p>
+        </div>
+        
+        <div class="test-grid">
+            <div class="test-card">
+                <h3>🔗 Connection Control</h3>
+                
+                <div class="controls">
+                    <button class="btn" id="ws-connect">Connect</button>
+                    <button class="btn" id="ws-disconnect">Disconnect</button>
+                    <button class="btn" id="ws-refresh">Force Update</button>
+                    <button class="btn" id="clear-log">Clear Log</button>
+                </div>
+                
+                <div class="status disconnected" id="connection-status">
+                    ❌ Disconnected
+                </div>
+                
+                <div>
+                    <strong>Connection Info:</strong>
+                    <div class="metric">
+                        <span>Server:</span>
+                        <span id="server-url">ws://localhost:9002</span>
+                    </div>
+                    <div class="metric">
+                        <span>Attempts:</span>
+                        <span id="reconnect-attempts">0/10</span>
+                    </div>
+                    <div class="metric">
+                        <span>Last Heartbeat:</span>
+                        <span id="last-heartbeat">Never</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="test-card">
+                <h3>📡 Live Data</h3>
+                
+                <div class="data-display" id="live-data">
+                    <div class="metric">
+                        <span>Total Events:</span>
+                        <span id="total-events">-</span>
+                    </div>
+                    <div class="metric">
+                        <span>CMEs:</span>
+                        <span id="cme-count">-</span>
+                    </div>
+                    <div class="metric">
+                        <span>Solar Flares:</span>
+                        <span id="flare-count">-</span>
+                    </div>
+                    <div class="metric">
+                        <span>Last Updated:</span>
+                        <span id="last-updated">-</span>
+                    </div>
+                    <div class="metric">
+                        <span>Data Source:</span>
+                        <span id="data-source">-</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="test-card">
+            <h3>📋 Activity Log</h3>
+            <div class="log" id="activity-log">
+                <div class="log-entry info">WebSocket test page loaded</div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="websocket_client.js"></script>
+    <script>
+        // Test page specific functionality
+        let logCount = 1;
+        
+        function addLogEntry(message, type = 'info') {
+            const log = document.getElementById('activity-log');
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            log.appendChild(entry);
+            log.scrollTop = log.scrollHeight;
+            
+            // Keep log manageable
+            if (log.children.length > 100) {
+                log.removeChild(log.firstChild);
+            }
+        }
+        
+        function updateConnectionInfo(status) {
+            const statusEl = document.getElementById('connection-status');
+            const attemptsEl = document.getElementById('reconnect-attempts');
+            
+            if (window.spaceWeatherWS) {
+                const wsStatus = window.spaceWeatherWS.getStatus();
+                attemptsEl.textContent = `${wsStatus.reconnectAttempts}/${wsStatus.maxReconnectAttempts}`;
+            }
+        }
+        
+        function updateLiveDataDisplay(data) {
+            if (data && data.summary) {
+                document.getElementById('total-events').textContent = data.summary.total_events || 0;
+                document.getElementById('cme-count').textContent = data.summary.cme_count || 0;
+                document.getElementById('flare-count').textContent = data.summary.flare_count || 0;
+                document.getElementById('last-updated').textContent = 
+                    data.summary.last_updated ? new Date(data.summary.last_updated).toLocaleTimeString() : '-';
+                document.getElementById('data-source').textContent = 
+                    data.stream_source || data.data_sources?.[0] || '-';
+            }
+        }
+        
+        // Override the connection status function
+        window.updateConnectionStatus = function(status, clients = null, attempt = null) {
+            const statusEl = document.getElementById('connection-status');
+            
+            let statusText = '';
+            let statusClass = '';
+            
+            switch (status) {
+                case 'connected':
+                    statusText = clients ? `🔗 Connected (${clients} clients)` : '🔗 Connected';
+                    statusClass = 'connected';
+                    addLogEntry(statusText, 'success');
+                    break;
+                case 'disconnected':
+                    statusText = '❌ Disconnected';
+                    statusClass = 'disconnected';
+                    addLogEntry('Connection lost', 'error');
+                    break;
+                case 'reconnecting':
+                    statusText = attempt ? `🔄 Reconnecting (${attempt})` : '🔄 Reconnecting';
+                    statusClass = 'reconnecting';
+                    addLogEntry(`Reconnection attempt ${attempt}`, 'warning');
+                    break;
+                case 'error':
+                    statusText = '🚨 Error';
+                    statusClass = 'error';
+                    addLogEntry('WebSocket error occurred', 'error');
+                    break;
+            }
+            
+            statusEl.textContent = statusText;
+            statusEl.className = `status ${statusClass}`;
+            updateConnectionInfo(status);
+        };
+        
+        // Override the data update function
+        window.updateDashboardWithLiveData = function(data) {
+            addLogEntry(`Data update received: ${data.summary?.total_events || 0} events`, 'success');
+            updateLiveDataDisplay(data);
+        };
+        
+        // Set up custom WebSocket event handlers
+        document.addEventListener('DOMContentLoaded', () => {
+            addLogEntry('Setting up WebSocket connection...', 'info');
+            
+            // Wait a moment for WebSocket to initialize
+            setTimeout(() => {
+                if (window.spaceWeatherWS) {
+                    // Add custom handlers
+                    window.spaceWeatherWS.on('initial_data', (data) => {
+                        addLogEntry('Initial data received', 'success');
+                        updateLiveDataDisplay(data);
+                    });
+                    
+                    window.spaceWeatherWS.on('heartbeat', (data) => {
+                        document.getElementById('last-heartbeat').textContent = new Date().toLocaleTimeString();
+                        addLogEntry(`Heartbeat - ${data.clients} clients`, 'info');
+                    });
+                    
+                    window.spaceWeatherWS.on('data_changed', (data) => {
+                        addLogEntry('Space weather data changed!', 'success');
+                    });
+                    
+                    window.spaceWeatherWS.on('forced_update', (data) => {
+                        addLogEntry('Forced update completed', 'info');
+                    });
+                }
+            }, 1000);
+            
+            // Set up button handlers
+            document.getElementById('clear-log').addEventListener('click', () => {
+                const log = document.getElementById('activity-log');
+                log.innerHTML = '<div class="log-entry info">Log cleared</div>';
+            });
+        });
+        
+        addLogEntry('WebSocket test interface ready', 'info');
+    </script>
+</body>
+</html>

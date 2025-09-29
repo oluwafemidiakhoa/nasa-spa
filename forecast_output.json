@@ -1,0 +1,57 @@
+{
+  "forecasts": [
+    {
+      "event": "CME",
+      "solar_timestamp": "2025-09-24T09:12:00Z",
+      "predicted_arrival_window_utc": [
+        "2025-09-26T12:00:00Z",
+        "2025-09-26T15:00:00Z"
+      ],
+      "risk_summary": "High-speed CME expected to cause moderate geomagnetic storm. Aurora visible to mid-latitudes.",
+      "impacts": [
+        "aurora_midlat",
+        "HF_comms",
+        "GNSS_jitter"
+      ],
+      "confidence": 0.85,
+      "evidence": {
+        "donki_ids": [
+          "2025-09-24T09:12:00-CME-001",
+          "2025-09-24T09:16:00-FLR-001"
+        ],
+        "epic_frames": [],
+        "gibs_layers": [
+          "VIIRS_SNPP_CorrectedReflectance_TrueColor"
+        ]
+      }
+    },
+    {
+      "event": "FLARE",
+      "solar_timestamp": "2025-09-24T09:16:00Z",
+      "predicted_arrival_window_utc": [
+        "2025-09-24T09:16:00Z",
+        "2025-09-24T09:44:00Z"
+      ],
+      "risk_summary": "M1.0 class solar flare associated with CME, may cause radio blackouts on sunlit side of Earth.",
+      "impacts": [
+        "HF_comms"
+      ],
+      "confidence": 0.8,
+      "evidence": {
+        "donki_ids": [
+          "2025-09-24T09:16:00-FLR-001"
+        ],
+        "epic_frames": [],
+        "gibs_layers": [
+          "VIIRS_SNPP_CorrectedReflectance_TrueColor"
+        ]
+      }
+    }
+  ],
+  "generated_at": "2025-09-27T13:00:00Z",
+  "data_sources": [
+    "NASA_DONKI",
+    "NASA_EPIC",
+    "NASA_GIBS"
+  ]
+}

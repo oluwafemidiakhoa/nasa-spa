@@ -1,0 +1,392 @@
+/* Advanced Loading Animations and Transitions for NASA Space Weather System */
+
+/* Global Animation Variables */
+:root {
+    --animation-speed-fast: 0.3s;
+    --animation-speed-normal: 0.6s;
+    --animation-speed-slow: 1.2s;
+    --glow-primary: rgba(0, 255, 255, 0.6);
+    --glow-secondary: rgba(0, 255, 0, 0.4);
+    --glow-accent: rgba(255, 255, 0, 0.3);
+}
+
+/* Advanced Loading Spinner */
+.nasa-loading-spinner {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: linear-gradient(135deg, #000011, #001122, #002233);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    opacity: 1;
+    transition: opacity 0.8s ease;
+}
+
+.nasa-loading-spinner.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.orbital-loader {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    margin-bottom: 30px;
+}
+
+.orbit {
+    position: absolute;
+    border: 2px solid transparent;
+    border-radius: 50%;
+    animation: rotate 2s linear infinite;
+}
+
+.orbit:nth-child(1) {
+    width: 120px;
+    height: 120px;
+    border-top-color: #00ffff;
+    animation-duration: 2s;
+}
+
+.orbit:nth-child(2) {
+    width: 90px;
+    height: 90px;
+    top: 15px;
+    left: 15px;
+    border-right-color: #00ff00;
+    animation-duration: 1.5s;
+    animation-direction: reverse;
+}
+
+.orbit:nth-child(3) {
+    width: 60px;
+    height: 60px;
+    top: 30px;
+    left: 30px;
+    border-bottom-color: #ffff00;
+    animation-duration: 1s;
+}
+
+.sun-core {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background: radial-gradient(circle, #ffaa00, #ff6600);
+    border-radius: 50%;
+    top: 50px;
+    left: 50px;
+    box-shadow: 0 0 20px #ff6600;
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+.loading-text {
+    color: #00ffff;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.2rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 10px;
+    animation: glow-text 2s ease-in-out infinite alternate;
+}
+
+.loading-progress {
+    color: #ffffff;
+    font-size: 0.9rem;
+    opacity: 0.8;
+    animation: fade-in-out 2s ease-in-out infinite;
+}
+
+/* Card Entrance Animations */
+.card-entrance {
+    opacity: 0;
+    transform: translateY(50px) scale(0.95);
+    transition: all var(--animation-speed-normal) cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.card-entrance.animate-in {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+.card-entrance:nth-child(even) {
+    transform: translateY(50px) scale(0.95) rotateY(5deg);
+}
+
+.card-entrance:nth-child(odd) {
+    transform: translateY(50px) scale(0.95) rotateY(-5deg);
+}
+
+.card-entrance.animate-in:nth-child(even),
+.card-entrance.animate-in:nth-child(odd) {
+    transform: translateY(0) scale(1) rotateY(0deg);
+}
+
+/* Enhanced Hover Effects */
+.enhanced-hover {
+    transition: all var(--animation-speed-fast) cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    position: relative;
+    overflow: hidden;
+}
+
+.enhanced-hover::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    transition: left 0.6s ease;
+}
+
+.enhanced-hover:hover::before {
+    left: 100%;
+}
+
+.enhanced-hover:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 
+        0 20px 40px rgba(0, 255, 255, 0.3),
+        0 0 30px var(--glow-primary);
+}
+
+/* Button Ripple Effect */
+.ripple-button {
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.ripple-button::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: width 0.6s ease, height 0.6s ease;
+}
+
+.ripple-button:active::after {
+    width: 300px;
+    height: 300px;
+}
+
+/* Data Stream Animation */
+.data-stream {
+    position: relative;
+    overflow: hidden;
+}
+
+.data-stream::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, 
+        transparent, 
+        var(--glow-primary), 
+        var(--glow-secondary), 
+        transparent
+    );
+    animation: data-flow 3s linear infinite;
+}
+
+/* 3D Element Animations */
+.rotate-3d {
+    animation: rotate3d 20s linear infinite;
+    transform-style: preserve-3d;
+}
+
+.float-3d {
+    animation: float3d 6s ease-in-out infinite;
+}
+
+/* Page Transition Effects */
+.page-transition {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: linear-gradient(45deg, #001122, #002244);
+    z-index: 10000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.8s cubic-bezier(0.77, 0, 0.175, 1);
+}
+
+.page-transition.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Status Indicator Animations */
+.status-online {
+    animation: pulse-green 2s ease-in-out infinite;
+}
+
+.status-loading {
+    animation: pulse-yellow 1.5s ease-in-out infinite;
+}
+
+.status-error {
+    animation: pulse-red 1s ease-in-out infinite;
+}
+
+/* Notification Slide-in */
+.notification-slide {
+    transform: translateX(400px);
+    opacity: 0;
+    transition: all var(--animation-speed-normal) cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.notification-slide.show {
+    transform: translateX(0);
+    opacity: 1;
+}
+
+/* Advanced Keyframes */
+@keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+@keyframes rotate3d {
+    from { transform: rotateY(0deg) rotateX(0deg); }
+    to { transform: rotateY(360deg) rotateX(360deg); }
+}
+
+@keyframes float3d {
+    0%, 100% { transform: translateY(0px) rotateZ(0deg); }
+    50% { transform: translateY(-20px) rotateZ(5deg); }
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.1); opacity: 0.8; }
+}
+
+@keyframes pulse-green {
+    0%, 100% { box-shadow: 0 0 15px rgba(0, 255, 0, 0.6); }
+    50% { box-shadow: 0 0 25px rgba(0, 255, 0, 1); }
+}
+
+@keyframes pulse-yellow {
+    0%, 100% { box-shadow: 0 0 15px rgba(255, 255, 0, 0.6); }
+    50% { box-shadow: 0 0 25px rgba(255, 255, 0, 1); }
+}
+
+@keyframes pulse-red {
+    0%, 100% { box-shadow: 0 0 15px rgba(255, 0, 0, 0.6); }
+    50% { box-shadow: 0 0 25px rgba(255, 0, 0, 1); }
+}
+
+@keyframes glow-text {
+    from { text-shadow: 0 0 10px var(--glow-primary); }
+    to { text-shadow: 0 0 20px var(--glow-primary), 0 0 30px var(--glow-primary); }
+}
+
+@keyframes fade-in-out {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
+}
+
+@keyframes data-flow {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+@keyframes slide-up {
+    from { 
+        opacity: 0; 
+        transform: translateY(50px); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0); 
+    }
+}
+
+@keyframes slide-down {
+    from { 
+        opacity: 0; 
+        transform: translateY(-50px); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0); 
+    }
+}
+
+@keyframes zoom-in {
+    from { 
+        opacity: 0; 
+        transform: scale(0.8); 
+    }
+    to { 
+        opacity: 1; 
+        transform: scale(1); 
+    }
+}
+
+/* Responsive Animation Adjustments */
+@media (max-width: 768px) {
+    .orbital-loader {
+        width: 80px;
+        height: 80px;
+    }
+    
+    .orbit:nth-child(1) {
+        width: 80px;
+        height: 80px;
+    }
+    
+    .orbit:nth-child(2) {
+        width: 60px;
+        height: 60px;
+        top: 10px;
+        left: 10px;
+    }
+    
+    .orbit:nth-child(3) {
+        width: 40px;
+        height: 40px;
+        top: 20px;
+        left: 20px;
+    }
+    
+    .sun-core {
+        width: 15px;
+        height: 15px;
+        top: 32.5px;
+        left: 32.5px;
+    }
+}
+
+/* Performance Optimizations */
+.gpu-accelerated {
+    will-change: transform, opacity;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    perspective: 1000px;
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}

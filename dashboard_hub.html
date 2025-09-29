@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NASA Space Weather Mission Control Hub</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="assets/animations.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(90deg, #1e3c72 0%, #2a5298 100%);
+            padding: 20px 0;
+            box-shadow: 0 4px 30px rgba(0, 255, 0, 0.3);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .header-content {
+            max-width: 1800px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 30px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .logo h1 {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 2rem;
+            font-weight: 700;
+            color: #ffffff;
+            text-shadow: 0 0 15px rgba(0, 255, 255, 0.8);
+        }
+        
+        .mission-status {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+        }
+        
+        .status-light {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #00ff00;
+            animation: pulse 2s infinite;
+        }
+        
+        .main-container {
+            max-width: 1800px;
+            margin: 0 auto;
+            padding: 40px 30px;
+        }
+        
+        .mission-title {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        
+        .mission-title h2 {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 2.5rem;
+            color: #00ffff;
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px rgba(0, 255, 255, 0.8);
+        }
+        
+        .mission-title p {
+            font-size: 1.2rem;
+            color: #ffffff;
+            opacity: 0.8;
+        }
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+        
+        .dashboard-card {
+            background: linear-gradient(145deg, rgba(26, 26, 46, 0.9), rgba(22, 33, 62, 0.9));
+            border: 2px solid rgba(0, 255, 255, 0.3);
+            border-radius: 15px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            box-shadow: 
+                0 8px 32px rgba(0, 255, 255, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 
+                0 15px 40px rgba(0, 255, 255, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            border-color: rgba(0, 255, 255, 0.6);
+        }
+        
+        .dashboard-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #00ff00, #00ffff, #0080ff, #8000ff);
+            animation: scan 4s linear infinite;
+        }
+        
+        .card-icon {
+            font-size: 3rem;
+            color: #00ffff;
+            margin-bottom: 20px;
+            text-shadow: 0 0 20px rgba(0, 255, 255, 0.8);
+        }
+        
+        .card-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.5rem;
+            color: #00ffff;
+            margin-bottom: 15px;
+        }
+        
+        .card-description {
+            font-size: 1rem;
+            line-height: 1.6;
+            color: #ffffff;
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+        
+        .card-features {
+            list-style: none;
+            margin-bottom: 25px;
+        }
+        
+        .card-features li {
+            font-size: 0.9rem;
+            color: #00ff00;
+            margin-bottom: 8px;
+            padding-left: 20px;
+            position: relative;
+        }
+        
+        .card-features li::before {
+            content: '▶';
+            position: absolute;
+            left: 0;
+            color: #00ff00;
+        }
+        
+        .launch-btn {
+            background: linear-gradient(145deg, #2a5298, #1e3c72);
+            color: #ffffff;
+            border: 2px solid #00ffff;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            width: 100%;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+        
+        .launch-btn:hover {
+            background: linear-gradient(145deg, #1e3c72, #2a5298);
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+            transform: translateY(-2px);
+        }
+        
+        .system-status {
+            background: linear-gradient(145deg, rgba(26, 26, 46, 0.9), rgba(22, 33, 62, 0.9));
+            border: 2px solid rgba(0, 255, 0, 0.3);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        
+        .status-item {
+            text-align: center;
+            padding: 15px;
+            background: rgba(0, 255, 0, 0.1);
+            border-radius: 10px;
+            border: 1px solid rgba(0, 255, 0, 0.3);
+        }
+        
+        .status-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #00ff00;
+            margin-bottom: 5px;
+        }
+        
+        .status-label {
+            font-size: 0.9rem;
+            color: #ffffff;
+            opacity: 0.8;
+        }
+        
+        @keyframes scan {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(300%); }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .mission-title h2 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+    <script src="live_nasa_data.js"></script>
+    <script src="websocket_client.js"></script>
+    <script src="assets/animations.js"></script>
+    <script src="assets/keyboard-shortcuts.js"></script>
+    <script src="assets/notification-system.js"></script>
+    <script src="assets/user-system.js"></script>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <i class="fas fa-satellite" style="font-size: 2rem; color: #00ffff;"></i>
+                <h1>NASA MISSION CONTROL</h1>
+            </div>
+            <div class="mission-status">
+                <div class="status-light"></div>
+                <span>SYSTEMS OPERATIONAL</span>
+                <span id="mission-time">00:00:00 UTC</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <div class="mission-title">
+            <h2>SPACE WEATHER COMMAND CENTER</h2>
+            <p>Multi-Modal AI-Powered Forecasting & 3D Visualization Platform</p>
+        </div>
+
+        <div class="system-status">
+            <h3 style="color: #00ffff; margin-bottom: 20px; font-family: 'JetBrains Mono', monospace;">
+                <i class="fas fa-tachometer-alt"></i> SYSTEM STATUS
+            </h3>
+            <div class="status-grid">
+                <div class="status-item">
+                    <div class="status-value" id="cme-count">0</div>
+                    <div class="status-label">CME Events Detected</div>
+                </div>
+                <div class="status-item">
+                    <div class="status-value" id="solar-flares">0</div>
+                    <div class="status-label">Solar Flares Tracked</div>
+                </div>
+                <div class="status-item">
+                    <div class="status-value" id="activity-level">LOADING</div>
+                    <div class="status-label">Space Weather Activity</div>
+                </div>
+                <div class="status-item">
+                    <div class="status-value" id="data-source">NASA DONKI</div>
+                    <div class="status-label">Live Data Source</div>
+                </div>
+                <div class="status-item">
+                    <div class="status-value" id="confidence-level">95%</div>
+                    <div class="status-label">System Confidence</div>
+                </div>
+                <div class="status-item">
+                    <div class="status-value" id="next-update">4:32</div>
+                    <div class="status-label">Next Auto-Update</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-grid">
+            <!-- Expert Physics Dashboard -->
+            <div class="dashboard-card" onclick="openDashboard('expert_dashboard.html')">
+                <div class="card-icon">
+                    <i class="fas fa-atom"></i>
+                </div>
+                <div class="card-title">EXPERT PHYSICS ENGINE</div>
+                <div class="card-description">
+                    Advanced physics-based forecasting with real-time data integration and AI analysis.
+                </div>
+                <ul class="card-features">
+                    <li>Drag-based CME propagation models</li>
+                    <li>Burton Dst equation predictions</li>
+                    <li>Newell coupling function analysis</li>
+                    <li>Real-time solar wind integration</li>
+                    <li>Advanced aurora boundary prediction</li>
+                </ul>
+                <a href="expert_dashboard.html" class="launch-btn" target="_blank">
+                    <i class="fas fa-rocket"></i> Launch Expert Dashboard
+                </a>
+            </div>
+
+            <!-- 3D Advanced Section -->
+            <div class="dashboard-card" onclick="openDashboard('3d_advanced_hub.html')">
+                <div class="card-icon">
+                    <i class="fas fa-cube"></i>
+                </div>
+                <div class="card-title">3D ADVANCED</div>
+                <div class="card-description">
+                    Access advanced 3D space weather visualization systems with professional NASA-grade interfaces and real-time data integration.
+                </div>
+                <ul class="card-features">
+                    <li>NASA Heliophysics Observatory</li>
+                    <li>Space Weather Research Center</li>
+                    <li>Enhanced particle systems (500-800 particles)</li>
+                    <li>Real-time NASA DONKI data integration</li>
+                    <li>Professional scientific interfaces</li>
+                </ul>
+                <a href="3d_advanced_hub.html" class="launch-btn" target="_blank">
+                    <i class="fas fa-rocket"></i> Launch 3D Advanced
+                </a>
+            </div>
+
+            <!-- Professional Dashboard -->
+            <div class="dashboard-card" onclick="openDashboard('professional_dashboard.html')">
+                <div class="card-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="card-title">MISSION CONTROL</div>
+                <div class="card-description">
+                    Professional mission control interface with AI-powered forecasting and risk assessment.
+                </div>
+                <ul class="card-features">
+                    <li>OpenAI GPT-4 analysis engine</li>
+                    <li>Mission control styling</li>
+                    <li>Real-time status indicators</li>
+                    <li>Evidence chain tracking</li>
+                    <li>Auto-refresh capabilities</li>
+                </ul>
+                <a href="professional_dashboard.html" class="launch-btn" target="_blank">
+                    <i class="fas fa-satellite-dish"></i> Launch Mission Control
+                </a>
+            </div>
+
+            <!-- Simple New Dashboard -->
+            <div class="dashboard-card" onclick="openDashboard('simple_new.html')">
+                <div class="card-icon">
+                    <i class="fas fa-rocket"></i>
+                </div>
+                <div class="card-title">ENSEMBLE DASHBOARD</div>
+                <div class="card-description">
+                    Advanced ensemble forecasting with physics, ML, and neural network models.
+                </div>
+                <ul class="card-features">
+                    <li>Ensemble AI forecasting</li>
+                    <li>Physics + ML + Neural networks</li>
+                    <li>Real-time data integration</li>
+                    <li>Professional interface</li>
+                    <li>Live status monitoring</li>
+                </ul>
+                <a href="simple_new.html" class="launch-btn" target="_blank">
+                    <i class="fas fa-play-circle"></i> Launch Ensemble
+                </a>
+            </div>
+
+            <!-- Export Testing Interface -->
+            <div class="dashboard-card" onclick="openDashboard('export_test.html')">
+                <div class="card-icon">
+                    <i class="fas fa-download"></i>
+                </div>
+                <div class="card-title">EXPORT & TESTING</div>
+                <div class="card-description">
+                    Test export features and download space weather data in various formats.
+                </div>
+                <ul class="card-features">
+                    <li>CSV/JSON data export</li>
+                    <li>Real NASA event data</li>
+                    <li>System testing interface</li>
+                    <li>Export validation</li>
+                    <li>Performance monitoring</li>
+                </ul>
+                <a href="export_test.html" class="launch-btn" target="_blank">
+                    <i class="fas fa-file-export"></i> Launch Export Tools
+                </a>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 40px; color: #888; font-size: 0.9rem;">
+            <p>NASA Space Weather Forecasting System v2.0 | All dashboards are operational and ready for mission deployment</p>
+        </div>
+    </div>
+
+    <script>
+        // Mission time display
+        function updateMissionTime() {
+            const now = new Date();
+            const timeString = now.toISOString().substring(11, 19) + ' UTC';
+            document.getElementById('mission-time').textContent = timeString;
+        }
+        
+        updateMissionTime();
+        setInterval(updateMissionTime, 1000);
+        
+        // Dashboard click handlers
+        function openDashboard(url) {
+            window.open(url, '_blank');
+        }
+        
+        // Auto-update countdown
+        let nextUpdateSeconds = 300; // 5 minutes
+        function updateCountdown() {
+            const minutes = Math.floor(nextUpdateSeconds / 60);
+            const seconds = nextUpdateSeconds % 60;
+            document.getElementById('next-update').textContent = 
+                `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            
+            nextUpdateSeconds--;
+            if (nextUpdateSeconds < 0) {
+                nextUpdateSeconds = 300; // Reset to 5 minutes
+            }
+        }
+        
+        setInterval(updateCountdown, 1000);
+        
+        // Enhanced NASA data loading with animations
+        function loadRealNASAData() {
+            if (window.LIVE_NASA_DATA && window.LIVE_NASA_DATA.summary) {
+                const summary = window.LIVE_NASA_DATA.summary;
+                
+                // Animate counter updates
+                if (window.nasaAnimationController) {
+                    const cmeElement = document.getElementById('cme-count');
+                    const flareElement = document.getElementById('solar-flares');
+                    
+                    nasaAnimationController.animateCounterUp(cmeElement, summary.cme_count || 0);
+                    nasaAnimationController.animateCounterUp(flareElement, summary.solar_flare_count || 0);
+                } else {
+                    document.getElementById('cme-count').textContent = summary.cme_count || 0;
+                    document.getElementById('solar-flares').textContent = summary.solar_flare_count || 0;
+                }
+                
+                // Determine activity level with enhanced status indicators
+                const totalEvents = summary.total_events || 0;
+                let activityLevel = 'QUIET';
+                let statusClass = 'status-online';
+                
+                if (totalEvents > 30) {
+                    activityLevel = 'HIGH';
+                    statusClass = 'status-error';
+                } else if (totalEvents > 15) {
+                    activityLevel = 'MODERATE';
+                    statusClass = 'status-loading';
+                } else if (totalEvents > 5) {
+                    activityLevel = 'LOW';
+                }
+                
+                const activityElement = document.getElementById('activity-level');
+                activityElement.textContent = activityLevel;
+                activityElement.className = `status-value ${statusClass}`;
+                
+                // Update data source with enhanced styling
+                const dataSourceElement = document.getElementById('data-source');
+                dataSourceElement.textContent = 'LIVE NASA';
+                dataSourceElement.className = 'status-value status-online';
+                
+                console.log('Dashboard Hub updated with real NASA data and animations:', summary);
+                
+                // Show data update notification
+                if (window.nasaAnimationController && totalEvents > 0) {
+                    nasaAnimationController.showNotification(
+                        `Live data updated: ${totalEvents} space weather events detected`,
+                        'info',
+                        3000
+                    );
+                }
+            } else {
+                console.log('NASA data not yet available, retrying...');
+                
+                // Show loading status
+                const dataSourceElement = document.getElementById('data-source');
+                if (dataSourceElement) {
+                    dataSourceElement.textContent = 'CONNECTING';
+                    dataSourceElement.className = 'status-value status-loading';
+                }
+                
+                setTimeout(loadRealNASAData, 2000);
+            }
+        }
+        
+        // WebSocket real-time data handler
+        window.updateDashboardHubWithLiveData = function(data) {
+            console.log('Dashboard Hub receiving real-time data:', data);
+            
+            if (data.summary) {
+                document.getElementById('cme-count').textContent = data.summary.cme_count || 0;
+                document.getElementById('solar-flares').textContent = data.summary.solar_flare_count || 0;
+                
+                const totalEvents = data.summary.total_events || 0;
+                let activityLevel = 'QUIET';
+                if (totalEvents > 30) activityLevel = 'HIGH';
+                else if (totalEvents > 15) activityLevel = 'MODERATE';
+                else if (totalEvents > 5) activityLevel = 'LOW';
+                
+                document.getElementById('activity-level').textContent = activityLevel;
+                
+                // Flash the status values to indicate update
+                ['cme-count', 'solar-flares', 'activity-level'].forEach(id => {
+                    const element = document.getElementById(id);
+                    element.style.transition = 'color 0.3s ease';
+                    element.style.color = '#00ffff';
+                    setTimeout(() => {
+                        element.style.color = '#00ff00';
+                    }, 500);
+                });
+            }
+        };
+        
+        // Enhanced visual effects with animation controller
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize loading sequence
+            if (window.nasaAnimationController) {
+                nasaAnimationController.updateLoadingProgress('Loading NASA data streams...', 25);
+            }
+            
+            // Load real NASA data with progress updates
+            setTimeout(() => {
+                if (window.nasaAnimationController) {
+                    nasaAnimationController.updateLoadingProgress('Establishing satellite connections...', 50);
+                }
+                loadRealNASAData();
+            }, 1000);
+            
+            // Initialize enhanced dashboard features
+            setTimeout(() => {
+                if (window.nasaAnimationController) {
+                    nasaAnimationController.updateLoadingProgress('Initializing mission control...', 75);
+                    
+                    // Add enhanced effects to cards
+                    const cards = document.querySelectorAll('.dashboard-card');
+                    cards.forEach(card => {
+                        card.classList.add('enhanced-hover', 'ripple-button');
+                        nasaAnimationController.addGlowEffect(card);
+                    });
+                    
+                    // Add data stream effects to status panels
+                    const statusItems = document.querySelectorAll('.status-item');
+                    statusItems.forEach(item => {
+                        nasaAnimationController.addDataStreamEffect(item);
+                    });
+                    
+                    nasaAnimationController.updateLoadingProgress('Mission control ready!', 100);
+                    nasaAnimationController.hideLoadingScreen(1500);
+                }
+            }, 2000);
+            
+            // Show welcome notification
+            setTimeout(() => {
+                if (window.nasaAnimationController) {
+                    nasaAnimationController.showNotification(
+                        'NASA Space Weather Command Center is now operational!',
+                        'success',
+                        5000
+                    );
+                }
+            }, 4000);
+        });
+    </script>
+</body>
+</html>

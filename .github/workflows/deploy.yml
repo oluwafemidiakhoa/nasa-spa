@@ -1,0 +1,385 @@
+name: 🚀 NASA Space Weather System - CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    # Run tests daily at 6 AM UTC
+    - cron: '0 6 * * *'
+
+env:
+  NODE_VERSION: '18'
+  PYTHON_VERSION: '3.11'
+
+jobs:
+  # Quality Assurance
+  quality-check:
+    name: 🔍 Quality Assurance
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+      
+    - name: 🟢 Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+    
+    - name: 🐍 Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+        
+    - name: 📦 Install dependencies
+      run: |
+        npm install --production=false
+        pip install -r requirements.txt
+        
+    - name: 🧹 Lint JavaScript
+      run: |
+        npx eslint assets/*.js --format=stylish
+        
+    - name: 🧹 Lint Python
+      run: |
+        python -m flake8 backend/ --max-line-length=100
+        
+    - name: 🔒 Security audit
+      run: |
+        npm audit --audit-level=moderate
+        pip-audit
+        
+    - name: 📊 Code quality analysis
+      uses: github/super-linter@v4
+      env:
+        DEFAULT_BRANCH: main
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        VALIDATE_JAVASCRIPT_ES: true
+        VALIDATE_PYTHON_FLAKE8: true
+        VALIDATE_HTML: true
+        VALIDATE_CSS: true
+
+  # Automated Testing
+  test-suite:
+    name: 🧪 Automated Testing
+    runs-on: ubuntu-latest
+    needs: quality-check
+    
+    strategy:
+      matrix:
+        browser: [chrome, firefox, edge]
+        
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+      
+    - name: 🟢 Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        
+    - name: 📦 Install dependencies
+      run: npm install
+      
+    - name: 🏗️ Build application
+      run: npm run build
+      
+    - name: 🧪 Run unit tests
+      run: npm run test:unit
+      
+    - name: 🌐 Setup browser testing
+      uses: browser-actions/setup-chrome@latest
+      if: matrix.browser == 'chrome'
+      
+    - name: 🧪 Run integration tests
+      run: npm run test:integration -- --browser=${{ matrix.browser }}
+      
+    - name: 🧪 Run E2E tests
+      run: npm run test:e2e -- --browser=${{ matrix.browser }}
+      
+    - name: 📊 Generate coverage report
+      run: npm run test:coverage
+      
+    - name: 📤 Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./coverage/lcov.info
+        flags: unittests
+        name: codecov-umbrella
+
+  # Performance Testing
+  performance-test:
+    name: ⚡ Performance Testing
+    runs-on: ubuntu-latest
+    needs: quality-check
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+      
+    - name: 🟢 Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        
+    - name: 📦 Install dependencies
+      run: npm install
+      
+    - name: 🏗️ Build for production
+      run: npm run build:prod
+      
+    - name: 🚀 Start local server
+      run: |
+        npm run serve &
+        sleep 10
+        
+    - name: 🏃‍♂️ Run Lighthouse CI
+      uses: treosh/lighthouse-ci-action@v9
+      with:
+        configPath: './lighthouse.json'
+        uploadArtifacts: true
+        temporaryPublicStorage: true
+        
+    - name: ⚡ Run WebPageTest
+      uses: WPOTools/webpagetest-github-action@v1
+      with:
+        apikey: ${{ secrets.WPT_API_KEY }}
+        urls: |
+          http://localhost:3000
+          http://localhost:3000/3d_advanced_hub.html
+          http://localhost:3000/expert_dashboard.html
+
+  # Security Testing
+  security-test:
+    name: 🔒 Security Testing
+    runs-on: ubuntu-latest
+    needs: quality-check
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+      
+    - name: 🔍 Run OWASP ZAP scan
+      uses: zaproxy/action-full-scan@v0.4.0
+      with:
+        target: 'http://localhost:3000'
+        
+    - name: 🔒 Run Snyk security scan
+      uses: snyk/actions/node@master
+      env:
+        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      with:
+        args: --severity-threshold=high
+        
+    - name: 🛡️ Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@master
+      with:
+        scan-type: 'fs'
+        scan-ref: '.'
+
+  # Build and Deploy
+  build-deploy:
+    name: 🏗️ Build & Deploy
+    runs-on: ubuntu-latest
+    needs: [test-suite, performance-test, security-test]
+    if: github.ref == 'refs/heads/main'
+    
+    environment:
+      name: production
+      url: https://nasa-space-weather.netlify.app
+      
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+      
+    - name: 🟢 Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        
+    - name: 📦 Install dependencies
+      run: npm install --production
+      
+    - name: 🏗️ Build for production
+      run: |
+        npm run build:prod
+        npm run optimize
+        
+    - name: 📦 Create deployment package
+      run: |
+        tar -czf nasa-space-weather-${{ github.sha }}.tar.gz \
+          *.html assets/ backend/ \
+          --exclude=node_modules \
+          --exclude=.git \
+          --exclude=tests
+          
+    - name: 📤 Upload build artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: nasa-space-weather-build
+        path: nasa-space-weather-${{ github.sha }}.tar.gz
+        
+    - name: 🚀 Deploy to Netlify
+      uses: netlify/actions/cli@master
+      with:
+        args: deploy --prod --dir=.
+      env:
+        NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+        NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+        
+    - name: 🌊 Deploy to Vercel
+      uses: amondnet/vercel-action@v25
+      with:
+        vercel-token: ${{ secrets.VERCEL_TOKEN }}
+        vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+        vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+        vercel-args: '--prod'
+        
+    - name: ☁️ Deploy to AWS S3
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1
+    
+    - name: 📤 Sync to S3
+      run: |
+        aws s3 sync . s3://${{ secrets.S3_BUCKET }} \
+          --exclude ".git/*" \
+          --exclude "node_modules/*" \
+          --exclude "tests/*" \
+          --cache-control max-age=31536000
+          
+    - name: 🔄 Invalidate CloudFront
+      run: |
+        aws cloudfront create-invalidation \
+          --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} \
+          --paths "/*"
+
+  # Docker Build and Push
+  docker-build:
+    name: 🐳 Docker Build & Push
+    runs-on: ubuntu-latest
+    needs: [test-suite]
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+      
+    - name: 🐳 Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+      
+    - name: 🔐 Login to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+        
+    - name: 🔐 Login to GitHub Container Registry
+      uses: docker/login-action@v2
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+        
+    - name: 🏷️ Extract metadata
+      id: meta
+      uses: docker/metadata-action@v4
+      with:
+        images: |
+          nasaspaceweather/forecaster
+          ghcr.io/${{ github.repository }}
+        tags: |
+          type=ref,event=branch
+          type=ref,event=pr
+          type=sha,prefix={{branch}}-
+          type=raw,value=latest,enable={{is_default_branch}}
+          
+    - name: 🏗️ Build and push Docker image
+      uses: docker/build-push-action@v4
+      with:
+        context: .
+        platforms: linux/amd64,linux/arm64
+        push: true
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+
+  # Monitoring and Notifications
+  monitoring:
+    name: 📊 Monitoring & Alerts
+    runs-on: ubuntu-latest
+    needs: [build-deploy]
+    if: always()
+    
+    steps:
+    - name: 📊 Send deployment metrics
+      uses: 8398a7/action-slack@v3
+      with:
+        status: ${{ job.status }}
+        text: |
+          🚀 NASA Space Weather System Deployment
+          Status: ${{ job.status }}
+          Commit: ${{ github.sha }}
+          Author: ${{ github.actor }}
+          URL: https://nasa-space-weather.netlify.app
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        
+    - name: 📧 Send email notification
+      uses: dawidd6/action-send-mail@v3
+      with:
+        server_address: smtp.gmail.com
+        server_port: 587
+        username: ${{ secrets.EMAIL_USERNAME }}
+        password: ${{ secrets.EMAIL_PASSWORD }}
+        subject: 🚀 NASA Space Weather System - Deployment ${{ job.status }}
+        body: |
+          NASA Space Weather Forecasting System deployment completed.
+          
+          Status: ${{ job.status }}
+          Commit: ${{ github.sha }}
+          Branch: ${{ github.ref }}
+          Author: ${{ github.actor }}
+          
+          Live URL: https://nasa-space-weather.netlify.app
+          
+          This is an automated message from the NASA Space Weather CI/CD pipeline.
+        to: ${{ secrets.NOTIFICATION_EMAIL }}
+        from: NASA Space Weather System <noreply@nasa-space-weather.com>
+
+  # Cleanup
+  cleanup:
+    name: 🧹 Cleanup
+    runs-on: ubuntu-latest
+    needs: [build-deploy, docker-build]
+    if: always()
+    
+    steps:
+    - name: 🧹 Clean up old artifacts
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const artifacts = await github.rest.actions.listArtifactsForRepo({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+          });
+          
+          const oldArtifacts = artifacts.data.artifacts
+            .filter(artifact => {
+              const ageInDays = (new Date() - new Date(artifact.created_at)) / (1000 * 60 * 60 * 24);
+              return ageInDays > 30;
+            });
+            
+          for (const artifact of oldArtifacts) {
+            await github.rest.actions.deleteArtifact({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              artifact_id: artifact.id,
+            });
+          }
