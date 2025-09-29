@@ -16,9 +16,24 @@ class handler(BaseHTTPRequestHandler):
         try:
             # Route handling - Serve HTML files
             html_files = [
-                '/live_dashboard.html', '/dashboard_hub.html', '/aurora_alerts.html', 
-                '/social_share.html', '/space_weather_chatbot.html', '/iss_tracker.html',
-                '/spectacular_dashboard.html', '/simple_working_dashboard.html'
+                # Main dashboards
+                '/live_dashboard.html', '/dashboard_hub.html', '/simple_working_dashboard.html',
+                '/spectacular_dashboard.html', '/professional_dashboard.html', '/expert_dashboard.html',
+                
+                # 3D Dashboards
+                '/3d_advanced_hub.html', '/3d_dashboard.html', '/3d_solar_system.html', '/3d_test_page.html',
+                '/enhanced_3d_solar_system.html', '/working_3d_solar_system.html', '/spectacular_3d_space_weather.html',
+                '/test_3d_dashboard.html',
+                
+                # Specialized dashboards
+                '/nasa_heliophysics_observatory.html', '/space_weather_research_center.html',
+                '/simple_new.html', '/test_ensemble_dashboard.html',
+                
+                # Viral-ready features
+                '/aurora_alerts.html', '/social_share.html', '/space_weather_chatbot.html', '/iss_tracker.html',
+                
+                # Testing and utilities
+                '/export_test.html', '/mobile_test.html', '/websocket_test.html', '/simple.html'
             ]
             
             if path in html_files:
@@ -228,7 +243,13 @@ class handler(BaseHTTPRequestHandler):
                     "success": False,
                     "error": "Endpoint not found",
                     "path": path,
-                    "available_endpoints": ["/", "/api/health", "/api/forecast", "/api/status", "/live_dashboard.html"]
+                    "available_endpoints": {
+                        "api_endpoints": ["/api/health", "/api/forecast", "/api/status"],
+                        "main_dashboards": ["/", "/dashboard_hub.html", "/live_dashboard.html", "/spectacular_dashboard.html"],
+                        "viral_features": ["/aurora_alerts.html", "/social_share.html", "/space_weather_chatbot.html", "/iss_tracker.html"],
+                        "3d_dashboards": ["/3d_advanced_hub.html", "/3d_solar_system.html", "/enhanced_3d_solar_system.html"],
+                        "all_html_files": html_files
+                    }
                 }
                 self.wfile.write(json.dumps(response_data, indent=2).encode())
                 return
