@@ -14,11 +14,18 @@ class handler(BaseHTTPRequestHandler):
         # Don't set response headers yet - we'll do it per route
         
         try:
-            # Route handling
-            if path == '/live_dashboard.html':
-                # Serve the HTML dashboard
+            # Route handling - Serve HTML files
+            html_files = [
+                '/live_dashboard.html', '/dashboard_hub.html', '/aurora_alerts.html', 
+                '/social_share.html', '/space_weather_chatbot.html', '/iss_tracker.html',
+                '/spectacular_dashboard.html', '/simple_working_dashboard.html'
+            ]
+            
+            if path in html_files:
+                # Serve HTML files
+                filename = path[1:]  # Remove leading slash
                 try:
-                    with open('live_dashboard.html', 'r', encoding='utf-8') as f:
+                    with open(filename, 'r', encoding='utf-8') as f:
                         html_content = f.read()
                     self.send_response(200)
                     self.send_header('Content-type', 'text/html; charset=utf-8')
@@ -33,7 +40,7 @@ class handler(BaseHTTPRequestHandler):
                     self.end_headers()
                     error_response = {
                         "success": False,
-                        "error": "Dashboard file not found",
+                        "error": f"File {filename} not found",
                         "path": path
                     }
                     self.wfile.write(json.dumps(error_response).encode())
@@ -52,6 +59,10 @@ class handler(BaseHTTPRequestHandler):
                     return
                 except FileNotFoundError:
                     # Fallback to API info if dashboard not found
+                    self.send_response(200)
+                    self.send_header('Content-type', 'application/json')
+                    self.send_header('Access-Control-Allow-Origin', '*')
+                    self.end_headers()
                     response_data = {
                         "name": "NASA Space Weather Forecaster",
                         "version": "2.0.0", 
@@ -64,6 +75,8 @@ class handler(BaseHTTPRequestHandler):
                             "dashboard": "/live_dashboard.html"
                         }
                     }
+                    self.wfile.write(json.dumps(response_data, indent=2).encode())
+                    return
             
             elif path == '/api/health':
                 self.send_response(200)
@@ -84,6 +97,11 @@ class handler(BaseHTTPRequestHandler):
                 return
             
             elif path == '/api/forecast':
+                self.send_response(200)
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                
                 # Check if we have real API keys to potentially make real calls
                 nasa_key = os.getenv("NASA_API_KEY")
                 anthropic_key = os.getenv("ANTHROPIC_API_KEY")
@@ -96,7 +114,12 @@ class handler(BaseHTTPRequestHandler):
                     source = "demo_mode"
                     note = "Demo mode - configure NASA_API_KEY and ANTHROPIC_API_KEY for live forecasting"
                 
-                # Return demo forecast data (enhanced based on configuration)
+                # Return demo forecast data with realistic space weather activity
+                import random
+                cme_count = random.randint(2, 8)
+                flare_count = random.randint(3, 12)
+                activity_level = "HIGH" if (cme_count + flare_count) > 15 else "MODERATE" if (cme_count + flare_count) > 8 else "LOW"
+                
                 response_data = {
                     "success": True,
                     "data": {
@@ -136,6 +159,12 @@ class handler(BaseHTTPRequestHandler):
                                 }
                             ]
                         },
+                        "summary": {
+                            "cme_count": cme_count,
+                            "solar_flare_count": flare_count,
+                            "total_events": cme_count + flare_count,
+                            "activity_level": activity_level
+                        },
                         "generated_at": datetime.utcnow().isoformat() + "Z",
                         "source": source,
                         "note": note,
@@ -145,8 +174,15 @@ class handler(BaseHTTPRequestHandler):
                         }
                     }
                 }
+                self.wfile.write(json.dumps(response_data, indent=2).encode())
+                return
             
             elif path == '/api/status':
+                self.send_response(200)
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                
                 # Check all environment variables
                 nasa_key = bool(os.getenv("NASA_API_KEY"))
                 anthropic_key = bool(os.getenv("ANTHROPIC_API_KEY"))
@@ -179,22 +215,23 @@ class handler(BaseHTTPRequestHandler):
                         "timestamp": datetime.utcnow().isoformat() + "Z"
                     }
                 }
+                self.wfile.write(json.dumps(response_data, indent=2).encode())
+                return
             
             else:
                 # 404 for unknown paths
                 self.send_response(404)
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
                 response_data = {
                     "success": False,
                     "error": "Endpoint not found",
-                    "path": path
+                    "path": path,
+                    "available_endpoints": ["/", "/api/health", "/api/forecast", "/api/status", "/live_dashboard.html"]
                 }
-            
-            # Send JSON response for remaining routes
-            self.send_response(200)
-            self.send_header('Content-type', 'application/json')
-            self.send_header('Access-Control-Allow-Origin', '*')
-            self.end_headers()
-            self.wfile.write(json.dumps(response_data, indent=2).encode())
+                self.wfile.write(json.dumps(response_data, indent=2).encode())
+                return
         
         except Exception as e:
             self.send_response(500)
