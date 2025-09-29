@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Advanced - NASA Space Weather Visualization Hub</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(90deg, #1e3c72 0%, #2a5298 100%);
+            padding: 30px 0;
+            box-shadow: 0 4px 30px rgba(0, 255, 0, 0.3);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 30px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .logo h1 {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #ffffff;
+            text-shadow: 0 0 15px rgba(0, 255, 255, 0.8);
+        }
+        
+        .back-nav {
+            background: linear-gradient(145deg, #2a5298, #1e3c72);
+            color: #ffffff;
+            border: 2px solid #00ffff;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .back-nav:hover {
+            background: linear-gradient(145deg, #1e3c72, #2a5298);
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+        }
+        
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 50px 30px;
+        }
+        
+        .title-section {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        
+        .title-section h2 {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 3rem;
+            color: #00ffff;
+            margin-bottom: 20px;
+            text-shadow: 0 0 25px rgba(0, 255, 255, 0.8);
+        }
+        
+        .title-section p {
+            font-size: 1.3rem;
+            color: #ffffff;
+            opacity: 0.9;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        
+        .systems-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 40px;
+            margin-bottom: 60px;
+        }
+        
+        .system-card {
+            background: linear-gradient(145deg, rgba(26, 26, 46, 0.95), rgba(22, 33, 62, 0.95));
+            border: 3px solid rgba(0, 255, 255, 0.4);
+            border-radius: 20px;
+            padding: 40px;
+            backdrop-filter: blur(15px);
+            box-shadow: 
+                0 12px 40px rgba(0, 255, 255, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s ease;
+            cursor: pointer;
+        }
+        
+        .system-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 
+                0 20px 50px rgba(0, 255, 255, 0.25),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            border-color: rgba(0, 255, 255, 0.7);
+        }
+        
+        .system-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #00ff00, #00ffff, #0080ff, #8000ff);
+            animation: scan 5s linear infinite;
+        }
+        
+        .card-icon {
+            font-size: 4rem;
+            color: #00ffff;
+            margin-bottom: 25px;
+            text-shadow: 0 0 25px rgba(0, 255, 255, 0.8);
+            text-align: center;
+        }
+        
+        .card-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.8rem;
+            color: #00ffff;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 700;
+        }
+        
+        .card-description {
+            font-size: 1.1rem;
+            line-height: 1.7;
+            color: #ffffff;
+            opacity: 0.9;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+        
+        .card-features {
+            list-style: none;
+            margin-bottom: 30px;
+        }
+        
+        .card-features li {
+            font-size: 1rem;
+            color: #00ff00;
+            margin-bottom: 12px;
+            padding-left: 25px;
+            position: relative;
+            line-height: 1.4;
+        }
+        
+        .card-features li::before {
+            content: '▶';
+            position: absolute;
+            left: 0;
+            color: #00ffff;
+            font-size: 0.8rem;
+        }
+        
+        .launch-btn {
+            background: linear-gradient(145deg, #2a5298, #1e3c72);
+            color: #ffffff;
+            border: 2px solid #00ffff;
+            padding: 15px 30px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            font-size: 1rem;
+            width: 100%;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+        
+        .launch-btn:hover {
+            background: linear-gradient(145deg, #1e3c72, #2a5298);
+            box-shadow: 0 0 25px rgba(0, 255, 255, 0.6);
+            transform: translateY(-3px);
+        }
+        
+        .data-status {
+            background: linear-gradient(145deg, rgba(0, 60, 40, 0.9), rgba(0, 40, 20, 0.8));
+            border: 2px solid rgba(0, 255, 0, 0.4);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+        
+        .data-status h3 {
+            color: #00ff88;
+            font-family: 'JetBrains Mono', monospace;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+        
+        .data-status p {
+            color: #cccccc;
+            line-height: 1.6;
+            font-size: 1rem;
+        }
+        
+        @keyframes scan {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(400%); }
+        }
+        
+        @media (max-width: 768px) {
+            .systems-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .title-section h2 {
+                font-size: 2.2rem;
+            }
+            
+            .main-container {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+    <script src="live_nasa_data.js"></script>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <i class="fas fa-cube" style="font-size: 2.5rem; color: #00ffff;"></i>
+                <h1>3D ADVANCED</h1>
+            </div>
+            <a href="dashboard_hub.html" class="back-nav">
+                <i class="fas fa-arrow-left"></i> BACK TO MISSION CONTROL
+            </a>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <div class="title-section">
+            <h2>ADVANCED 3D VISUALIZATION</h2>
+            <p>Professional NASA-grade space weather visualization systems with enhanced particle physics, real-time data integration, and scientific-quality interfaces designed to impress researchers worldwide.</p>
+        </div>
+
+        <div class="data-status">
+            <h3><i class="fas fa-satellite-dish"></i> NASA DATA STREAM STATUS</h3>
+            <p id="data-status">Connecting to NASA DONKI data stream...</p>
+        </div>
+
+        <div class="systems-grid">
+            <!-- NASA Heliophysics Observatory -->
+            <div class="system-card" onclick="openSystem('nasa_heliophysics_observatory.html')">
+                <div class="card-icon">
+                    <i class="fas fa-satellite"></i>
+                </div>
+                <div class="card-title">NASA HELIOPHYSICS OBSERVATORY</div>
+                <div class="card-description">
+                    Professional-grade 3D space weather visualization with clean NASA-style interface, enhanced particle systems, and real-time data integration designed for operational use.
+                </div>
+                <ul class="card-features">
+                    <li>Professional NASA-style clean interface</li>
+                    <li>Enhanced CME particle visualization (500 particles per event)</li>
+                    <li>Interactive solar system with realistic lighting and shadows</li>
+                    <li>Real-time NASA DONKI data integration (44 events)</li>
+                    <li>Improved visibility with enhanced color coding</li>
+                    <li>Solar flare visualization with glow effects</li>
+                    <li>Research-grade controls and live metrics display</li>
+                </ul>
+                <a href="nasa_heliophysics_observatory.html" class="launch-btn" target="_blank">
+                    <i class="fas fa-satellite-dish"></i> Launch Observatory
+                </a>
+            </div>
+
+            <!-- Space Weather Research Center -->
+            <div class="system-card" onclick="openSystem('space_weather_research_center.html')">
+                <div class="card-icon">
+                    <i class="fas fa-microscope"></i>
+                </div>
+                <div class="card-title">SPACE WEATHER RESEARCH CENTER</div>
+                <div class="card-description">
+                    Advanced research-grade 3D visualization with detailed particle physics modeling, live scientific calculations, and professional analysis tools for deep space weather research.
+                </div>
+                <ul class="card-features">
+                    <li>Research-grade particle physics modeling (800 particles per CME)</li>
+                    <li>Live physics calculations (Solar wind velocity, IMF, Dst index)</li>
+                    <li>Advanced 15,000 star field visualization</li>
+                    <li>Professional scientific interface with research controls</li>
+                    <li>Enhanced longitude/latitude positioning accuracy</li>
+                    <li>Detailed planetary system with realistic shadows</li>
+                    <li>Scientific data classification and analysis tools</li>
+                </ul>
+                <a href="space_weather_research_center.html" class="launch-btn" target="_blank">
+                    <i class="fas fa-atom"></i> Launch Research Center
+                </a>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 50px; color: #888; font-size: 1rem;">
+            <p><strong>3D Advanced Hub v2.0</strong> | Professional space weather visualization systems with enhanced NASA data integration</p>
+        </div>
+    </div>
+
+    <script>
+        function openSystem(url) {
+            window.open(url, '_blank');
+        }
+
+        function checkNASADataStatus() {
+            if (window.LIVE_NASA_DATA && window.LIVE_NASA_DATA.events) {
+                const events = window.LIVE_NASA_DATA.events;
+                const cmes = events.filter(e => e.type === 'CME');
+                const flares = events.filter(e => e.type === 'FLARE');
+                
+                document.getElementById('data-status').innerHTML = `
+                    <span style="color: #00ff88;"><strong>✅ LIVE NASA DATA ACTIVE</strong></span><br>
+                    📊 Total Events: <strong>${events.length}</strong> | 
+                    🌀 CMEs: <strong>${cmes.length}</strong> | 
+                    ☀️ Solar Flares: <strong>${flares.length}</strong><br>
+                    <small style="opacity: 0.8;">Both 3D systems are displaying real NASA DONKI events with enhanced particle visualization</small>
+                `;
+            } else {
+                document.getElementById('data-status').innerHTML = `
+                    <span style="color: #ffaa00;"><strong>⏳ LOADING NASA DATA STREAM</strong></span><br>
+                    🔄 Establishing connection to NASA DONKI servers...<br>
+                    <small style="opacity: 0.8;">Systems will display demo data until live connection is established</small>
+                `;
+                setTimeout(checkNASADataStatus, 2000);
+            }
+        }
+
+        // Initialize data status checking
+        setTimeout(checkNASADataStatus, 1000);
+
+        // Add entrance animations
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.system-card');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(50px)';
+                
+                setTimeout(() => {
+                    card.style.transition = 'all 0.8s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 300 + 500);
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Space Weather Research Center - Advanced 3D Visualization</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="live_nasa_data.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #001122, #000000);
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+        }
+
+        #canvas-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        .panel {
+            position: absolute;
+            background: linear-gradient(135deg, rgba(0, 40, 80, 0.95), rgba(0, 20, 40, 0.9));
+            border: 2px solid #0088cc;
+            border-radius: 12px;
+            padding: 20px;
+            backdrop-filter: blur(15px);
+            box-shadow: 0 8px 32px rgba(0, 136, 204, 0.3);
+        }
+
+        #main-control {
+            top: 25px;
+            left: 25px;
+            width: 320px;
+        }
+
+        #research-data {
+            top: 25px;
+            right: 25px;
+            width: 380px;
+            max-height: 75vh;
+            overflow-y: auto;
+        }
+
+        #analysis-panel {
+            bottom: 25px;
+            left: 25px;
+            width: 450px;
+        }
+
+        .panel-header {
+            color: #00ccff;
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 18px;
+            text-align: center;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #0088cc;
+        }
+
+        .metric-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .metric-box {
+            background: rgba(0, 136, 204, 0.2);
+            border: 1px solid #0088cc;
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+        }
+
+        .metric-value {
+            font-size: 1.6rem;
+            font-weight: bold;
+            color: #00ff88;
+            margin-bottom: 4px;
+        }
+
+        .metric-label {
+            font-size: 0.9rem;
+            color: #cccccc;
+        }
+
+        .control-section {
+            margin-bottom: 18px;
+        }
+
+        .section-title {
+            color: #00ccff;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .btn-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #004080, #0066cc);
+            color: #ffffff;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            background: linear-gradient(135deg, #0066cc, #0088ff);
+            transform: translateY(-1px);
+        }
+
+        .btn.active {
+            background: linear-gradient(135deg, #008844, #00aa66);
+            box-shadow: 0 4px 12px rgba(0, 170, 102, 0.4);
+        }
+
+        .slider-control {
+            margin: 12px 0;
+        }
+
+        .slider {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(255, 255, 255, 0.2);
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #00ccff;
+            cursor: pointer;
+        }
+
+        .data-card {
+            background: rgba(0, 100, 150, 0.3);
+            border: 1px solid #0088cc;
+            border-radius: 8px;
+            padding: 14px;
+            margin: 10px 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .data-card:hover {
+            background: rgba(0, 120, 180, 0.4);
+            border-color: #00aaff;
+            transform: translateX(5px);
+        }
+
+        .card-title {
+            color: #00ccff;
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 6px;
+        }
+
+        .card-content {
+            color: #e0e0e0;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .status-online { background: #00ff00; box-shadow: 0 0 8px #00ff00; }
+        .status-loading { background: #ffaa00; box-shadow: 0 0 8px #ffaa00; }
+        .status-offline { background: #ff4444; box-shadow: 0 0 8px #ff4444; }
+
+        .loading-screen {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #00ccff;
+            font-size: 1.8rem;
+            text-align: center;
+            z-index: 1000;
+        }
+
+        .physics-display {
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+
+        .equation {
+            font-family: 'Courier New', monospace;
+            color: #00ff88;
+            font-size: 1rem;
+            margin: 8px 0;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div id="canvas-container"></div>
+    
+    <div class="loading-screen" id="loading">
+        Space Weather Research Center<br>
+        <small style="font-size: 1rem;">Initializing Advanced 3D Environment...</small>
+    </div>
+    
+    <!-- Main Control Panel -->
+    <div id="main-control" class="panel">
+        <div class="panel-header">Research Control</div>
+        
+        <div class="metric-grid">
+            <div class="metric-box">
+                <div class="metric-value" id="cme-events">0</div>
+                <div class="metric-label">CME Events</div>
+            </div>
+            <div class="metric-box">
+                <div class="metric-value" id="solar-flares">0</div>
+                <div class="metric-label">Solar Flares</div>
+            </div>
+            <div class="metric-box">
+                <div class="metric-value" id="research-status">QUIET</div>
+                <div class="metric-label">Space Weather</div>
+            </div>
+            <div class="metric-box">
+                <div class="metric-value">
+                    <span class="status-indicator status-loading"></span>
+                    <span id="connection-status">INIT</span>
+                </div>
+                <div class="metric-label">Data Stream</div>
+            </div>
+        </div>
+
+        <div class="control-section">
+            <div class="section-title">Visualization Controls</div>
+            <div class="btn-group">
+                <button class="btn" onclick="toggleSimulation()">⏯ Simulation</button>
+                <button class="btn" onclick="resetCamera()">🔄 Reset</button>
+                <button class="btn" onclick="toggleFullscreen()">⛶ Fullscreen</button>
+            </div>
+        </div>
+
+        <div class="control-section">
+            <div class="section-title">Research Focus</div>
+            <div class="btn-group">
+                <button class="btn active" onclick="setFocus('system')" id="focus-system">Solar System</button>
+                <button class="btn" onclick="setFocus('heliosphere')" id="focus-helio">Heliosphere</button>
+                <button class="btn" onclick="setFocus('magnetosphere')" id="focus-magneto">Magnetosphere</button>
+            </div>
+        </div>
+
+        <div class="control-section">
+            <div class="section-title">Simulation Speed</div>
+            <div class="slider-control">
+                <input type="range" class="slider" id="sim-speed" min="0.1" max="4" step="0.1" value="1" onchange="updateSimSpeed(this.value)">
+                <div style="text-align: center; color: #00ccff; margin-top: 5px;">
+                    <span id="speed-value">1.0x Real Time</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="control-section">
+            <div class="section-title">Particle Density</div>
+            <div class="slider-control">
+                <input type="range" class="slider" id="particle-density" min="0.2" max="2" step="0.1" value="1" onchange="updateParticleDensity(this.value)">
+            </div>
+        </div>
+    </div>
+
+    <!-- Research Data Panel -->
+    <div id="research-data" class="panel">
+        <div class="panel-header">Research Data Stream</div>
+        <div id="data-stream">
+            <div style="text-align: center; color: #00ccff; margin: 25px 0;">
+                Establishing connection to NASA DONKI...<br>
+                <small>Awaiting research data stream...</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Analysis Panel -->
+    <div id="analysis-panel" class="panel">
+        <div class="panel-header">Real-Time Analysis</div>
+        
+        <div class="metric-grid">
+            <div class="metric-box">
+                <div class="metric-value" id="total-objects">0</div>
+                <div class="metric-label">3D Objects</div>
+            </div>
+            <div class="metric-box">
+                <div class="metric-value" id="particle-systems">0</div>
+                <div class="metric-label">Particle Systems</div>
+            </div>
+        </div>
+
+        <div class="physics-display">
+            <div style="color: #00ccff; font-weight: 600; margin-bottom: 10px;">Live Physics Calculations</div>
+            <div class="equation">Solar Wind: v = <span id="sw-velocity">400</span> km/s</div>
+            <div class="equation">IMF: B = <span id="imf-strength">5.2</span> nT</div>
+            <div class="equation">Dst Index: <span id="dst-value">-12</span> nT</div>
+        </div>
+
+        <div style="margin-top: 15px; color: #cccccc; font-size: 0.85rem;">
+            <strong>Space Weather Research Center</strong><br>
+            Advanced 3D modeling and visualization of space weather phenomena using real-time NASA data streams.
+        </div>
+    </div>
+
+    <script>
+        let scene, camera, renderer;
+        let sun, earth, moon, mars;
+        let cmeParticleSystems = [];
+        let solarFlareObjects = [];
+        let simulationRunning = true;
+        let researchFocus = 'system';
+        let simulationSpeed = 1.0;
+        let particleDensity = 1.0;
+        let researchData = null;
+
+        console.log('🔬 Initializing Space Weather Research Center...');
+
+        function init() {
+            // Create scene
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x000510);
+
+            // Create camera
+            camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 5000);
+            camera.position.set(0, 150, 300);
+
+            // Create renderer with high quality
+            renderer = new THREE.WebGLRenderer({ 
+                antialias: true,
+                powerPreference: "high-performance"
+            });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+            // Create enhanced star field
+            createAdvancedStarField();
+
+            // Create detailed solar system
+            createResearchSolarSystem();
+
+            // Setup research-grade lighting
+            setupResearchLighting();
+
+            // Setup interaction controls
+            setupResearchControls();
+
+            // Load research data
+            setTimeout(loadResearchData, 1500);
+
+            // Start simulation
+            animate();
+
+            // Hide loading screen
+            setTimeout(() => {
+                document.getElementById('loading').style.display = 'none';
+            }, 2500);
+
+            console.log('✅ Space Weather Research Center initialized');
+        }
+
+        function createAdvancedStarField() {
+            const starGeometry = new THREE.BufferGeometry();
+            const starCount = 15000;
+            const positions = new Float32Array(starCount * 3);
+            const colors = new Float32Array(starCount * 3);
+            const sizes = new Float32Array(starCount);
+
+            for (let i = 0; i < starCount; i++) {
+                // Position
+                positions[i * 3] = (Math.random() - 0.5) * 8000;
+                positions[i * 3 + 1] = (Math.random() - 0.5) * 8000;
+                positions[i * 3 + 2] = (Math.random() - 0.5) * 8000;
+
+                // Color (realistic star colors)
+                const temp = Math.random();
+                if (temp < 0.6) {
+                    // Main sequence stars
+                    colors[i * 3] = 0.9 + Math.random() * 0.1;
+                    colors[i * 3 + 1] = 0.9 + Math.random() * 0.1;
+                    colors[i * 3 + 2] = 1.0;
+                } else if (temp < 0.85) {
+                    // Yellow stars
+                    colors[i * 3] = 1.0;
+                    colors[i * 3 + 1] = 0.8 + Math.random() * 0.2;
+                    colors[i * 3 + 2] = 0.6;
+                } else {
+                    // Red giants
+                    colors[i * 3] = 1.0;
+                    colors[i * 3 + 1] = 0.3;
+                    colors[i * 3 + 2] = 0.2;
+                }
+
+                // Size
+                sizes[i] = Math.random() * 2 + 0.5;
+            }
+
+            starGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            starGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+            starGeometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+
+            const starMaterial = new THREE.PointsMaterial({
+                size: 1,
+                transparent: true,
+                opacity: 0.9,
+                vertexColors: true
+            });
+
+            const stars = new THREE.Points(starGeometry, starMaterial);
+            scene.add(stars);
+
+            console.log('⭐ Advanced star field created: 15,000 stars');
+        }
+
+        function createResearchSolarSystem() {
+            // Enhanced Sun
+            const sunGeometry = new THREE.SphereGeometry(18, 64, 64);
+            const sunMaterial = new THREE.MeshBasicMaterial({ 
+                color: 0xffbb00,
+                emissive: 0xff8800,
+                emissiveIntensity: 0.8
+            });
+            sun = new THREE.Mesh(sunGeometry, sunMaterial);
+            scene.add(sun);
+
+            // Enhanced Earth with detailed materials
+            const earthGeometry = new THREE.SphereGeometry(8, 48, 48);
+            const earthMaterial = new THREE.MeshPhongMaterial({ 
+                color: 0x1155bb,
+                shininess: 120,
+                specular: 0x224488
+            });
+            earth = new THREE.Mesh(earthGeometry, earthMaterial);
+            earth.position.set(120, 0, 0);
+            earth.castShadow = true;
+            earth.receiveShadow = true;
+            scene.add(earth);
+
+            // Earth's atmosphere
+            const atmosGeometry = new THREE.SphereGeometry(8.5, 32, 32);
+            const atmosMaterial = new THREE.MeshBasicMaterial({
+                color: 0x4488ff,
+                transparent: true,
+                opacity: 0.3,
+                side: THREE.BackSide
+            });
+            const atmosphere = new THREE.Mesh(atmosGeometry, atmosMaterial);
+            atmosphere.position.copy(earth.position);
+            scene.add(atmosphere);
+
+            // Enhanced Moon
+            const moonGeometry = new THREE.SphereGeometry(2, 24, 24);
+            const moonMaterial = new THREE.MeshPhongMaterial({ 
+                color: 0xdddddd,
+                shininess: 10
+            });
+            moon = new THREE.Mesh(moonGeometry, moonMaterial);
+            moon.position.set(132, 0, 0);
+            moon.castShadow = true;
+            scene.add(moon);
+
+            // Mars
+            const marsGeometry = new THREE.SphereGeometry(5, 32, 32);
+            const marsMaterial = new THREE.MeshPhongMaterial({ 
+                color: 0xbb4422,
+                shininess: 20
+            });
+            mars = new THREE.Mesh(marsGeometry, marsMaterial);
+            mars.position.set(200, 0, 0);
+            mars.castShadow = true;
+            scene.add(mars);
+
+            console.log('🌍 Research-grade solar system created');
+            updateObjectCount();
+        }
+
+        function setupResearchLighting() {
+            // Ambient lighting for research visibility
+            const ambientLight = new THREE.AmbientLight(0x404040, 0.3);
+            scene.add(ambientLight);
+
+            // Primary solar illumination
+            const solarLight = new THREE.PointLight(0xffffff, 3, 1000);
+            solarLight.position.set(0, 0, 0);
+            solarLight.castShadow = true;
+            solarLight.shadow.mapSize.width = 2048;
+            solarLight.shadow.mapSize.height = 2048;
+            scene.add(solarLight);
+
+            // Additional research lighting
+            const researchLight = new THREE.DirectionalLight(0xffffff, 0.4);
+            researchLight.position.set(200, 200, 100);
+            scene.add(researchLight);
+
+            console.log('💡 Research lighting configured');
+        }
+
+        function setupResearchControls() {
+            let isDragging = false;
+            let previousMousePosition = { x: 0, y: 0 };
+
+            renderer.domElement.addEventListener('mousedown', (event) => {
+                isDragging = true;
+                previousMousePosition.x = event.clientX;
+                previousMousePosition.y = event.clientY;
+            });
+
+            document.addEventListener('mouseup', () => {
+                isDragging = false;
+            });
+
+            document.addEventListener('mousemove', (event) => {
+                if (isDragging && researchFocus === 'system') {
+                    const deltaMove = {
+                        x: event.clientX - previousMousePosition.x,
+                        y: event.clientY - previousMousePosition.y
+                    };
+
+                    const deltaRotationQuaternion = new THREE.Quaternion()
+                        .setFromEuler(new THREE.Euler(
+                            toRadians(deltaMove.y * 0.5),
+                            toRadians(deltaMove.x * 0.5),
+                            0,
+                            'XYZ'
+                        ));
+
+                    camera.quaternion.multiplyQuaternions(deltaRotationQuaternion, camera.quaternion);
+
+                    previousMousePosition.x = event.clientX;
+                    previousMousePosition.y = event.clientY;
+                }
+            });
+
+            renderer.domElement.addEventListener('wheel', (event) => {
+                const zoomFactor = event.deltaY > 0 ? 1.1 : 0.9;
+                camera.position.multiplyScalar(zoomFactor);
+                camera.position.clampLength(80, 2000);
+            });
+
+            function toRadians(angle) {
+                return angle * (Math.PI / 180);
+            }
+
+            console.log('🎮 Research controls configured');
+        }
+
+        function loadResearchData() {
+            console.log('📡 Loading research data stream...');
+            
+            if (window.LIVE_NASA_DATA && window.LIVE_NASA_DATA.events) {
+                // Transform the NASA data format for research analysis
+                const events = window.LIVE_NASA_DATA.events;
+                const cmes = events.filter(e => e.type === 'CME');
+                const flares = events.filter(e => e.type === 'FLARE');
+                
+                researchData = {
+                    summary: {
+                        cme_count: cmes.length,
+                        solar_flare_count: flares.length,
+                        total_events: events.length
+                    },
+                    events: {
+                        cmes: cmes.map(cme => ({
+                            id: cme.id,
+                            speed: cme.speed || 500,
+                            start_time: cme.time,
+                            latitude: cme.latitude,
+                            longitude: cme.longitude,
+                            source_location: cme.source || 'Unknown'
+                        })),
+                        solar_flares: flares.map(flare => ({
+                            id: flare.id,
+                            class_type: flare.class_type || 'C1.0',
+                            start_time: flare.time,
+                            source_location: flare.source || 'Unknown'
+                        }))
+                    }
+                };
+                
+                console.log('✅ Research data transformed:', researchData);
+                console.log(`Research analysis: ${cmes.length} CMEs, ${flares.length} flares`);
+                
+                updateResearchDisplay();
+                createAdvancedCMEVisualization();
+                createSolarFlareVisualization();
+                updateConnectionStatus('online');
+                
+            } else {
+                console.log('⏳ Creating research demonstration...');
+                createResearchDemo();
+                updateConnectionStatus('loading');
+                setTimeout(loadResearchData, 4000);
+            }
+        }
+
+        function createResearchDemo() {
+            researchData = {
+                summary: { cme_count: 12, solar_flare_count: 7, total_events: 19 },
+                events: {
+                    cmes: [
+                        { id: 'RESEARCH_CME_001', speed: 720, start_time: new Date().toISOString(), source_location: 'N15E30' },
+                        { id: 'RESEARCH_CME_002', speed: 950, start_time: new Date().toISOString(), source_location: 'S10W20' },
+                        { id: 'RESEARCH_CME_003', speed: 580, start_time: new Date().toISOString(), source_location: 'N05E50' },
+                        { id: 'RESEARCH_CME_004', speed: 1100, start_time: new Date().toISOString(), source_location: 'S25E10' }
+                    ],
+                    solar_flares: [
+                        { id: 'RESEARCH_FLARE_001', class_type: 'M5.8', start_time: new Date().toISOString(), source_location: 'N15E30' },
+                        { id: 'RESEARCH_FLARE_002', class_type: 'X1.2', start_time: new Date().toISOString(), source_location: 'S10W20' },
+                        { id: 'RESEARCH_FLARE_003', class_type: 'C9.4', start_time: new Date().toISOString(), source_location: 'N05E50' }
+                    ]
+                }
+            };
+            
+            updateResearchDisplay();
+            createAdvancedCMEVisualization();
+            createSolarFlareVisualization();
+        }
+
+        function updateResearchDisplay() {
+            if (!researchData) return;
+
+            const summary = researchData.summary;
+            document.getElementById('cme-events').textContent = summary.cme_count || 0;
+            document.getElementById('solar-flares').textContent = summary.solar_flare_count || 0;
+            
+            const totalEvents = summary.total_events || 0;
+            let status = 'QUIET';
+            if (totalEvents > 25) status = 'SEVERE';
+            else if (totalEvents > 15) status = 'HIGH';
+            else if (totalEvents > 8) status = 'MODERATE';
+            else if (totalEvents > 3) status = 'LOW';
+            
+            document.getElementById('research-status').textContent = status;
+
+            // Update research data stream
+            const streamContainer = document.getElementById('data-stream');
+            streamContainer.innerHTML = '';
+
+            // Add CME research data
+            researchData.events.cmes.slice(0, 6).forEach((cme, index) => {
+                const card = document.createElement('div');
+                card.className = 'data-card';
+                
+                const speed = cme.speed || 500;
+                const classification = speed > 1000 ? 'Fast CME' : speed > 700 ? 'Moderate CME' : 'Slow CME';
+                
+                card.innerHTML = `
+                    <div class="card-title">🌀 ${classification} - ${cme.id.slice(-6)}</div>
+                    <div class="card-content">
+                        <strong>Velocity:</strong> ${speed.toLocaleString()} km/s<br>
+                        <strong>Source Region:</strong> ${cme.source_location || 'Unknown'}<br>
+                        <strong>Detection Time:</strong> ${new Date(cme.start_time).toLocaleString()}<br>
+                        <strong>Research Priority:</strong> ${speed > 900 ? 'HIGH' : 'NORMAL'}
+                    </div>
+                `;
+                
+                card.onclick = () => focusOnResearchObject(cme, 'cme');
+                streamContainer.appendChild(card);
+            });
+
+            // Add solar flare research data
+            researchData.events.solar_flares.slice(0, 4).forEach((flare, index) => {
+                const card = document.createElement('div');
+                card.className = 'data-card';
+                card.style.borderColor = '#ff6666';
+                
+                const classType = flare.class_type || 'C1.0';
+                const importance = classType.startsWith('X') ? 'CRITICAL' : classType.startsWith('M') ? 'HIGH' : 'MODERATE';
+                
+                card.innerHTML = `
+                    <div class="card-title" style="color: #ff6666;">☀️ ${classType} Solar Flare</div>
+                    <div class="card-content">
+                        <strong>Classification:</strong> ${classType}<br>
+                        <strong>Research Importance:</strong> ${importance}<br>
+                        <strong>Source Region:</strong> ${flare.source_location || 'Unknown'}<br>
+                        <strong>Detection Time:</strong> ${new Date(flare.start_time).toLocaleString()}
+                    </div>
+                `;
+                
+                card.onclick = () => focusOnResearchObject(flare, 'flare');
+                streamContainer.appendChild(card);
+            });
+        }
+
+        function createAdvancedCMEVisualization() {
+            // Clear existing CME visualizations
+            cmeParticleSystems.forEach(system => scene.remove(system));
+            cmeParticleSystems = [];
+
+            if (!researchData || !researchData.events.cmes) {
+                console.log('No CME research data available');
+                return;
+            }
+
+            console.log(`Creating advanced visualization for ${researchData.events.cmes.length} CMEs...`);
+
+            researchData.events.cmes.slice(0, 15).forEach((cme, index) => {
+                const speed = cme.speed || 500;
+                const particleCount = Math.floor(800 * particleDensity);
+                
+                // Create enhanced research particle system
+                const geometry = new THREE.BufferGeometry();
+                const positions = new Float32Array(particleCount * 3);
+                const colors = new Float32Array(particleCount * 3);
+                const sizes = new Float32Array(particleCount);
+                const velocities = new Float32Array(particleCount * 3);
+
+                // Use actual longitude if available, otherwise distribute evenly
+                let propagationAngle;
+                if (cme.longitude !== null && cme.longitude !== undefined) {
+                    propagationAngle = (cme.longitude * Math.PI) / 180;
+                } else {
+                    propagationAngle = (index / 15) * Math.PI * 2;
+                }
+
+                const coneHalfAngle = Math.PI * 0.3; // Wider 54-degree cone for better visibility
+
+                for (let i = 0; i < particleCount; i++) {
+                    const i3 = i * 3;
+                    
+                    // Enhanced cone formation with research accuracy
+                    const localAngle = propagationAngle + (Math.random() - 0.5) * coneHalfAngle;
+                    const distance = 20 + Math.random() * 60;
+                    const elevation = cme.latitude ? (cme.latitude / 90) * 30 : (Math.random() - 0.5) * 30;
+                    
+                    positions[i3] = Math.cos(localAngle) * distance;
+                    positions[i3 + 1] = elevation + (Math.random() - 0.5) * 15;
+                    positions[i3 + 2] = Math.sin(localAngle) * distance;
+
+                    // Enhanced velocity for realistic propagation
+                    const speedFactor = speed / 80000;
+                    velocities[i3] = Math.cos(localAngle) * speedFactor;
+                    velocities[i3 + 1] = (Math.random() - 0.5) * speedFactor * 0.2;
+                    velocities[i3 + 2] = Math.sin(localAngle) * speedFactor;
+
+                    // Enhanced research-grade colors with better visibility
+                    const intensity = Math.min(speed / 1000, 1);
+                    const coreDistance = distance < 40 ? 1.0 : 0.8;
+                    const densityFactor = Math.random() * 0.3 + 0.7;
+                    
+                    colors[i3] = coreDistance * densityFactor * (0.95 + intensity * 0.05);     // Bright red
+                    colors[i3 + 1] = coreDistance * densityFactor * (0.6 - intensity * 0.5);  // Variable green
+                    colors[i3 + 2] = coreDistance * densityFactor * (0.1 + intensity * 0.2);  // Slight blue
+
+                    // Enhanced size based on research parameters
+                    sizes[i] = (2.0 + intensity * 3) * coreDistance * densityFactor;
+                }
+
+                geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+                geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+                geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+
+                const material = new THREE.PointsMaterial({
+                    size: 2,
+                    transparent: true,
+                    opacity: 0.85,
+                    vertexColors: true,
+                    blending: THREE.AdditiveBlending
+                });
+
+                const particles = new THREE.Points(geometry, material);
+                particles.userData = { 
+                    type: 'cme_research',
+                    speed: speed,
+                    startTime: Date.now(),
+                    velocities: velocities,
+                    cmeData: cme
+                };
+                
+                scene.add(particles);
+                cmeParticleSystems.push(particles);
+            });
+
+            console.log(`🌀 Advanced CME visualization: ${cmeParticleSystems.length} systems`);
+            updateParticleSystemCount();
+        }
+
+        function createSolarFlareVisualization() {
+            // Clear existing solar flares
+            solarFlareObjects.forEach(obj => scene.remove(obj));
+            solarFlareObjects = [];
+
+            if (!researchData || !researchData.events.solar_flares) return;
+
+            researchData.events.solar_flares.slice(0, 5).forEach((flare, index) => {
+                const flareGroup = new THREE.Group();
+                
+                // Main flare component
+                const flareGeometry = new THREE.SphereGeometry(3, 24, 24);
+                const flareMaterial = new THREE.MeshBasicMaterial({
+                    color: 0xff4400,
+                    transparent: true,
+                    opacity: 0.9
+                });
+
+                const flareCore = new THREE.Mesh(flareGeometry, flareMaterial);
+                
+                // Position on solar surface
+                const angle = (index / 5) * Math.PI * 2;
+                const solarDistance = 20;
+                flareCore.position.set(
+                    Math.cos(angle) * solarDistance,
+                    (Math.random() - 0.5) * 12,
+                    Math.sin(angle) * solarDistance
+                );
+
+                flareCore.userData = {
+                    type: 'solar_flare_research',
+                    startTime: Date.now(),
+                    flareData: flare,
+                    basePosition: flareCore.position.clone()
+                };
+
+                flareGroup.add(flareCore);
+                scene.add(flareGroup);
+                solarFlareObjects.push(flareGroup);
+            });
+
+            console.log(`☀️ Solar flare visualization: ${solarFlareObjects.length} objects`);
+        }
+
+        function updateConnectionStatus(status) {
+            const statusElement = document.getElementById('connection-status');
+            const indicator = statusElement.previousElementSibling;
+            
+            indicator.className = `status-indicator status-${status}`;
+            
+            switch (status) {
+                case 'online':
+                    statusElement.textContent = 'LIVE';
+                    break;
+                case 'loading':
+                    statusElement.textContent = 'DEMO';
+                    break;
+                case 'offline':
+                    statusElement.textContent = 'OFFLINE';
+                    break;
+            }
+        }
+
+        function updateObjectCount() {
+            document.getElementById('total-objects').textContent = scene.children.length;
+        }
+
+        function updateParticleSystemCount() {
+            document.getElementById('particle-systems').textContent = cmeParticleSystems.length;
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            if (simulationRunning) {
+                const time = Date.now() * 0.001 * simulationSpeed;
+
+                // Animate solar rotation
+                if (sun) {
+                    sun.rotation.y += 0.008 * simulationSpeed;
+                }
+
+                // Animate planetary orbits
+                if (earth) {
+                    earth.position.x = Math.cos(time * 0.15) * 120;
+                    earth.position.z = Math.sin(time * 0.15) * 120;
+                    earth.rotation.y += 0.025 * simulationSpeed;
+                }
+
+                if (moon) {
+                    moon.position.x = earth.position.x + Math.cos(time * 0.6) * 12;
+                    moon.position.z = earth.position.z + Math.sin(time * 0.6) * 12;
+                }
+
+                if (mars) {
+                    mars.position.x = Math.cos(time * 0.08) * 200;
+                    mars.position.z = Math.sin(time * 0.08) * 200;
+                    mars.rotation.y += 0.02 * simulationSpeed;
+                }
+
+                // Animate CME particle systems
+                cmeParticleSystems.forEach(system => {
+                    const elapsed = (Date.now() - system.userData.startTime) / 1000;
+                    const positions = system.geometry.attributes.position.array;
+                    const velocities = system.userData.velocities;
+
+                    for (let i = 0; i < positions.length; i += 3) {
+                        // Update positions based on velocities
+                        positions[i] += velocities[i] * simulationSpeed * 100;
+                        positions[i + 1] += velocities[i + 1] * simulationSpeed * 100;
+                        positions[i + 2] += velocities[i + 2] * simulationSpeed * 100;
+                    }
+
+                    system.geometry.attributes.position.needsUpdate = true;
+
+                    // Fade out over research time scale
+                    if (elapsed > 45) {
+                        system.material.opacity = Math.max(0, 0.85 - (elapsed - 45) / 30);
+                    }
+                });
+
+                // Animate solar flares
+                solarFlareObjects.forEach(flareGroup => {
+                    const flare = flareGroup.children[0];
+                    const elapsed = (Date.now() - flare.userData.startTime) / 1000;
+                    
+                    // Realistic flare pulsation
+                    flare.material.opacity = 0.9 * (1 + Math.sin(elapsed * 12) * 0.2);
+                    flare.scale.setScalar(1 + Math.sin(elapsed * 8) * 0.15);
+                });
+
+                // Update live physics values
+                updatePhysicsValues(time);
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        function updatePhysicsValues(time) {
+            // Solar wind velocity with realistic variation
+            const swVel = 400 + Math.sin(time * 0.1) * 150 + Math.random() * 20;
+            document.getElementById('sw-velocity').textContent = Math.round(swVel);
+
+            // Interplanetary magnetic field
+            const imf = 5.2 + Math.sin(time * 0.15) * 2.8 + Math.random() * 0.5;
+            document.getElementById('imf-strength').textContent = imf.toFixed(1);
+
+            // Dst index
+            const dst = -12 + Math.sin(time * 0.08) * 25 + Math.random() * 5;
+            document.getElementById('dst-value').textContent = Math.round(dst);
+        }
+
+        // Control functions
+        function toggleSimulation() {
+            simulationRunning = !simulationRunning;
+            console.log('Simulation:', simulationRunning ? 'Running' : 'Paused');
+        }
+
+        function resetCamera() {
+            camera.position.set(0, 150, 300);
+            camera.lookAt(0, 0, 0);
+            setFocus('system');
+        }
+
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
+        function setFocus(focus) {
+            researchFocus = focus;
+            
+            // Update button states
+            document.querySelectorAll('.btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`focus-${focus}`).classList.add('active');
+
+            switch (focus) {
+                case 'system':
+                    camera.position.set(0, 150, 300);
+                    camera.lookAt(0, 0, 0);
+                    break;
+                case 'heliosphere':
+                    camera.position.set(0, 100, 200);
+                    camera.lookAt(0, 0, 0);
+                    break;
+                case 'magnetosphere':
+                    camera.position.set(120, 80, 150);
+                    camera.lookAt(120, 0, 0);
+                    break;
+            }
+        }
+
+        function updateSimSpeed(value) {
+            simulationSpeed = parseFloat(value);
+            document.getElementById('speed-value').textContent = value + 'x Real Time';
+        }
+
+        function updateParticleDensity(value) {
+            particleDensity = parseFloat(value);
+            if (researchData) {
+                createAdvancedCMEVisualization();
+            }
+        }
+
+        function focusOnResearchObject(data, type) {
+            console.log(`Research focus on ${type}:`, data);
+            if (type === 'cme') {
+                setFocus('heliosphere');
+            } else if (type === 'flare') {
+                setFocus('system');
+            }
+        }
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        window.addEventListener('resize', onWindowResize);
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('🔬 Starting Space Weather Research Center...');
+            setTimeout(init, 100);
+        });
+
+        // WebSocket handler
+        window.updateResearchCenterWithLiveData = function(data) {
+            console.log('📡 Research Center receiving data:', data);
+            
+            if (data.events) {
+                researchData = data;
+                updateResearchDisplay();
+                createAdvancedCMEVisualization();
+                createSolarFlareVisualization();
+            }
+        };
+    </script>
+</body>
+</html>

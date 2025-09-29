@@ -1,0 +1,54 @@
+NASA Space Weather Export Report
+Export Timestamp,2025-09-28T17:19:02.601346Z
+Data Period,7 days
+Total Events,44
+CME Count,34
+Solar Flare Count,10
+Data Source,NASA DONKI API
+
+class_type,id,note,source_location,speed,start_time,type
+,2025-09-28T09:00:00-CME-001,"Somewhat asymmetrical CME directed eastward in all 3 coronagraphs (SOHO LASCO C2/C3, STEREO A COR2 and GOES CCOR-1). It has a clear follow-up front, best seen in CCOR-1. Its source is likely the impul...",N03E59,1163.0,2025-09-28T09:00Z,CME
+M6.4,2025-09-28T08:34:00-FLR-001,Impulsive flare covered by eclipse in GOES Primary.,N03E59,,2025-09-28T08:34Z,Solar Flare
+,2025-09-27T20:12:00-CME-001,"Faint, slow CME visible to the NE as seen in SOHO LASCO C2. The source appears to be a slow filament eruption visible to the NE in GOES SUVI 304 starting around 2025-09-27T18:40Z along the NE limb.",,231.0,2025-09-27T20:12Z,CME
+,2025-09-27T18:00:00-CME-001,"Seemingly two jet like CMEs treated as one in this as they are associated with the same source and traveling at similar speeds to the SE in SOHO LASCO C2, C3, GOES CCOR-1, and STEREO A COR2 imagery. T...",N02E67,1091.0,2025-09-27T18:00Z,CME
+C7.6,2025-09-27T17:51:00-FLR-001,,N02E67,,2025-09-27T17:51Z,Solar Flare
+,2025-09-27T17:12:00-CME-001,Faint narrow CME to the NW visible in SOHO LASCO C2 and C3 imagery. The source appears to be a filament eruption along the NW limb starting around 2025-09-27T15:30Z in GOES SUVI 304.,,846.0,2025-09-27T17:12Z,CME
+,2025-09-27T12:36:00-CME-001,"Extremely faint narrow jet to the SE in SOHO LASCO C2 and STEREO A COR2, too faint to be seen in C3 and GOES CCOR-1. No source has been found.",,553.0,2025-09-27T12:36Z,CME
+,2025-09-27T07:24:00-CME-001,"A faint CME to the SE in all three coronagraphs, possibly with a preceding fainter shock. Its source is the M1.1 flare from newly numbered AR 14232 (N02E74) and the associated wide fan-like filament e...",N02E74,1213.0,2025-09-27T07:24Z,CME
+M1.1,2025-09-27T07:03:00-FLR-001,,N02E74,,2025-09-27T07:03Z,Solar Flare
+,2025-09-27T06:48:00-CME-001,A very faint narrow jet to the SE in SOHO LASCO C2/C3 and STEREO A COR2. No clear source found but there is minor sparks in AR 14232 at the time.,,931.0,2025-09-27T06:48Z,CME
+M1.1,2025-09-27T04:18:00-FLR-001,,S18W13,,2025-09-27T04:18Z,Solar Flare
+,2025-09-27T04:00:00-CME-001,A super faint narrow jet seen to the SE in SOHO LASCO C2 and STEREO A COR2 but not seen in C3 and GOES CCOR-1. Its source may be a narrow minor filament eruption in AR 14232 starting around 2025-09-27...,N02E75,496.0,2025-09-27T04:00Z,CME
+M1.0,2025-09-27T03:29:00-FLR-001,,S18W13,,2025-09-27T03:29Z,Solar Flare
+,2025-09-27T03:00:00-CME-001,"Narrow jet CME to the ESE in all three coronagraphs (SOHO LASCO C2/C3, STEREO A COR2 and GOES CCOR-1). The source is likely a C3.6 flare from AR 14232 (N02E76) peaking at 2025-09-27T02:40Z.",N02E76,1061.0,2025-09-27T03:00Z,CME
+C3.6,2025-09-27T02:32:00-FLR-001,,N04E76,,2025-09-27T02:32Z,Solar Flare
+M1.6,2025-09-26T19:49:00-FLR-001,"Occulted flare from behind the NE limb, possibly from what would be later numbered as AR 14233. There is a very faint CME associated with this flare, only seen in several timestamps of SOHO LASCO C2 c...",N17E77,,2025-09-26T19:49Z,Solar Flare
+,2025-09-25T19:12:00-CME-001,Faint CME seen to the SW in SOHO LASCO C2/C3 and GOES CCOR-1; extremely faint and seen to the SE in STEREO A COR2. Source is likely very minor dimming seen in STEREO A EUVI 195 starting around 2025-09...,S30W48,534.0,2025-09-25T19:12Z,CME
+,2025-09-25T17:36:00-CME-001,"Narrow CME seen to the NNE in SOHO LASCO C2/C3, STEREO A COR2, and GOES CCOR-1. Source is uncertain; there is no clear source in available UV imagery of the disk.",,541.0,2025-09-25T17:36Z,CME
+,2025-09-25T14:12:00-CME-001,"Narrow and faint CME seen to the NNE in SOHO LASCO C2/C3 and GOES CCOR-1. Leading edge is not discernable in STEREO A COR2 imagery. Source is uncertain, but may be a tiny area of brightening seen in G...",,469.0,2025-09-25T14:12Z,CME
+,2025-09-25T10:36:00-CME-001,"Narrow faint jet to the SW in SOHO LASCO C2/C3 and GOES CCOR-1 and S in STEREO A COR2. No clear source has been found, however there is continuous activity near ARs 14217 and 14224 on 2025-09-25.",,570.0,2025-09-25T10:36Z,CME
+,2025-09-25T07:36:00-CME-001,"Narrow fast jet with flattened front seen to the SW in SOHO LASCO C2/C3, GOES CCOR-1 and STEREO A COR2. Resembles 2025-09-24T14:36Z CME |  Source is likely a minor narrow filament eruption seen close ...",S13W75,881.0,2025-09-25T07:36Z,CME
+,2025-09-25T07:00:00-CME-001,"Faint jet to the SW in SOHO LASCO C2/C3 and GOES CCOR-1 and not seen in STEREO A COR2 coronagraph. One possible source could be AR 4217 (S17W65 at the time), marked by a minor brightening in this AR.",,642.0,2025-09-25T07:00Z,CME
+,2025-09-25T04:12:00-CME-001,Extremely narrow and faint jet seen to the SE in SOHO LASCO C2 and STEREO A COR2. No source has been found.,,511.0,2025-09-25T04:12Z,CME
+M1.6,2025-09-24T18:57:00-FLR-001,,S13W47,,2025-09-24T18:57Z,Solar Flare
+,2025-09-24T14:36:00-CME-001,This CME is visible to the southwest in SOHO LASCO C2/C3 and GOES CCOR-1 imagery. It is currently not observed in STEREO A COR2 imagery due to a data gap starting at 2025-09-24T14:53Z. The source is l...,S16W57,894.0,2025-09-24T14:36Z,CME
+,2025-09-24T12:24:00-CME-001,"This CME is visible to the northeast in SOHO LASCO C2/C3, GOES CCOR-1, and STEREO A COR2 coronagraphs. The source is an eruption observed from beyond the northeast limb starting around 2025-09-24T10:4...",,791.0,2025-09-24T12:24Z,CME
+M1.0,2025-09-24T09:16:00-FLR-001,Data gap in GOES-P (GOES-18) due to eclipse season.,S13W45,,2025-09-24T09:16Z,Solar Flare
+,2025-09-24T09:12:00-CME-001,Jet CME seen to the SW in SOHO LASCO C2/C3 and GOES CCOR-1. Seen extremely faintly in STEREO A COR2. Source is likely narrow opening field lines and an M1.0 flare seen from AR 14224 (S13W45) seen in G...,S13W45,1019.0,2025-09-24T09:12Z,CME
+,2025-09-24T07:12:00-CME-001,"This CME is visible to the southwest in SOHO LASCOC2/C3, GOES CCOR-1, and STEREO A COR2 imagery. The source may be related to an eruption from Active Region 14217 (S16W51) starting around 2025-09-24T0...",,636.0,2025-09-24T07:12Z,CME
+,2025-09-24T05:24:00-CME-001,"This CME is visible to the southwest in SOHO LASCO C2/C3, STEREO A COR2, and GOES CCOR-1 coronagraphs. The source is obscured by an eclipse in GOES SUVI imagery, but there is minor brightening observe...",,361.0,2025-09-24T05:24Z,CME
+,2025-09-23T23:24:00-CME-001,"Thin CME observed to the SW in SOHO LASCO C2/C3 and GOES CCOR-1. This CME is not observed in STEREO A COR2, but it is a thin CME pointed almost directly at STEREO A (~W47.8 at this time) so it may be ...",S15W52,871.0,2025-09-23T23:24Z,CME
+,2025-09-23T19:48:00-CME-001,Faint CME observed to the SE in SOHO LASCO C2/C3 and GOES CCOR-1. Not observed in STEREO A COR2 due to a data gap. No observable source is seen in GOES SUVI or STEREO A EUVI imagery.,,581.0,2025-09-23T19:48Z,CME
+M1.0,2025-09-23T10:24:00-FLR-001,,S14W43,,2025-09-23T10:24Z,Solar Flare
+,2025-09-23T00:12:00-CME-001,"CME first seen in the SW by SOHO LASCO C2 beginning at 2025-09-23T00:12Z, as well as by SOHO LASCO C3, STEREO A COR2 and GOES CCOR-1 in later frames. The source of this event is a filament eruption se...",,403.0,2025-09-23T00:12Z,CME
+,2025-09-22T21:36:00-CME-001,"Bright loop CME first seen to the NW in SOHO LASCO C2 beginning 2025-09-22T21:36Z, as well as by SOHO LASCO C3, STEREO A COR2 and GOES CCOR-1. The source is rising field clearly over the far-sided NW ...",,264.0,2025-09-22T21:36Z,CME
+,2025-09-22T15:36:00-CME-001,"CME observed to the NE in SOHO LASCO C2/C3 and GOES CCOR-1, not observed in STEREO A COR2 due to a data gap. The source is a filament eruption observed near the NE limb which begins to lift off around...",,435.0,2025-09-22T15:36Z,CME
+,2025-09-22T09:36:00-CME-001,"This CME is visible to the southwest in SOHO LASCO C2/C3, GOES CCOR-1, and STEREO A COR2 imagery. The source is likely far-sided as there are no source signatures visible on the Earth-facing disk arou...",,332.0,2025-09-22T09:36Z,CME
+,2025-09-22T07:12:00-CME-001,"This CME has a diffuse, faint leading edge but is visible to the east in SOHO LASCO C2, GOES CCOR-1, and STEREO A COR2 imagery. It is not observed in SOHO LASCO C3 imagery as it is blocked by the pylo...",S05E45,321.0,2025-09-22T07:12Z,CME
+,2025-09-21T22:36:00-CME-001,"Bright light-bulb shaped CME to the SW in SOHO LASCO, with the start covered by the data gap in STEREO A COR2 (the gap starts right before the CME start).
+The source is a large prominence from behind ...",S35W97,588.0,2025-09-21T22:36Z,CME
+,2025-09-21T21:36:00-CME-001,"A relatively bright jet-like CME seen to the ESE in SOHO LASCO and GOES CCOR-1 coronagraph and covered by the data gap in STEREO A COR2. No clear source has been found, however there is some activity ...",,762.0,2025-09-21T21:36Z,CME
+,2025-09-21T21:24:00-CME-001,Faint asymmetrical CME with an irregular front to the NE with the start time that could be even earlier. The CME overlaps with a NE streamer making analysis more difficult. Source is likely a large pr...,N50E70,613.0,2025-09-21T21:24Z,CME
+,2025-09-21T20:48:00-CME-001,Faint loop CME seen to the NW in SOHO LASCO (and possibly to the N in STEREO A COR2 in one timestamp before data gap). It is likely completely covered by a data gap in STEREO A and is covered by the p...,N30W117,401.0,2025-09-21T20:48Z,CME
+,2025-09-21T10:36:00-CME-001,"Narrow, very faint, jet-like CME seen SSE in all 3 coronagraphs (SOHO LASCO, STEREO A COR2 and GOES CCOR-1) but only for a few timestamps, after which it becomes too faint. Its front is fuzzy and not ...",,370.0,2025-09-21T10:36Z,CME
+,2025-09-21T02:48:00-CME-001,"Narrow, diffuse CME first seen to the East in SOHO LASCO C2 beginning at 2025-09-21T02:48Z, as well as faintly by STEREO A COR2 in later frames. This CME is only visible for a few frames in STEREO A C...",,405.0,2025-09-21T02:48Z,CME

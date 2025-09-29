@@ -1,0 +1,21 @@
+# WebSocket Real-Time Streaming Requirements
+# Install with: pip install -r requirements_websocket.txt
+
+# Core WebSocket library
+websockets>=11.0.3
+
+# Async support (usually included with Python 3.7+)
+asyncio
+
+# JSON handling (built-in)
+# json
+
+# Logging (built-in)
+# logging
+
+# Additional useful libraries for real-time features
+aiohttp>=3.8.5
+aiofiles>=23.1.0
+
+# For advanced monitoring (optional)
+psutil>=5.9.5

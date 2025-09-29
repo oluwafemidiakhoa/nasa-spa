@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced 3D Systems Test Page</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #001122, #000000);
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(0, 40, 80, 0.9), rgba(0, 20, 40, 0.8));
+            border-radius: 12px;
+            border: 2px solid #0088cc;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            color: #00ccff;
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px rgba(0, 204, 255, 0.8);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            color: #cccccc;
+        }
+
+        .systems-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .system-card {
+            background: linear-gradient(135deg, rgba(0, 40, 80, 0.9), rgba(0, 20, 40, 0.8));
+            border: 2px solid #0088cc;
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .system-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 136, 204, 0.3);
+            border-color: #00ccff;
+        }
+
+        .system-title {
+            font-size: 1.5rem;
+            color: #00ccff;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .system-description {
+            color: #cccccc;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .launch-button {
+            background: linear-gradient(135deg, #0066cc, #004499);
+            color: #ffffff;
+            border: 2px solid #00ccff;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+
+        .launch-button:hover {
+            background: linear-gradient(135deg, #004499, #0066cc);
+            box-shadow: 0 0 20px rgba(0, 204, 255, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .features-list {
+            text-align: left;
+            margin: 15px 0;
+        }
+
+        .features-list li {
+            color: #00ff88;
+            margin: 8px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .features-list li::before {
+            content: '▶';
+            position: absolute;
+            left: 0;
+            color: #00ccff;
+        }
+
+        .data-info {
+            background: linear-gradient(135deg, rgba(0, 60, 40, 0.9), rgba(0, 40, 20, 0.8));
+            border: 2px solid #00cc66;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .data-info h3 {
+            color: #00ff88;
+            margin-bottom: 10px;
+        }
+
+        .data-info p {
+            color: #cccccc;
+            line-height: 1.5;
+        }
+
+        @media (max-width: 768px) {
+            .systems-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+    <script src="live_nasa_data.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Enhanced 3D Space Weather Systems</h1>
+            <p>Professional NASA-Grade Visualization with Real Data Integration</p>
+        </div>
+
+        <div class="data-info">
+            <h3>🛰️ Live NASA Data Status</h3>
+            <p id="data-status">Checking NASA DONKI data availability...</p>
+        </div>
+
+        <div class="systems-grid">
+            <div class="system-card">
+                <div class="system-title">NASA Heliophysics Observatory</div>
+                <div class="system-description">
+                    Professional-grade 3D space weather visualization with clean NASA-style interface. 
+                    Enhanced with improved particle systems and real-time NASA data integration.
+                </div>
+                <ul class="features-list">
+                    <li>Enhanced CME particle visualization (up to 500 particles per event)</li>
+                    <li>Professional NASA-style clean interface</li>
+                    <li>Interactive solar system with realistic shadows</li>
+                    <li>Real-time data integration with 44 NASA events</li>
+                    <li>Improved visibility and color coding</li>
+                    <li>Enhanced solar flare visualization with glow effects</li>
+                </ul>
+                <a href="nasa_heliophysics_observatory.html" class="launch-button" target="_blank">
+                    Launch Observatory
+                </a>
+            </div>
+
+            <div class="system-card">
+                <div class="system-title">Space Weather Research Center</div>
+                <div class="system-description">
+                    Advanced research-grade 3D visualization with detailed particle physics and scientific analysis. 
+                    Enhanced with improved data processing and particle density controls.
+                </div>
+                <ul class="features-list">
+                    <li>Advanced research particle systems (up to 800 particles per CME)</li>
+                    <li>Live physics calculations (Solar wind, IMF, Dst index)</li>
+                    <li>Enhanced 15,000 star field visualization</li>
+                    <li>Professional scientific interface</li>
+                    <li>Improved longitude/latitude positioning</li>
+                    <li>Research-grade data analysis and classification</li>
+                </ul>
+                <a href="space_weather_research_center.html" class="launch-button" target="_blank">
+                    Launch Research Center
+                </a>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 40px; color: #888;">
+            <p>Both systems have been enhanced to properly display the 44 real NASA space weather events with improved visibility and particle systems.</p>
+        </div>
+    </div>
+
+    <script>
+        function checkNASAData() {
+            if (window.LIVE_NASA_DATA && window.LIVE_NASA_DATA.events) {
+                const events = window.LIVE_NASA_DATA.events;
+                const cmes = events.filter(e => e.type === 'CME');
+                const flares = events.filter(e => e.type === 'FLARE');
+                
+                document.getElementById('data-status').innerHTML = `
+                    ✅ <strong>NASA DONKI Data Available</strong><br>
+                    📊 Total Events: ${events.length}<br>
+                    🌀 CMEs: ${cmes.length}<br>
+                    ☀️ Solar Flares: ${flares.length}<br>
+                    🔗 Both 3D systems will display these real events with enhanced visibility.
+                `;
+            } else {
+                document.getElementById('data-status').innerHTML = `
+                    ⏳ <strong>Loading NASA Data...</strong><br>
+                    🔄 Attempting to connect to NASA DONKI data stream...
+                `;
+                setTimeout(checkNASAData, 2000);
+            }
+        }
+
+        // Check data on page load
+        setTimeout(checkNASAData, 1000);
+    </script>
+</body>
+</html>
