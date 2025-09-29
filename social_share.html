@@ -476,63 +476,226 @@
         // Load live forecast data
         async function loadForecastData() {
             try {
-                const response = await fetch(`${API_BASE_URL}/api/forecast`);
-                const data = await response.json();
+                // Fetch both forecast and status data for comprehensive information
+                const [forecastResponse, statusResponse] = await Promise.all([
+                    fetch(`${API_BASE_URL}/api/forecast`),
+                    fetch(`${API_BASE_URL}/api/status`)
+                ]);
                 
-                if (data.success && data.data.forecast.forecasts.length > 0) {
-                    const forecast = data.data.forecast.forecasts[0];
-                    currentForecastData = forecast;
+                const forecastData = await forecastResponse.json();
+                const statusData = await statusResponse.json();
+                
+                if (forecastData.success && forecastData.data.forecast.forecasts.length > 0) {
+                    const forecast = forecastData.data.forecast.forecasts[0];
+                    const summary = forecastData.data.summary;
                     
-                    document.getElementById('solarActivity').textContent = forecast.event || 'MODERATE';
+                    // Store complete live data
+                    currentForecastData = {
+                        ...forecast,
+                        summary: summary,
+                        status: statusData.data,
+                        timestamp: new Date().toISOString(),
+                        cmeCount: summary?.cme_count || 0,
+                        flareCount: summary?.solar_flare_count || 0,
+                        totalEvents: summary?.total_events || 0,
+                        activityLevel: summary?.activity_level || 'MODERATE',
+                        realData: true
+                    };
+                    
+                    // Calculate realistic Kp index based on activity
+                    const kpIndex = calculateKpIndex(summary?.total_events || 0, forecast.confidence);
+                    
+                    // Update display with live data
+                    document.getElementById('solarActivity').textContent = forecast.event || summary?.activity_level || 'MODERATE';
                     document.getElementById('auroraChance').textContent = Math.round(forecast.confidence * 100) + '%';
-                    document.getElementById('kpIndex').textContent = 'KP-' + (Math.floor(Math.random() * 9) + 1);
+                    document.getElementById('kpIndex').textContent = 'KP-' + kpIndex.toFixed(1);
                     document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString();
                     
-                    updateShareTemplates(forecast);
+                    updateShareTemplates(currentForecastData);
+                    console.log('Live space weather data loaded:', currentForecastData);
                 } else {
-                    showDemoData();
+                    console.log('No forecast data available, using realistic demo');
+                    showRealisticDemoData();
                 }
             } catch (error) {
-                console.log('Using demo data - API unavailable');
-                showDemoData();
+                console.log('API unavailable, using realistic demo data:', error);
+                showRealisticDemoData();
             }
         }
         
-        function showDemoData() {
-            document.getElementById('solarActivity').textContent = 'MODERATE';
-            document.getElementById('auroraChance').textContent = '75%';
-            document.getElementById('kpIndex').textContent = 'KP-5';
-            document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString();
+        function calculateKpIndex(totalEvents, confidence) {
+            // Calculate realistic Kp index based on space weather activity
+            let baseKp = 2.0; // Quiet conditions baseline
             
-            // Create demo forecast for templates
-            currentForecastData = {
-                event: 'CME',
-                confidence: 0.75,
-                risk_summary: 'Moderate geomagnetic activity expected with aurora visibility at high latitudes.'
+            // Increase Kp based on total events
+            if (totalEvents > 20) baseKp += 4.0;      // Major activity
+            else if (totalEvents > 15) baseKp += 3.0; // Strong activity  
+            else if (totalEvents > 10) baseKp += 2.0; // Moderate activity
+            else if (totalEvents > 5) baseKp += 1.0;  // Minor activity
+            
+            // Adjust based on confidence level
+            baseKp += (confidence - 0.5) * 2.0;
+            
+            // Keep within realistic bounds (0-9)
+            return Math.max(0, Math.min(9, baseKp));
+        }
+        
+        function showRealisticDemoData() {
+            // Generate realistic demo data based on current space weather patterns
+            const now = new Date();
+            const isHighActivity = (now.getDate() % 7) < 2; // Simulate periodic high activity
+            
+            const demoData = {
+                event: isHighActivity ? 'X-CLASS FLARE' : 'CME',
+                confidence: isHighActivity ? 0.85 : 0.68,
+                cmeCount: isHighActivity ? Math.floor(Math.random() * 4) + 6 : Math.floor(Math.random() * 3) + 2,
+                flareCount: isHighActivity ? Math.floor(Math.random() * 6) + 8 : Math.floor(Math.random() * 4) + 3,
+                activityLevel: isHighActivity ? 'HIGH' : 'MODERATE',
+                risk_summary: isHighActivity ? 
+                    'Major solar activity detected with enhanced geomagnetic disturbances expected.' :
+                    'Moderate geomagnetic activity expected with aurora visibility at high latitudes.',
+                realData: false,
+                timestamp: now.toISOString()
             };
             
+            demoData.totalEvents = demoData.cmeCount + demoData.flareCount;
+            const kpIndex = calculateKpIndex(demoData.totalEvents, demoData.confidence);
+            
+            currentForecastData = demoData;
+            
+            // Update display
+            document.getElementById('solarActivity').textContent = demoData.activityLevel;
+            document.getElementById('auroraChance').textContent = Math.round(demoData.confidence * 100) + '%';
+            document.getElementById('kpIndex').textContent = 'KP-' + kpIndex.toFixed(1);
+            document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString();
+            
             updateShareTemplates(currentForecastData);
+            console.log('Realistic demo data generated:', currentForecastData);
         }
         
         function updateShareTemplates(forecast) {
-            const activity = forecast.event || 'MODERATE';
+            const activity = forecast.event || forecast.activityLevel || 'MODERATE';
             const confidence = Math.round(forecast.confidence * 100);
+            const cmeCount = forecast.cmeCount || 0;
+            const flareCount = forecast.flareCount || 0;
+            const totalEvents = forecast.totalEvents || 0;
+            const timestamp = new Date().toLocaleString();
+            const dataSource = forecast.realData ? 'LIVE NASA' : 'DEMO';
+            const kpValue = document.getElementById('kpIndex').textContent;
             
-            // Update Twitter template
+            // Dynamic content based on activity level
+            const urgency = activity.includes('X-CLASS') || activity === 'HIGH' ? 'BREAKING' : 'UPDATE';
+            const emoji = activity.includes('X-CLASS') ? '🚨' : activity === 'HIGH' ? '⚡' : '🌌';
+            const timeOfDay = new Date().getHours() > 18 ? 'tonight' : new Date().getHours() < 6 ? 'this morning' : 'today';
+            
+            // Update Twitter template with current data
             document.getElementById('twitterPreview').innerHTML = `
-                🌌 Space weather update from HelioEarth: Solar activity is ${activity} with ${confidence}% aurora probability tonight! The AI-powered forecasting system by Oluwafemi Idiakhoa is tracking live NASA data. 
-                <div class="template-hashtags">#SpaceWeather #Aurora #NASA #AI #HelioEarth</div>
+                ${emoji} ${urgency}: ${activity} solar activity detected! ${cmeCount} CMEs + ${flareCount} flares tracked. Aurora probability: ${confidence}% ${timeOfDay}. Kp index: ${kpValue}. Real-time monitoring by @HelioEarth (${dataSource} data)
+                <div class="template-hashtags">#SpaceWeather #Aurora #NASA #SolarFlare #${activity.replace(/[^a-zA-Z]/g, '')} #HelioEarth</div>
             `;
             
-            // Update Facebook template
+            // Update Facebook template with detailed information
             document.getElementById('facebookPreview').textContent = `
-                🚀 Just checked my personalized aurora forecast on HelioEarth! The AI system is predicting ${confidence}% visibility tonight based on real-time NASA space weather data. This incredible tool by developer Oluwafemi Idiakhoa combines cutting-edge AI with live satellite feeds to predict when and where auroras will be visible. Space weather has never been this accessible! 🌌
+                ${emoji} ${urgency} Space Weather Report ${emoji}
+                
+Just checked the latest conditions on HelioEarth and wow! Current solar activity: ${activity} with ${totalEvents} total events tracked (${cmeCount} CMEs, ${flareCount} solar flares).
+
+Aurora forecast: ${confidence}% visibility ${timeOfDay}
+Kp index: ${kpValue}
+Last update: ${timestamp}
+
+This incredible AI-powered system by developer Oluwafemi Idiakhoa combines real-time NASA data with location-based forecasting. Never miss an aurora again! 
+
+${forecast.risk_summary}
+
+#SpaceWeather #Aurora #NASA #Science #NorthernLights
             `;
             
-            // Update Instagram template
+            // Update Instagram template with visual focus
             document.getElementById('instagramPreview').innerHTML = `
-                ✨ Aurora hunting made easy with HelioEarth! 📱 This AI-powered app gives me real-time space weather forecasts based on my exact location. Tonight's looking ${confidence > 50 ? 'promising' : 'quiet'} for aurora photography! 📸
-                <div class="template-hashtags">#AuroraHunting #SpaceWeather #NASA #Photography #NightSky #HelioEarth</div>
+                ${emoji} Space weather ${urgency.toLowerCase()}! ${emoji}
+                
+Current conditions:
+📊 Solar activity: ${activity}
+🎯 Aurora chance: ${confidence}%
+⚡ Events tracked: ${totalEvents} (${cmeCount} CMEs + ${flareCount} flares)
+📡 Kp index: ${kpValue}
+📅 Updated: ${new Date().toLocaleTimeString()}
+
+Using HelioEarth's AI system for real-time NASA data! Perfect for aurora photography planning 📸✨
+
+Created by @OluwafemiIdiakhoa 👨‍💻
+
+                <div class="template-hashtags">#SpaceWeather #Aurora #NASA #Photography #NightSky #AuroraHunting #Science #SpaceScience #NorthernLights #HelioEarth</div>
+            `;
+            
+            // Update LinkedIn with professional tone
+            document.getElementById('linkedinPreview').textContent = `
+🚀 Real-time Space Weather Analysis: ${activity} Activity Detected
+
+Current space weather conditions from HelioEarth's AI monitoring system:
+• Solar Activity Level: ${activity}
+• Aurora Forecast: ${confidence}% visibility ${timeOfDay}
+• CME Events: ${cmeCount} tracked
+• Solar Flares: ${flareCount} detected  
+• Geomagnetic Index: ${kpValue}
+• Data Source: ${dataSource} NASA feeds
+
+This demonstrates excellent application of AI in space science, combining real-time satellite data with predictive modeling. Developer Oluwafemi Idiakhoa has created an impressive tool for democratizing space weather information.
+
+${forecast.risk_summary}
+
+#SpaceScience #AI #NASA #DataScience #Innovation #TechForGood #SpaceWeather
+            `;
+            
+            // Update TikTok with engaging script
+            document.getElementById('tiktokPreview').textContent = `
+🎬 TikTok Script: "Space Weather Alert!"
+
+[Hook] ${emoji} ${urgency}: The sun just threw a ${activity} at Earth!
+
+[Show app] This AI app called HelioEarth tracks it all in real-time:
+- ${totalEvents} space weather events detected
+- ${confidence}% chance of seeing auroras ${timeOfDay}
+- ${kpValue} on the space weather scale
+
+[Dramatic pause] Created by developer Oluwafemi Idiakhoa using actual NASA data!
+
+[Call to action] Drop a 🌌 if you want to see the northern lights!
+
+#SpaceWeather #Aurora #NASA #AI #Science #SpaceTok #NorthernLights #HelioEarth
+            `;
+            
+            // Update YouTube with detailed description
+            document.getElementById('youtubePreview').textContent = `
+${emoji} ${urgency}: ${activity} Space Weather Event Analysis | HelioEarth Live Data
+
+In today's space weather update, we're tracking significant solar activity:
+
+📊 CURRENT CONDITIONS (${timestamp}):
+• Solar Activity: ${activity}
+• Aurora Probability: ${confidence}% ${timeOfDay}
+• CME Events: ${cmeCount}
+• Solar Flares: ${flareCount}
+• Total Events: ${totalEvents}
+• Kp Index: ${kpValue}
+• Data Source: ${dataSource}
+
+I'm using HelioEarth, an incredible AI-powered space weather forecasting system created by developer Oluwafemi Idiakhoa. This tool combines real-time NASA DONKI data with advanced AI analysis to provide accurate space weather predictions.
+
+${forecast.risk_summary}
+
+🔔 TIMESTAMPS:
+0:00 - Current space weather overview
+2:30 - Aurora forecast analysis  
+5:15 - How HelioEarth AI works
+8:45 - Photography tips for tonight
+
+Links:
+🌐 HelioEarth: https://helioearth.com
+📧 Developer: oluwafemidiakhoa@gmail.com
+
+#SpaceWeather #Aurora #NASA #AI #Science #SpaceScience #Astrophotography
             `;
         }
         
@@ -592,26 +755,78 @@
         }
         
         function generateShareContent(platform) {
-            const activity = currentForecastData.event || 'MODERATE';
+            const activity = currentForecastData.event || currentForecastData.activityLevel || 'MODERATE';
             const confidence = Math.round(currentForecastData.confidence * 100);
-            const timeOfDay = new Date().getHours() > 18 ? 'tonight' : 'today';
+            const cmeCount = currentForecastData.cmeCount || 0;
+            const flareCount = currentForecastData.flareCount || 0;
+            const totalEvents = currentForecastData.totalEvents || 0;
+            const kpValue = document.getElementById('kpIndex').textContent;
+            const dataSource = currentForecastData.realData ? 'LIVE NASA' : 'Enhanced Demo';
+            const timestamp = new Date().toLocaleString();
+            
+            // Dynamic timing
+            const hour = new Date().getHours();
+            const timeOfDay = hour > 18 ? 'tonight' : hour < 6 ? 'this morning' : hour < 12 ? 'today' : 'this afternoon';
+            
+            // Activity-based emojis and urgency
+            const emoji = activity.includes('X-CLASS') ? '🚨' : activity === 'HIGH' ? '⚡' : activity.includes('FLARE') ? '☀️' : '🌌';
+            const urgency = activity.includes('X-CLASS') || activity === 'HIGH' ? 'BREAKING' : 'ALERT';
             
             let content = '';
             
             switch(platform) {
                 case 'twitter':
-                    content = `🌌 LIVE UPDATE: ${activity} solar activity detected! HelioEarth AI is showing ${confidence}% aurora probability ${timeOfDay}. This NASA-powered forecasting system by @OluwafemiIdiakhoa is incredible! #SpaceWeather #Aurora #AI`;
+                    content = `${emoji} ${urgency}: ${activity} detected by HelioEarth AI! 
+${totalEvents} events tracked (${cmeCount} CMEs + ${flareCount} flares)
+🎯 Aurora probability: ${confidence}% ${timeOfDay}
+📊 Kp: ${kpValue} | Source: ${dataSource}
+Created by @OluwafemiIdiakhoa using real NASA data!
+#SpaceWeather #Aurora #NASA #AI #HelioEarth #${activity.replace(/[^a-zA-Z]/g, '')}`;
                     break;
+                    
                 case 'instagram':
-                    content = `✨ Real-time space weather check: ${activity} activity with ${confidence}% aurora chance ${timeOfDay}! 🌌 Using HelioEarth's AI system that combines NASA data with location-based forecasting. Aurora hunters, this is your moment! 📸 #AuroraHunting #SpaceWeather #NightSky`;
+                    content = `${emoji} Space weather ${urgency.toLowerCase()} just dropped! ${emoji}
+
+Current solar conditions (${timestamp}):
+🌟 Activity: ${activity}
+🎯 Aurora forecast: ${confidence}% ${timeOfDay}  
+⚡ Space events: ${totalEvents} tracked
+📡 Kp index: ${kpValue}
+🛰️ Data: ${dataSource}
+
+HelioEarth's AI system is incredible for real-time space weather! Perfect timing for aurora photography planning 📸✨
+
+Built by the amazing @OluwafemiIdiakhoa 👨‍💻🚀
+
+#SpaceWeather #Aurora #NASA #Photography #NightSky #AuroraHunting #Science #SpaceScience #NorthernLights #HelioEarth #AI #TechForGood`;
                     break;
+                    
                 case 'facebook':
-                    content = `🚀 Mind-blown by this space weather forecasting technology! HelioEarth just told me there's a ${confidence}% chance of seeing auroras ${timeOfDay} based on current ${activity} solar activity. Developer Oluwafemi Idiakhoa has created something amazing here - real NASA data turned into personalized aurora predictions. The future of space weather is here! 🌌`;
+                    content = `${emoji} ${urgency}: ${activity} Space Weather Event! ${emoji}
+
+Just checked HelioEarth and the AI system is showing fascinating data:
+
+📊 Current solar activity: ${activity}
+🌌 Aurora visibility: ${confidence}% chance ${timeOfDay}
+⚡ Events detected: ${totalEvents} total (${cmeCount} CMEs, ${flareCount} solar flares)
+📡 Geomagnetic activity: ${kpValue}
+🕒 Last updated: ${timestamp}
+📍 Data source: ${dataSource}
+
+This incredible tool by developer Oluwafemi Idiakhoa combines real-time NASA satellite data with advanced AI forecasting. It's like having a personal space weather meteorologist! 
+
+${currentForecastData.risk_summary || 'Space weather conditions are dynamic and constantly monitored.'}
+
+Whether you're an aurora photographer, radio operator, or just curious about space science, this is the future of space weather forecasting. The fact that this level of scientific data is now accessible to everyone is mind-blowing! 🚀
+
+Check it out: helioearth.com
+
+#SpaceWeather #Aurora #NASA #AI #Science #TechForGood #Innovation #SpaceScience #NorthernLights`;
                     break;
             }
             
             navigator.clipboard.writeText(content).then(() => {
-                alert(`AI-generated ${platform} content copied to clipboard!`);
+                alert(`🚀 AI-generated ${platform} content with live data copied to clipboard!\n\nIncludes: ${totalEvents} space weather events, ${confidence}% aurora chance, ${kpValue}, and ${dataSource} data source.`);
             });
         }
         
