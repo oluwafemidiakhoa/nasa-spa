@@ -16,6 +16,29 @@
             color: #fff;
             font-family: 'JetBrains Mono', 'Courier New', monospace;
             overflow: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 70%, rgba(87, 189, 232, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 90% 90%, rgba(255, 183, 77, 0.1) 0%, transparent 50%);
+            animation: nebula 30s ease-in-out infinite;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        @keyframes nebula {
+            0%, 100% { opacity: 0.8; transform: scale(1) rotate(0deg); }
+            50% { opacity: 1; transform: scale(1.1) rotate(2deg); }
         }
 
         #canvas-container {
@@ -305,7 +328,7 @@
             </div>
             <div class="metric">
                 <span class="metric-label">Data Connection:</span>
-                <span class="metric-value"><span class="status-indicator status-warning"></span>Demo Mode</span>
+                <span class="metric-value"><span class="status-indicator status-warning"></span>Simulation Mode</span>
             </div>
             <div class="metric">
                 <span class="metric-label">Frame Rate:</span>
@@ -532,7 +555,7 @@
             camera.position.set(2, 1, 2);
 
             // Create renderer
-            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
             renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.shadowMap.enabled = true;
             renderer.shadowMap.type = THREE.PCFSoftShadowMap;

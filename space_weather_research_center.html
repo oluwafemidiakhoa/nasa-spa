@@ -356,7 +356,8 @@
             // Create renderer with high quality
             renderer = new THREE.WebGLRenderer({ 
                 antialias: true,
-                powerPreference: "high-performance"
+                powerPreference: "high-performance",
+                preserveDrawingBuffer: true
             });
             renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));

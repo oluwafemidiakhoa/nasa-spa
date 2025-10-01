@@ -5,6 +5,7 @@ class SpaceWeatherExporter {
     constructor(apiBaseUrl = 'http://localhost:9001') {
         this.apiBaseUrl = apiBaseUrl;
         this.setupExportUI();
+        this.demoMode = false;
     }
     
     setupExportUI() {
@@ -333,6 +334,39 @@ class SpaceWeatherExporter {
         }
     }
     
+    generateDemoCSV(days) {
+        // Generate sample space weather CSV data
+        const header = "Date,Time,Event_Type,Event_ID,Speed_km/s,Confidence,Risk_Level,Impact_Description\n";
+        let csvData = header;
+        
+        // Generate sample data for the last 'days' days
+        for (let i = 0; i < days; i++) {
+            const date = new Date();
+            date.setDate(date.getDate() - i);
+            const dateStr = date.toISOString().split('T')[0];
+            const timeStr = date.toISOString().split('T')[1].split('.')[0];
+            
+            // Generate 1-3 events per day
+            const eventsPerDay = Math.floor(Math.random() * 3) + 1;
+            
+            for (let j = 0; j < eventsPerDay; j++) {
+                const eventTypes = ['CME', 'Solar Flare', 'SEP', 'Geomagnetic Storm'];
+                const eventType = eventTypes[Math.floor(Math.random() * eventTypes.length)];
+                const eventId = `${eventType.replace(' ', '')}-${dateStr.replace(/-/g, '')}-${j + 1}`;
+                const speed = Math.floor(Math.random() * 800) + 200; // 200-1000 km/s
+                const confidence = (Math.random() * 0.4 + 0.6).toFixed(2); // 0.6-1.0
+                const riskLevels = ['LOW', 'MODERATE', 'HIGH'];
+                const riskLevel = riskLevels[Math.floor(Math.random() * riskLevels.length)];
+                const impacts = ['Aurora activity', 'Radio blackout', 'GPS disruption', 'Satellite drag', 'Power grid effects'];
+                const impact = impacts[Math.floor(Math.random() * impacts.length)];
+                
+                csvData += `${dateStr},${timeStr},${eventType},${eventId},${speed},${confidence},${riskLevel},"${impact}"\n`;
+            }
+        }
+        
+        return csvData;
+    }
+    
     getDaysBack() {
         const select = document.getElementById('export-days');
         return select ? parseInt(select.value) : 7;
@@ -344,21 +378,40 @@ class SpaceWeatherExporter {
         
         try {
             if (format === 'csv') {
-                // Use export service directly
-                const response = await fetch(`${this.apiBaseUrl}/api/v1/export/csv?days=${days}`);
-                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                // Try API first, fallback to demo data
+                try {
+                    const response = await fetch(`${this.apiBaseUrl}/api/v1/export/csv?days=${days}`);
+                    if (response.ok) {
+                        const blob = await response.blob();
+                        const downloadUrl = window.URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = downloadUrl;
+                        a.download = `space_weather_export_${new Date().toISOString().split('T')[0]}.csv`;
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        window.URL.revokeObjectURL(downloadUrl);
+                        
+                        this.showStatus('CSV export downloaded successfully!');
+                        return;
+                    }
+                } catch (apiError) {
+                    console.log('API not available, generating demo CSV');
+                }
                 
-                const blob = await response.blob();
+                // Generate demo CSV data
+                const demoCSV = this.generateDemoCSV(days);
+                const blob = new Blob([demoCSV], { type: 'text/csv' });
                 const downloadUrl = window.URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.href = downloadUrl;
-                a.download = `space_weather_export_${new Date().toISOString().split('T')[0]}.csv`;
+                a.download = `space_weather_demo_export_${new Date().toISOString().split('T')[0]}.csv`;
                 document.body.appendChild(a);
                 a.click();
                 document.body.removeChild(a);
                 window.URL.revokeObjectURL(downloadUrl);
                 
-                this.showStatus('CSV export downloaded successfully!');
+                this.showStatus('Demo CSV export downloaded successfully!');
                 
             } else if (format === 'json') {
                 // Generate JSON export locally using live NASA data
