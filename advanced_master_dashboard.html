@@ -1438,25 +1438,10 @@
             console.log('✅ Advanced master dashboard fully loaded');
         }
 
-        // Initialize master system with performance optimization
+        // Initialize master system
         document.addEventListener('DOMContentLoaded', () => {
-            // Setup performance optimization
-            window.perfOptimizer.optimizeDashboard({
-                lazyLoad3D: true,
-                lazyLoadCharts: true,
-                deferHeavyInit: true,
-                enableImageLazyLoad: true
-            });
-            
-            // Load Font Awesome lazily
-            window.perfOptimizer.deferUntilInteraction(() => {
-                window.perfOptimizer.loadCSS('fontawesome');
-            });
-            
-            // Initialize heavy components on user interaction
-            window.perfOptimizer.deferUntilInteraction(() => {
-                initMasterLibraries();
-            });
+            // Initialize dashboard directly
+            init();
             
             // Fallback: Load after 3 seconds if no interaction
             setTimeout(() => {
