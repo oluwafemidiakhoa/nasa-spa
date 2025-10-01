@@ -2018,37 +2018,14 @@
 
         window.addEventListener('resize', onWindowResize);
 
-        // Lazy initialization for spectacular observatory
-        async function initSpectacularLibraries() {
-            console.log('⏳ Loading spectacular observatory libraries...');
-            
-            // Load libraries in parallel
-            await Promise.all([
-                window.perfOptimizer.loadLibrary('three.js'),
-                window.perfOptimizer.loadLibrary('dat.gui')
-            ]);
-            
-            // Initialize observatory after libraries are loaded
-            init();
-            
-            console.log('✅ Spectacular observatory fully loaded');
-        }
 
-        // Initialize when page loads with performance optimization
+        // Initialize when page loads
         document.addEventListener('DOMContentLoaded', () => {
             console.log('🚀 Starting Spectacular Space Weather Observatory...');
             
-            // Setup performance optimization
-            window.perfOptimizer.optimizeDashboard({
-                lazyLoad3D: true,
-                lazyLoadCharts: false,
-                deferHeavyInit: true,
-                enableImageLazyLoad: false
-            });
-            
             // Initialize spectacular observatory immediately
             setTimeout(() => {
-                initSpectacularLibraries();
+                init();
             }, 100);
         });
 
@@ -2089,5 +2066,7 @@
             }
         });
     </script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </body>
 </html>
