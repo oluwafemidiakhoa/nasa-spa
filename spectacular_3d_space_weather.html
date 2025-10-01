@@ -4,8 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>🌌 NASA SPECTACULAR 3D SPACE WEATHER OBSERVATORY</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.9/dat.gui.min.js"></script>
+    <script src="performance_optimizer.js"></script>
     <script src="live_nasa_data.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600&display=swap');
@@ -22,6 +21,29 @@
             font-family: 'Rajdhani', sans-serif;
             overflow: hidden;
             cursor: none;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 70%, rgba(87, 189, 232, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 90% 90%, rgba(255, 183, 77, 0.1) 0%, transparent 50%);
+            animation: nebula 30s ease-in-out infinite;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        @keyframes nebula {
+            0%, 100% { opacity: 0.8; transform: scale(1) rotate(0deg); }
+            50% { opacity: 1; transform: scale(1.1) rotate(2deg); }
         }
 
         #canvas-container {
@@ -34,12 +56,12 @@
             position: fixed;
             width: 20px;
             height: 20px;
-            border: 2px solid #00ffff;
+            border: 2px solid #4a90e2;
             border-radius: 50%;
             pointer-events: none;
             z-index: 10000;
             transition: transform 0.1s ease;
-            box-shadow: 0 0 20px #00ffff;
+            box-shadow: 0 0 10px rgba(74, 144, 226, 0.5);
         }
 
         .hud-overlay {
@@ -54,14 +76,13 @@
 
         .hud-panel {
             position: absolute;
-            background: linear-gradient(135deg, rgba(0, 20, 40, 0.95), rgba(0, 40, 80, 0.85));
-            border: 2px solid transparent;
-            background-clip: padding-box;
-            border-radius: 15px;
-            padding: 25px;
-            backdrop-filter: blur(15px);
+            background: linear-gradient(135deg, rgba(20, 30, 40, 0.95), rgba(30, 40, 50, 0.90));
+            border: 1px solid rgba(74, 144, 226, 0.4);
+            border-radius: 8px;
+            padding: 10px;
+            backdrop-filter: blur(10px);
             box-shadow: 
-                0 0 50px rgba(0, 255, 255, 0.3),
+                0 0 20px rgba(0, 0, 0, 0.5),
                 inset 0 1px 0 rgba(255, 255, 255, 0.1);
             pointer-events: auto;
             font-family: 'Orbitron', monospace;
@@ -74,12 +95,12 @@
             left: 0;
             right: 0;
             bottom: 0;
-            border-radius: 15px;
-            padding: 2px;
-            background: linear-gradient(45deg, #00ffff, #0080ff, #8000ff, #ff0080, #ff8000, #ffff00);
+            border-radius: 12px;
+            padding: 1px;
+            background: linear-gradient(45deg, rgba(74, 144, 226, 0.3), rgba(100, 150, 200, 0.3));
             -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
             -webkit-mask-composite: exclude;
-            animation: borderGlow 3s linear infinite;
+            animation: borderGlow 5s linear infinite;
         }
 
         @keyframes borderGlow {
@@ -89,23 +110,23 @@
         }
 
         #mission-control {
-            top: 30px;
-            left: 30px;
-            min-width: 380px;
+            top: 15px;
+            left: 15px;
+            min-width: 220px;
         }
 
         #observatory-data {
-            top: 30px;
-            right: 30px;
-            min-width: 400px;
-            max-height: 75vh;
+            top: 15px;
+            right: 15px;
+            min-width: 240px;
+            max-height: 50vh;
             overflow-y: auto;
         }
 
         #physics-panel {
-            bottom: 30px;
-            left: 30px;
-            min-width: 500px;
+            bottom: 15px;
+            left: 15px;
+            min-width: 300px;
         }
 
         #alert-panel {
@@ -119,28 +140,28 @@
         }
 
         .panel-title {
-            color: #00ffff;
-            font-size: 1.4rem;
-            font-weight: 900;
-            margin-bottom: 20px;
+            color: #4a90e2;
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 12px;
             text-align: center;
             text-transform: uppercase;
-            text-shadow: 0 0 15px #00ffff;
-            letter-spacing: 2px;
+            text-shadow: 0 0 5px rgba(74, 144, 226, 0.3);
+            letter-spacing: 1px;
         }
 
         .status-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            margin-bottom: 20px;
+            gap: 8px;
+            margin-bottom: 12px;
         }
 
         .status-metric {
-            background: rgba(0, 255, 255, 0.1);
-            border: 1px solid #00ffff;
-            border-radius: 10px;
-            padding: 15px;
+            background: rgba(74, 144, 226, 0.1);
+            border: 1px solid rgba(74, 144, 226, 0.3);
+            border-radius: 6px;
+            padding: 8px;
             text-align: center;
             position: relative;
             overflow: hidden;
@@ -153,7 +174,7 @@
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.3), transparent);
+            background: linear-gradient(90deg, transparent, rgba(74, 144, 226, 0.2), transparent);
             transition: left 0.5s ease;
         }
 
@@ -162,29 +183,29 @@
         }
 
         .metric-value {
-            font-size: 2rem;
-            font-weight: 900;
-            color: #00ff00;
-            margin-bottom: 5px;
-            text-shadow: 0 0 10px #00ff00;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #5cb85c;
+            margin-bottom: 3px;
+            text-shadow: 0 0 3px rgba(92, 184, 92, 0.3);
         }
 
         .metric-label {
-            font-size: 0.9rem;
+            font-size: 0.7rem;
             color: #cccccc;
             text-transform: uppercase;
             letter-spacing: 1px;
         }
 
         .controls-section {
-            margin-bottom: 20px;
+            margin-bottom: 12px;
         }
 
         .control-label {
-            color: #ffff00;
-            font-size: 1rem;
+            color: #f0ad4e;
+            font-size: 0.8rem;
             font-weight: 600;
-            margin-bottom: 10px;
+            margin-bottom: 6px;
             display: block;
             text-transform: uppercase;
             letter-spacing: 1px;
@@ -197,14 +218,14 @@
         }
 
         .control-btn {
-            background: linear-gradient(135deg, #0066cc, #0099ff);
+            background: linear-gradient(135deg, #4a90e2, #5ba3f5);
             color: white;
             border: none;
-            padding: 12px 20px;
-            border-radius: 8px;
+            padding: 8px 12px;
+            border-radius: 6px;
             cursor: pointer;
             font-family: 'Orbitron', monospace;
-            font-size: 0.9rem;
+            font-size: 0.7rem;
             font-weight: 600;
             transition: all 0.3s ease;
             text-transform: uppercase;
@@ -309,6 +330,71 @@
             animation: pulse 1.5s ease-in-out infinite;
         }
 
+        .top-status-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: linear-gradient(135deg, rgba(0, 20, 40, 0.95), rgba(0, 30, 60, 0.9));
+            backdrop-filter: blur(10px);
+            border-bottom: 2px solid rgba(74, 144, 226, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+            font-family: 'Orbitron', monospace;
+            z-index: 1100;
+            pointer-events: auto;
+        }
+
+        .mission-clock {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #00ffff;
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+            font-family: 'Orbitron', monospace;
+        }
+
+        .system-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #ffffff;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #00ff00;
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .status-dot.green {
+            background: #00ff00;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.6);
+        }
+
+        .status-dot.yellow {
+            background: #ffff00;
+            box-shadow: 0 0 10px rgba(255, 255, 0, 0.6);
+        }
+
+        .status-dot.red {
+            background: #ff0000;
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.6);
+        }
+
         .connection-status {
             display: inline-flex;
             align-items: center;
@@ -384,6 +470,117 @@
                 min-width: auto;
             }
         }
+
+        /* Help Center Styles */
+        .help-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .help-content {
+            background: linear-gradient(135deg, rgba(10, 10, 30, 0.95), rgba(20, 20, 50, 0.95));
+            border: 2px solid rgba(74, 144, 226, 0.6);
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 90vw;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+        }
+
+        .help-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            border-bottom: 2px solid rgba(74, 144, 226, 0.3);
+            padding-bottom: 15px;
+        }
+
+        .help-header h2 {
+            color: #4a90e2;
+            font-family: 'Orbitron', monospace;
+            font-size: 1.8rem;
+            margin: 0;
+            text-shadow: 0 0 10px rgba(74, 144, 226, 0.5);
+        }
+
+        .help-close {
+            background: rgba(255, 0, 0, 0.7);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .help-close:hover {
+            background: rgba(255, 0, 0, 0.9);
+            transform: scale(1.1);
+        }
+
+        .help-sections {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+        }
+
+        .help-section {
+            background: rgba(0, 20, 40, 0.6);
+            border: 1px solid rgba(74, 144, 226, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        .help-section h3 {
+            color: #00ff80;
+            font-family: 'Orbitron', monospace;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            text-shadow: 0 0 5px rgba(0, 255, 128, 0.3);
+        }
+
+        .help-section ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .help-section li {
+            margin-bottom: 8px;
+            padding-left: 15px;
+            position: relative;
+            color: #e0e0e0;
+            line-height: 1.4;
+        }
+
+        .help-section li::before {
+            content: '▶';
+            position: absolute;
+            left: 0;
+            color: #4a90e2;
+        }
+
+        .help-section a {
+            color: #4a90e2;
+            text-decoration: none;
+        }
+
+        .help-section a:hover {
+            color: #00ff80;
+            text-shadow: 0 0 5px rgba(0, 255, 128, 0.3);
+        }
     </style>
 </head>
 <body>
@@ -395,6 +592,16 @@
     </div>
     
     <div class="hud-overlay">
+        <!-- Professional Status Bar -->
+        <div class="top-status-bar">
+            <div class="mission-clock" id="missionClock">00:00:00</div>
+            <div class="system-name">🌌 SPECTACULAR SPACE OBSERVATORY</div>
+            <div class="status-indicator">
+                <div class="status-dot green"></div>
+                <span id="systemStatus">OPERATIONAL</span>
+            </div>
+        </div>
+
         <!-- Mission Control Panel -->
         <div id="mission-control" class="hud-panel">
             <div class="panel-title">🛰️ MISSION CONTROL</div>
@@ -483,6 +690,12 @@
                     <button class="control-btn active" onclick="togglePhysicsModel('magnetic')" id="btn-mag-model">Magnetic</button>
                 </div>
             </div>
+
+            <div style="margin-top: 20px; text-align: center;">
+                <button class="control-btn" onclick="openHelpCenter()" style="background: linear-gradient(135deg, #28a745, #20c997);">
+                    ❓ Help & Guide
+                </button>
+            </div>
         </div>
 
         <!-- Emergency Alert Panel -->
@@ -496,7 +709,81 @@
                 <button class="control-btn" onclick="dismissAlert()">ACKNOWLEDGE</button>
             </div>
         </div>
-    </div>
+
+        <!-- Help Center Modal -->
+        <div id="help-center" class="help-modal" style="display: none;">
+            <div class="help-content">
+                <div class="help-header">
+                    <h2>🌌 3D Space Weather Observatory - Help Center</h2>
+                    <button class="help-close" onclick="closeHelpCenter()">&times;</button>
+                </div>
+                
+                <div class="help-sections">
+                    <div class="help-section">
+                        <h3>🎮 Controls & Navigation</h3>
+                        <ul>
+                            <li><strong>Mouse:</strong> Left-click + drag to rotate view</li>
+                            <li><strong>Scroll:</strong> Zoom in/out</li>
+                            <li><strong>Right-click + drag:</strong> Pan camera</li>
+                            <li><strong>Keyboard:</strong> WASD for movement, Arrow keys for camera control</li>
+                            <li><strong>Space:</strong> Pause/resume animation</li>
+                            <li><strong>R:</strong> Reset camera view</li>
+                        </ul>
+                    </div>
+
+                    <div class="help-section">
+                        <h3>🛰️ Mission Control Panel</h3>
+                        <ul>
+                            <li><strong>Animation:</strong> Toggle time-based simulation</li>
+                            <li><strong>Reset:</strong> Return to default view</li>
+                            <li><strong>Fullscreen:</strong> Immersive viewing mode</li>
+                            <li><strong>Capture:</strong> Take screenshot of current view</li>
+                            <li><strong>Camera Modes:</strong> Switch between observation perspectives</li>
+                            <li><strong>Speed Control:</strong> Adjust simulation time rate</li>
+                        </ul>
+                    </div>
+
+                    <div class="help-section">
+                        <h3>🧪 Physics Models</h3>
+                        <ul>
+                            <li><strong>CME Drag Model:</strong> Simulates Coronal Mass Ejection propagation with solar wind resistance</li>
+                            <li><strong>Solar Wind:</strong> Real-time solar wind speed and density modeling</li>
+                            <li><strong>Magnetic Field:</strong> Earth's magnetosphere interaction visualization</li>
+                            <li><strong>Dst Index:</strong> Geomagnetic storm intensity indicator</li>
+                        </ul>
+                    </div>
+
+                    <div class="help-section">
+                        <h3>📊 Data Interpretation</h3>
+                        <ul>
+                            <li><strong>Observatory Data:</strong> Live NASA satellite measurements</li>
+                            <li><strong>Physics Panel:</strong> Real-time equations and calculations</li>
+                            <li><strong>Event Alerts:</strong> Automated warnings for space weather events</li>
+                            <li><strong>Color Coding:</strong> Green=Normal, Yellow=Watch, Red=Warning</li>
+                        </ul>
+                    </div>
+
+                    <div class="help-section">
+                        <h3>🚨 Emergency Procedures</h3>
+                        <ul>
+                            <li><strong>Red Alerts:</strong> Immediate attention required</li>
+                            <li><strong>ACKNOWLEDGE:</strong> Confirm alert awareness</li>
+                            <li><strong>Data Sources:</strong> NOAA, NASA DONKI, SDO, SOHO</li>
+                            <li><strong>Contact Support:</strong> support@helioearth.com</li>
+                        </ul>
+                    </div>
+
+                    <div class="help-section">
+                        <h3>📞 Support & Resources</h3>
+                        <p><strong>Professional Space Weather Platform</strong></p>
+                        <p>Email: <a href="mailto:support@helioearth.com">support@helioearth.com</a></p>
+                        <p>Documentation: Real-time NASA data integration</p>
+                        <p>Emergency Hotline: Contact your space weather coordinator</p>
+                        <p>Training: Interactive 3D visualization tutorials available</p>
+                    </div>
+                </div>
+            </div>
+        </div>
 
     <script>
         // Global variables
@@ -511,8 +798,27 @@
         let nasaData = null;
         let physicsModels = { cme: true, solarWind: true, magnetic: true };
         let stats, gui;
+        
+        // Performance monitoring
+        let frameCount = 0;
+        let lastTime = 0;
+        let fps = 60;
+        let autoQuality = true;
 
         console.log('🚀 Initializing Spectacular 3D Space Weather Observatory...');
+        
+        // Mission Clock System
+        function updateMissionClock() {
+            const now = new Date();
+            const hours = String(now.getUTCHours()).padStart(2, '0');
+            const minutes = String(now.getUTCMinutes()).padStart(2, '0');
+            const seconds = String(now.getUTCSeconds()).padStart(2, '0');
+            document.getElementById('missionClock').textContent = `${hours}:${minutes}:${seconds}`;
+        }
+
+        // Start mission clock
+        setInterval(updateMissionClock, 1000);
+        updateMissionClock();
 
         function init() {
             // Create scene with fog for depth
@@ -523,19 +829,21 @@
             camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 10000);
             camera.position.set(0, 200, 400);
 
-            // Create renderer with advanced settings
+            // Create renderer with optimized settings and preserve drawing buffer for screenshots
             renderer = new THREE.WebGLRenderer({ 
-                antialias: true, 
+                antialias: window.devicePixelRatio < 2, 
                 powerPreference: "high-performance",
                 stencil: false,
-                depth: true
+                depth: true,
+                logarithmicDepthBuffer: true,
+                preserveDrawingBuffer: true
             });
             renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-            renderer.shadowMap.enabled = true;
-            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+            renderer.shadowMap.enabled = false; // Disable shadows for better performance
             renderer.toneMapping = THREE.ACESFilmicToneMapping;
-            renderer.toneMappingExposure = 0.5;
+            renderer.toneMappingExposure = 0.8;
+            renderer.outputEncoding = THREE.sRGBEncoding;
             document.getElementById('canvas-container').appendChild(renderer.domElement);
 
             // Create spectacular background
@@ -568,8 +876,8 @@
         }
 
         function createSpectacularBackground() {
-            // Create nebula background
-            const nebulaGeometry = new THREE.SphereGeometry(5000, 64, 64);
+            // Create optimized nebula background
+            const nebulaGeometry = new THREE.SphereGeometry(5000, 32, 32);
             const nebulaTexture = createNebulaTexture();
             const nebulaMaterial = new THREE.MeshBasicMaterial({
                 map: nebulaTexture,
@@ -580,9 +888,9 @@
             const nebula = new THREE.Mesh(nebulaGeometry, nebulaMaterial);
             scene.add(nebula);
 
-            // Create massive star field
+            // Create optimized star field
             const starGeometry = new THREE.BufferGeometry();
-            const starCount = 50000;
+            const starCount = 8000;
             const positions = new Float32Array(starCount * 3);
             const colors = new Float32Array(starCount * 3);
             const sizes = new Float32Array(starCount);
@@ -655,7 +963,51 @@
             const stars = new THREE.Points(starGeometry, starMaterial);
             scene.add(stars);
 
-            console.log('🌌 Spectacular background created with 50,000 stars');
+            console.log('🌌 Optimized background created with 8,000 stars');
+        }
+
+        function createContinuousSolarWind() {
+            // Create flowing solar wind particles
+            const windCount = 1500;
+            const windGeometry = new THREE.BufferGeometry();
+            const windPositions = new Float32Array(windCount * 3);
+            const windVelocities = new Float32Array(windCount * 3);
+            const windSizes = new Float32Array(windCount);
+
+            for (let i = 0; i < windCount; i++) {
+                const i3 = i * 3;
+                const angle = Math.random() * Math.PI * 2;
+                const radius = 25 + Math.random() * 15;
+                
+                windPositions[i3] = Math.cos(angle) * radius;
+                windPositions[i3 + 1] = (Math.random() - 0.5) * 20;
+                windPositions[i3 + 2] = Math.sin(angle) * radius;
+                
+                windVelocities[i3] = Math.cos(angle) * (1.5 + Math.random() * 0.5);
+                windVelocities[i3 + 1] = (Math.random() - 0.5) * 0.2;
+                windVelocities[i3 + 2] = Math.sin(angle) * (1.5 + Math.random() * 0.5);
+                
+                windSizes[i] = 0.5 + Math.random() * 1.5;
+            }
+
+            windGeometry.setAttribute('position', new THREE.BufferAttribute(windPositions, 3));
+            windGeometry.setAttribute('velocity', new THREE.BufferAttribute(windVelocities, 3));
+            windGeometry.setAttribute('size', new THREE.BufferAttribute(windSizes, 1));
+
+            const windMaterial = new THREE.PointsMaterial({
+                color: 0x00aaff,
+                size: 1,
+                transparent: true,
+                opacity: 0.6,
+                blending: THREE.AdditiveBlending
+            });
+
+            const solarWind = new THREE.Points(windGeometry, windMaterial);
+            solarWind.userData = { type: 'solarWind' };
+            scene.add(solarWind);
+            solarWindParticles.push(solarWind);
+
+            console.log('🌪️ Continuous solar wind created');
         }
 
         function createNebulaTexture() {
@@ -681,8 +1033,8 @@
             // Create enhanced Sun with corona
             const sunGroup = new THREE.Group();
             
-            // Sun core
-            const sunGeometry = new THREE.SphereGeometry(20, 64, 64);
+            // Sun core (optimized geometry)
+            const sunGeometry = new THREE.SphereGeometry(20, 32, 32);
             const sunMaterial = new THREE.ShaderMaterial({
                 uniforms: {
                     time: { value: 0 },
@@ -768,11 +1120,14 @@
 
             scene.add(sunGroup);
 
+            // Create spectacular continuous solar wind
+            createContinuousSolarWind();
+
             // Create enhanced Earth with atmosphere
             const earthGroup = new THREE.Group();
             
-            // Earth
-            const earthGeometry = new THREE.SphereGeometry(8, 64, 64);
+            // Earth (optimized geometry)
+            const earthGeometry = new THREE.SphereGeometry(8, 32, 32);
             const earthTexture = createEarthTexture();
             const earthMaterial = new THREE.MeshPhongMaterial({
                 map: earthTexture,
@@ -1013,15 +1368,15 @@
                 }
                 
             } else {
-                console.log('⏳ NASA data not available, creating spectacular demo...');
+                console.log('⏳ NASA data not available, creating spectacular simulation...');
                 updateConnectionStatus('loading');
-                createSpectacularDemo();
+                createSpectacularSimulation();
                 setTimeout(loadNASAData, 3000);
             }
         }
 
-        function createSpectacularDemo() {
-            // Create demo data that looks impressive
+        function createSpectacularSimulation() {
+            // Create simulation data that looks impressive
             nasaData = {
                 summary: {
                     cme_count: 12,
@@ -1030,15 +1385,15 @@
                 },
                 events: {
                     cmes: [
-                        { id: 'DEMO_CME_001', speed: 850, start_time: new Date().toISOString(), source_location: 'N15E25' },
-                        { id: 'DEMO_CME_002', speed: 1200, start_time: new Date().toISOString(), source_location: 'S20W10' },
-                        { id: 'DEMO_CME_003', speed: 650, start_time: new Date().toISOString(), source_location: 'N05E45' },
-                        { id: 'DEMO_CME_004', speed: 920, start_time: new Date().toISOString(), source_location: 'S10E30' }
+                        { id: 'SIM_CME_001', speed: 850, start_time: new Date().toISOString(), source_location: 'N15E25' },
+                        { id: 'SIM_CME_002', speed: 1200, start_time: new Date().toISOString(), source_location: 'S20W10' },
+                        { id: 'SIM_CME_003', speed: 650, start_time: new Date().toISOString(), source_location: 'N05E45' },
+                        { id: 'SIM_CME_004', speed: 920, start_time: new Date().toISOString(), source_location: 'S10E30' }
                     ],
                     solar_flares: [
-                        { id: 'DEMO_FLARE_001', class_type: 'X2.5', start_time: new Date().toISOString(), source_location: 'N15E25' },
-                        { id: 'DEMO_FLARE_002', class_type: 'M8.1', start_time: new Date().toISOString(), source_location: 'S20W10' },
-                        { id: 'DEMO_FLARE_003', class_type: 'M5.3', start_time: new Date().toISOString(), source_location: 'N05E45' }
+                        { id: 'SIM_FLARE_001', class_type: 'X2.5', start_time: new Date().toISOString(), source_location: 'N15E25' },
+                        { id: 'SIM_FLARE_002', class_type: 'M8.1', start_time: new Date().toISOString(), source_location: 'S20W10' },
+                        { id: 'SIM_FLARE_003', class_type: 'M5.3', start_time: new Date().toISOString(), source_location: 'N05E45' }
                     ]
                 }
             };
@@ -1047,7 +1402,7 @@
             createSpectacularCMEVisualization();
             createSpectacularFlareVisualization();
             
-            // Show demo alert for X-class flare
+            // Show simulation alert for X-class flare
             setTimeout(() => {
                 showEmergencyAlert(nasaData.events.cmes[1]);
             }, 5000);
@@ -1162,8 +1517,8 @@
                 const speed = cme.speed || 500;
                 const cmeGroup = new THREE.Group();
                 
-                // Create particle system based on CME speed
-                const particleCount = Math.min(2000, 500 + speed);
+                // Create optimized particle system based on CME speed
+                const particleCount = Math.min(800, 200 + Math.floor(speed / 3));
                 const geometry = new THREE.BufferGeometry();
                 const positions = new Float32Array(particleCount * 3);
                 const colors = new Float32Array(particleCount * 3);
@@ -1387,19 +1742,37 @@
             requestAnimationFrame(animate);
 
             const time = Date.now() * 0.001;
+            
+            // Performance monitoring
+            frameCount++;
+            if (time - lastTime >= 1.0) {
+                fps = frameCount / (time - lastTime);
+                frameCount = 0;
+                lastTime = time;
+                
+                // Auto-adjust quality based on FPS
+                if (autoQuality) {
+                    if (fps < 30 && particleIntensity > 0.3) {
+                        particleIntensity = Math.max(0.3, particleIntensity - 0.1);
+                        console.log(`🔧 Auto-reduced quality: FPS ${fps.toFixed(1)}, Intensity ${particleIntensity}`);
+                    } else if (fps > 50 && particleIntensity < 1.0) {
+                        particleIntensity = Math.min(1.0, particleIntensity + 0.05);
+                    }
+                }
+            }
 
             if (animationRunning) {
-                // Update shader uniforms
-                scene.traverse((object) => {
-                    if (object.material && object.material.uniforms) {
-                        if (object.material.uniforms.time) {
-                            object.material.uniforms.time.value = time * timeSpeed;
-                        }
-                        if (object.material.uniforms.intensity) {
-                            object.material.uniforms.intensity.value = particleIntensity;
-                        }
-                    }
-                });
+                // Optimized shader uniform updates (only update specific objects)
+                if (sun && sun.material.uniforms) {
+                    sun.material.uniforms.time.value = time * timeSpeed;
+                    sun.material.uniforms.intensity.value = particleIntensity;
+                }
+                
+                // Update star material time uniform
+                const stars = scene.children.find(child => child.type === 'Points');
+                if (stars && stars.material.uniforms) {
+                    stars.material.uniforms.time.value = time * timeSpeed;
+                }
 
                 // Animate solar system
                 if (sun) {
@@ -1444,15 +1817,45 @@
                     }
                 });
 
-                // Update physics calculations
-                updatePhysicsDisplay();
+                // Animate continuous solar wind
+                solarWindParticles.forEach(windSystem => {
+                    const positions = windSystem.geometry.attributes.position.array;
+                    const velocities = windSystem.geometry.attributes.velocity.array;
+                    
+                    for (let i = 0; i < positions.length; i += 3) {
+                        positions[i] += velocities[i] * timeSpeed;
+                        positions[i + 1] += velocities[i + 1] * timeSpeed;
+                        positions[i + 2] += velocities[i + 2] * timeSpeed;
+                        
+                        // Reset particles that go too far
+                        const distance = Math.sqrt(positions[i]**2 + positions[i + 1]**2 + positions[i + 2]**2);
+                        if (distance > 300) {
+                            const angle = Math.random() * Math.PI * 2;
+                            const radius = 25 + Math.random() * 15;
+                            positions[i] = Math.cos(angle) * radius;
+                            positions[i + 1] = (Math.random() - 0.5) * 20;
+                            positions[i + 2] = Math.sin(angle) * radius;
+                        }
+                    }
+                    windSystem.geometry.attributes.position.needsUpdate = true;
+                });
 
-                // Update camera for cinematic mode
+                // Update physics calculations (only every 10 frames for performance)
+                if (Math.floor(time * 60) % 10 === 0) {
+                    updatePhysicsDisplay();
+                }
+
+                // Update camera for cinematic mode with spectacular movements
                 if (cameraMode === 'cinematic') {
-                    camera.position.x = Math.cos(time * 0.1) * 300;
-                    camera.position.y = 100 + Math.sin(time * 0.05) * 50;
-                    camera.position.z = Math.sin(time * 0.1) * 300;
-                    camera.lookAt(0, 0, 0);
+                    const radius = 250 + Math.sin(time * 0.03) * 50;
+                    camera.position.x = Math.cos(time * 0.08) * radius;
+                    camera.position.y = 80 + Math.sin(time * 0.04) * 60;
+                    camera.position.z = Math.sin(time * 0.08) * radius;
+                    
+                    // Dynamic look target for more dramatic effect
+                    const lookX = Math.sin(time * 0.02) * 30;
+                    const lookY = Math.cos(time * 0.015) * 20;
+                    camera.lookAt(lookX, lookY, 0);
                 }
             }
 
@@ -1494,11 +1897,67 @@
         }
 
         function captureScreenshot() {
-            const link = document.createElement('a');
-            link.download = 'nasa_space_weather_' + new Date().toISOString().slice(0, 19) + '.png';
-            link.href = renderer.domElement.toDataURL();
-            link.click();
-            console.log('📸 Screenshot captured');
+            try {
+                // Force a render to ensure the canvas is up to date
+                renderer.render(scene, camera);
+                
+                // Get the canvas data with error handling
+                const canvas = renderer.domElement;
+                const dataURL = canvas.toDataURL('image/png', 1.0);
+                
+                if (dataURL === 'data:,') {
+                    throw new Error('Canvas is blank');
+                }
+                
+                // Create download link
+                const link = document.createElement('a');
+                const timestamp = new Date().toISOString().replace(/[:.]/g, '_').slice(0, 19);
+                link.download = `helioearth_3d_space_weather_${timestamp}.png`;
+                link.href = dataURL;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                console.log('📸 Screenshot captured successfully');
+                
+                // Show user feedback
+                showCaptureNotification();
+                
+            } catch (error) {
+                console.error('Screenshot capture failed:', error);
+                alert('📸 Screenshot capture failed. Please try again or use your system screenshot tool (Windows+Shift+S or Cmd+Shift+4)');
+            }
+        }
+
+        function showCaptureNotification() {
+            // Create temporary notification
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: linear-gradient(135deg, #4a90e2, #5ba3f5);
+                color: white;
+                padding: 15px 20px;
+                border-radius: 8px;
+                font-family: 'Orbitron', monospace;
+                font-size: 0.9rem;
+                z-index: 10000;
+                box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);
+                opacity: 0;
+                transition: opacity 0.3s ease;
+            `;
+            notification.innerHTML = '📸 Screenshot captured successfully!';
+            document.body.appendChild(notification);
+            
+            // Animate in
+            setTimeout(() => notification.style.opacity = '1', 100);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                setTimeout(() => document.body.removeChild(notification), 300);
+            }, 3000);
         }
 
         function setCameraMode(mode) {
@@ -1561,10 +2020,38 @@
 
         window.addEventListener('resize', onWindowResize);
 
-        // Initialize when page loads
+        // Lazy initialization for spectacular observatory
+        async function initSpectacularLibraries() {
+            console.log('⏳ Loading spectacular observatory libraries...');
+            
+            // Load libraries in parallel
+            await Promise.all([
+                window.perfOptimizer.loadLibrary('three.js'),
+                window.perfOptimizer.loadLibrary('dat.gui')
+            ]);
+            
+            // Initialize observatory after libraries are loaded
+            init();
+            
+            console.log('✅ Spectacular observatory fully loaded');
+        }
+
+        // Initialize when page loads with performance optimization
         document.addEventListener('DOMContentLoaded', () => {
             console.log('🚀 Starting Spectacular Space Weather Observatory...');
-            init();
+            
+            // Setup performance optimization
+            window.perfOptimizer.optimizeDashboard({
+                lazyLoad3D: true,
+                lazyLoadCharts: false,
+                deferHeavyInit: true,
+                enableImageLazyLoad: false
+            });
+            
+            // Initialize spectacular observatory immediately
+            setTimeout(() => {
+                initSpectacularLibraries();
+            }, 100);
         });
 
         // WebSocket handler
@@ -1578,6 +2065,31 @@
                 createSpectacularFlareVisualization();
             }
         };
+
+        // Help Center Functions
+        function openHelpCenter() {
+            document.getElementById('help-center').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeHelpCenter() {
+            document.getElementById('help-center').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        // Close help center with Escape key
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+                closeHelpCenter();
+            }
+        });
+
+        // Close help center when clicking outside content
+        document.getElementById('help-center').addEventListener('click', (event) => {
+            if (event.target.id === 'help-center') {
+                closeHelpCenter();
+            }
+        });
     </script>
 </body>
 </html>

@@ -143,6 +143,114 @@
             font-size: 1.5rem;
             text-align: center;
         }
+
+        /* Help Center Styles */
+        .help-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .help-content {
+            background: linear-gradient(135deg, rgba(0, 20, 40, 0.95), rgba(0, 40, 80, 0.95));
+            border: 2px solid #00aaff;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 90vw;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+        }
+
+        .help-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #00aaff;
+            padding-bottom: 15px;
+        }
+
+        .help-header h2 {
+            color: #00aaff;
+            font-family: 'Courier New', monospace;
+            font-size: 1.8rem;
+            margin: 0;
+        }
+
+        .help-close {
+            background: rgba(255, 0, 0, 0.7);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .help-close:hover {
+            background: rgba(255, 0, 0, 0.9);
+            transform: scale(1.1);
+        }
+
+        .help-sections {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+        }
+
+        .help-section {
+            background: rgba(0, 30, 60, 0.6);
+            border: 1px solid #00aaff;
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        .help-section h3 {
+            color: #00ccff;
+            font-family: 'Courier New', monospace;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+
+        .help-section ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .help-section li {
+            margin-bottom: 8px;
+            padding-left: 15px;
+            position: relative;
+            color: #ffffff;
+            line-height: 1.4;
+        }
+
+        .help-section li::before {
+            content: '▶';
+            position: absolute;
+            left: 0;
+            color: #00aaff;
+        }
+
+        .help-section a {
+            color: #00aaff;
+            text-decoration: none;
+        }
+
+        .help-section a:hover {
+            color: #00ccff;
+        }
     </style>
 </head>
 <body>
@@ -179,6 +287,7 @@
             <button class="control-button" onclick="toggleAnimation()">Play/Pause</button>
             <button class="control-button" onclick="resetView()">Reset View</button>
             <button class="control-button" onclick="toggleFullscreen()">Fullscreen</button>
+            <button class="control-button" onclick="openHelpCenter()" style="background: #28a745; border-color: #20c997;">Help & Guide</button>
         </div>
 
         <div style="margin-top: 15px;">
@@ -249,7 +358,7 @@
             camera.position.set(0, 100, 200);
 
             // Create renderer
-            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
             renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.shadowMap.enabled = true;
             renderer.shadowMap.type = THREE.PCFSoftShadowMap;
@@ -434,25 +543,25 @@
                 document.getElementById('data-status').textContent = 'LIVE';
                 
             } else {
-                console.log('⏳ NASA data not available, creating demo...');
-                createDemoData();
-                document.getElementById('data-status').textContent = 'DEMO';
+                console.log('⏳ NASA data not available, using simulation data...');
+                createSimulationData();
+                document.getElementById('data-status').textContent = 'SIMULATION';
                 setTimeout(loadNASAData, 3000);
             }
         }
 
-        function createDemoData() {
+        function createSimulationData() {
             nasaData = {
                 summary: { cme_count: 8, solar_flare_count: 5, total_events: 13 },
                 events: {
                     cmes: [
-                        { id: 'DEMO_CME_001', speed: 650, start_time: new Date().toISOString() },
-                        { id: 'DEMO_CME_002', speed: 890, start_time: new Date().toISOString() },
-                        { id: 'DEMO_CME_003', speed: 420, start_time: new Date().toISOString() }
+                        { id: 'SIM_CME_001', speed: 650, start_time: new Date().toISOString() },
+                        { id: 'SIM_CME_002', speed: 890, start_time: new Date().toISOString() },
+                        { id: 'SIM_CME_003', speed: 420, start_time: new Date().toISOString() }
                     ],
                     solar_flares: [
-                        { id: 'DEMO_FLARE_001', class_type: 'M2.5', start_time: new Date().toISOString() },
-                        { id: 'DEMO_FLARE_002', class_type: 'C8.1', start_time: new Date().toISOString() }
+                        { id: 'SIM_FLARE_001', class_type: 'M2.5', start_time: new Date().toISOString() },
+                        { id: 'SIM_FLARE_002', class_type: 'C8.1', start_time: new Date().toISOString() }
                     ]
                 }
             };
@@ -799,6 +908,89 @@
                 createFlareVisualization();
             }
         };
+
+        // Help Center Functions
+        function openHelpCenter() {
+            document.getElementById('help-center').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeHelpCenter() {
+            document.getElementById('help-center').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        // Close help center with Escape key
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+                closeHelpCenter();
+            }
+        });
     </script>
+
+    <!-- Help Center Modal -->
+    <div id="help-center" class="help-modal" style="display: none;">
+        <div class="help-content">
+            <div class="help-header">
+                <h2>🛰️ NASA Heliophysics Observatory - Help Center</h2>
+                <button class="help-close" onclick="closeHelpCenter()">&times;</button>
+            </div>
+            
+            <div class="help-sections">
+                <div class="help-section">
+                    <h3>🎮 Observatory Controls</h3>
+                    <ul>
+                        <li><strong>Play/Pause:</strong> Control solar system animation</li>
+                        <li><strong>Reset View:</strong> Return to default observation angle</li>
+                        <li><strong>Fullscreen:</strong> Immersive observatory mode</li>
+                        <li><strong>Camera Modes:</strong> Overview, Earth focus, or Sun focus</li>
+                        <li><strong>Mouse Controls:</strong> Drag to rotate, scroll to zoom</li>
+                    </ul>
+                </div>
+
+                <div class="help-section">
+                    <h3>🌞 Heliophysics Science</h3>
+                    <ul>
+                        <li><strong>Solar Wind:</strong> Continuous stream of charged particles</li>
+                        <li><strong>CME Events:</strong> Coronal Mass Ejections from solar surface</li>
+                        <li><strong>Magnetic Fields:</strong> Sun-Earth magnetic connections</li>
+                        <li><strong>Space Weather:</strong> Impact on Earth's environment</li>
+                        <li><strong>Orbital Mechanics:</strong> Real planetary motion simulation</li>
+                    </ul>
+                </div>
+
+                <div class="help-section">
+                    <h3>📡 Data Sources</h3>
+                    <ul>
+                        <li><strong>NASA DONKI:</strong> Space Weather Database</li>
+                        <li><strong>SOHO Mission:</strong> Solar and Heliospheric Observatory</li>
+                        <li><strong>SDO Mission:</strong> Solar Dynamics Observatory</li>
+                        <li><strong>Real-time Data:</strong> Live satellite measurements</li>
+                        <li><strong>Status Monitoring:</strong> Connection health indicators</li>
+                    </ul>
+                </div>
+
+                <div class="help-section">
+                    <h3>🔬 Research Applications</h3>
+                    <ul>
+                        <li><strong>Space Weather Prediction:</strong> Forecast geomagnetic storms</li>
+                        <li><strong>Satellite Safety:</strong> Assess radiation environment</li>
+                        <li><strong>Communication Impact:</strong> HF radio propagation effects</li>
+                        <li><strong>Aurora Prediction:</strong> Visible aurora forecasting</li>
+                        <li><strong>Educational Tool:</strong> Interactive heliophysics learning</li>
+                    </ul>
+                </div>
+
+                <div class="help-section">
+                    <h3>📞 Support & Resources</h3>
+                    <p><strong>NASA Heliophysics Division Observatory</strong></p>
+                    <p>Email: <a href="mailto:support@helioearth.com">support@helioearth.com</a></p>
+                    <p>NASA Resources: Heliophysics mission data and education</p>
+                    <p>Research Support: Academic and professional applications</p>
+                    <p>Observatory Training: 3D visualization techniques</p>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

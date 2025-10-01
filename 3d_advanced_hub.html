@@ -20,6 +20,29 @@
             color: #ffffff;
             min-height: 100vh;
             overflow-x: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 70%, rgba(87, 189, 232, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 90% 90%, rgba(255, 183, 77, 0.1) 0%, transparent 50%);
+            animation: nebula 30s ease-in-out infinite;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        @keyframes nebula {
+            0%, 100% { opacity: 0.8; transform: scale(1) rotate(0deg); }
+            50% { opacity: 1; transform: scale(1.1) rotate(2deg); }
         }
         
         .header {
@@ -281,6 +304,32 @@
         </div>
 
         <div class="systems-grid">
+            <!-- NASA-Grade 3D Solar System -->
+            <div class="system-card" onclick="openSystem('working_3d_solar_system.html')">
+                <div class="card-icon">
+                    <i class="fas fa-globe-americas"></i>
+                </div>
+                <div class="card-title">NASA-GRADE 3D SOLAR SYSTEM</div>
+                <div class="card-description">
+                    Professional NASA-style 3D solar system with "Eyes on Solar System" features. Real-time spacecraft tracking, orbital visualization, time controls, and sharing capabilities matching NASA JPL standards.
+                </div>
+                <ul class="card-features">
+                    <li>NASA-style orbital paths and spacecraft tracking</li>
+                    <li>Parker Solar Probe and STEREO-A models</li>
+                    <li>Live UTC time controls and mission time</li>
+                    <li>Professional snapshot sharing (like NASA's Eyes)</li>
+                    <li>Fullscreen presentation mode</li>
+                    <li>Real-time CME visualization with physics</li>
+                    <li>NASA JPL credits and attribution</li>
+                </ul>
+                <a href="working_3d_solar_system.html" class="launch-btn" target="_blank">
+                    <i class="fas fa-rocket"></i> Launch NASA-Grade 3D
+                </a>
+                <button class="share-btn" onclick="shareSystem('working_3d_solar_system.html', 'NASA-Grade 3D Solar System')" style="background: linear-gradient(145deg, #ff6b35, #f7931e); color: white; border: 2px solid #ff6b35; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-family: 'JetBrains Mono', monospace; font-weight: 700; margin-top: 10px; width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px;">
+                    <i class="fas fa-share-alt"></i> Share NASA-Grade 3D
+                </button>
+            </div>
+
             <!-- NASA Heliophysics Observatory -->
             <div class="system-card" onclick="openSystem('nasa_heliophysics_observatory.html')">
                 <div class="card-icon">

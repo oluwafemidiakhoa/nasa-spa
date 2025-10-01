@@ -31,6 +31,7 @@ class handler(BaseHTTPRequestHandler):
                 
                 # Viral-ready features
                 '/aurora_alerts.html', '/social_share.html', '/space_weather_chatbot.html', '/iss_tracker.html',
+                '/video_content_hub.html',
                 
                 # Testing and utilities
                 '/export_test.html', '/mobile_test.html', '/websocket_test.html', '/simple.html'

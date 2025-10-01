@@ -1,2 +1,0 @@
-# NASA Space Weather - Serverless Deployment
-# Minimal dependencies for Vercel deployment
