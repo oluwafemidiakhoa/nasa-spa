@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NASA Space Weather Observatory</title>
+    <meta http-equiv="refresh" content="0; url=./dashboard_hub.html">
+    <style>
+        body {
+            margin: 0;
+            padding: 50px;
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #001122 0%, #000814 70%, #000000 100%);
+            color: white;
+            text-align: center;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .logo {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+        .title {
+            font-size: 32px;
+            margin-bottom: 30px;
+            color: #00ddff;
+        }
+        .loading {
+            font-size: 18px;
+            margin-bottom: 30px;
+            opacity: 0.8;
+        }
+        .redirect-link {
+            color: #00aaff;
+            text-decoration: none;
+            font-size: 20px;
+            padding: 15px 30px;
+            border: 2px solid #00aaff;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        .redirect-link:hover {
+            background: #00aaff;
+            color: #001122;
+        }
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(0, 170, 255, 0.3);
+            border-top: 4px solid #00aaff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="logo">🛰️</div>
+    <h1 class="title">NASA Space Weather Observatory</h1>
+    <div class="loading">Redirecting to Dashboard Hub...</div>
+    <div class="spinner"></div>
+    <a href="./dashboard_hub.html" class="redirect-link">Click here if not redirected automatically</a>
+    
+    <script>
+        // Backup redirect in case meta refresh doesn't work
+        setTimeout(() => {
+            window.location.href = './dashboard_hub.html';
+        }, 2000);
+    </script>
+</body>
+</html>
