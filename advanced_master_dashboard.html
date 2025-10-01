@@ -1319,6 +1319,17 @@
         function updateAdvancedMetrics() {
             const time = Date.now() / 1000;
             
+            // Update main status bar metrics
+            const totalEvents = Math.round(45 + Math.sin(time / 20) * 15);
+            const cmeEvents = Math.round(8 + Math.sin(time / 25) * 4);
+            const solarFlares = Math.round(12 + Math.sin(time / 18) * 6);
+            const activityIndex = (87.5 + Math.sin(time / 30) * 12.5).toFixed(1);
+            
+            document.getElementById('total-events').textContent = totalEvents;
+            document.getElementById('cme-events').textContent = cmeEvents;
+            document.getElementById('solar-flares').textContent = solarFlares;
+            document.getElementById('space-weather-index').textContent = activityIndex + '%';
+            
             // Dynamic physics parameters
             const baseVelocity = 567;
             const velVariation = Math.sin(time / 12) * 80;
