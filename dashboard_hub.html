@@ -2141,23 +2141,10 @@
             }, 800);
         }
 
-        // Initialize system with performance optimization
+        // Initialize system
         document.addEventListener('DOMContentLoaded', () => {
-            // Initialize performance optimization
-            window.perfOptimizer.optimizeDashboard({
-                lazyLoad3D: true,
-                lazyLoadCharts: true,
-                deferHeavyInit: true,
-                enableImageLazyLoad: true
-            });
-
             // Start professional loading sequence
             initializeLoadingSequence();
-            
-            // Load Font Awesome lazily
-            window.perfOptimizer.deferUntilInteraction(() => {
-                window.perfOptimizer.loadCSS('fontawesome');
-            });
             
             // Load live data in background with delay for better initial load
             setTimeout(() => {
