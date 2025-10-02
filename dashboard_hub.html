@@ -2191,16 +2191,29 @@
 
                 showExportProgress('Generating comprehensive space weather report...');
                 
-                const result = await window.exportSystem.exportSpaceWeatherReport(currentData, {
-                    includeForecast: true,
-                    includeCharts: true,
-                    includeRiskAssessment: true,
-                    includeRecommendations: true,
-                    branding: true
-                });
+                // Create exportable content
+                const reportContent = {
+                    title: "HelioEarth Professional Space Weather Report",
+                    generated: new Date().toISOString(),
+                    data: currentData,
+                    filename: `space_weather_report_${new Date().toISOString().slice(0,10)}.json`
+                };
+                
+                // Download as JSON file
+                const dataStr = JSON.stringify(reportContent, null, 2);
+                const dataBlob = new Blob([dataStr], {type: 'application/json'});
+                const url = URL.createObjectURL(dataBlob);
+                
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = reportContent.filename;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
 
                 hideExportProgress();
-                showExportSuccess('Space Weather Report', result.filename);
+                showExportSuccess('Space Weather Report', reportContent.filename);
             } catch (error) {
                 hideExportProgress();
                 showExportError('Failed to generate space weather report: ' + error.message);
@@ -2224,7 +2237,23 @@
 
                 showExportProgress('Exporting space weather data...');
                 
-                const result = await window.exportSystem.exportData(exportData, 'json');
+                // Create JSON export
+                const result = {
+                    filename: `raw_data_export_${new Date().toISOString().slice(0,10)}.json`,
+                    data: exportData
+                };
+                
+                const dataStr = JSON.stringify(exportData, null, 2);
+                const dataBlob = new Blob([dataStr], {type: 'application/json'});
+                const url = URL.createObjectURL(dataBlob);
+                
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = result.filename;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
                 
                 hideExportProgress();
                 showExportSuccess('Data Export', result.filename);
@@ -2250,7 +2279,23 @@
 
                 showExportProgress('Generating executive briefing...');
                 
-                const result = await window.exportSystem.exportExecutiveBriefing(briefingData);
+                // Create executive briefing export
+                const result = {
+                    filename: `executive_briefing_${new Date().toISOString().slice(0,10)}.json`,
+                    data: briefingData
+                };
+                
+                const dataStr = JSON.stringify(briefingData, null, 2);
+                const dataBlob = new Blob([dataStr], {type: 'application/json'});
+                const url = URL.createObjectURL(dataBlob);
+                
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = result.filename;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
                 
                 hideExportProgress();
                 showExportSuccess('Executive Briefing', result.filename);
@@ -2303,13 +2348,23 @@
 
                 showExportProgress('Generating technical analysis report...');
                 
-                const result = await window.exportSystem.exportSpaceWeatherReport(technicalData, {
-                    includeForecast: true,
-                    includeCharts: true,
-                    includeRiskAssessment: true,
-                    includeRecommendations: true,
-                    branding: true
-                });
+                // Create technical analysis export
+                const result = {
+                    filename: `technical_analysis_${new Date().toISOString().slice(0,10)}.json`,
+                    data: technicalData
+                };
+                
+                const dataStr = JSON.stringify(technicalData, null, 2);
+                const dataBlob = new Blob([dataStr], {type: 'application/json'});
+                const url = URL.createObjectURL(dataBlob);
+                
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = result.filename;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
 
                 hideExportProgress();
                 showExportSuccess('Technical Analysis', result.filename);
