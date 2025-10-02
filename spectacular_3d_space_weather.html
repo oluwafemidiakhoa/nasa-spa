@@ -579,6 +579,287 @@
             color: #00ff80;
             text-shadow: 0 0 5px rgba(0, 255, 128, 0.3);
         }
+
+        /* Story Mode Styles */
+        .mode-toggle-btn {
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-family: 'Orbitron', monospace;
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+        }
+
+        .mode-toggle-btn:hover {
+            background: linear-gradient(135deg, #ff5252, #ff7979);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(255, 107, 107, 0.5);
+        }
+
+        .mode-toggle-btn.story-active {
+            background: linear-gradient(135deg, #ffd93d, #ffb347);
+            color: #000;
+            box-shadow: 0 4px 15px rgba(255, 217, 61, 0.5);
+        }
+
+        /* Story Mode Interface */
+        .story-mode-active {
+            filter: saturate(1.8) brightness(1.3);
+        }
+
+        .story-mode-active .hud-panel {
+            background: linear-gradient(135deg, rgba(255, 217, 61, 0.15), rgba(255, 179, 71, 0.15));
+            border: 3px solid rgba(255, 217, 61, 0.8);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(255, 217, 61, 0.3);
+        }
+
+        .story-mode-active .panel-title {
+            color: #ffd93d;
+            font-size: 1.2rem;
+            text-shadow: 0 0 15px rgba(255, 217, 61, 0.8);
+            animation: titlePulse 2s ease-in-out infinite;
+        }
+
+        @keyframes titlePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .story-mode-active .control-btn {
+            background: linear-gradient(135deg, #ffd93d, #ffb347);
+            color: #000;
+            font-weight: bold;
+            font-size: 0.9rem;
+            padding: 12px 18px;
+            border-radius: 25px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 6px 20px rgba(255, 217, 61, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .story-mode-active .control-btn:hover {
+            background: linear-gradient(135deg, #ffed4e, #ffc947);
+            transform: translateY(-4px) scale(1.08);
+            box-shadow: 0 10px 30px rgba(255, 217, 61, 0.6);
+            border-color: rgba(255, 255, 255, 0.6);
+        }
+
+        /* Kid-Friendly Enhancements */
+        .story-mode-active .metric-value {
+            font-size: 1.4rem;
+            color: #ff6b6b;
+            text-shadow: 0 0 8px rgba(255, 107, 107, 0.5);
+            animation: numberBounce 1.5s ease-in-out infinite;
+        }
+
+        @keyframes numberBounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .story-mode-active .status-metric {
+            background: linear-gradient(135deg, rgba(255, 107, 107, 0.2), rgba(255, 140, 140, 0.1));
+            border: 2px solid rgba(255, 107, 107, 0.5);
+            border-radius: 15px;
+            transform: perspective(1000px) rotateX(5deg);
+        }
+
+        .story-mode-active .status-metric:hover {
+            transform: perspective(1000px) rotateX(0deg) scale(1.05);
+            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.3);
+        }
+
+        /* Fun animations for kids */
+        .story-mode-active .event-card {
+            background: linear-gradient(135deg, rgba(78, 205, 196, 0.3), rgba(68, 179, 217, 0.2));
+            border: 3px solid #4ecdc4;
+            border-radius: 20px;
+            transform: perspective(1000px) rotateY(2deg);
+            transition: all 0.4s ease;
+        }
+
+        .story-mode-active .event-card:hover {
+            transform: perspective(1000px) rotateY(0deg) scale(1.03);
+            box-shadow: 0 12px 40px rgba(78, 205, 196, 0.4);
+        }
+
+        /* Bigger, more fun sliders for kids */
+        .story-mode-active .slider {
+            height: 12px;
+            border-radius: 6px;
+            background: linear-gradient(90deg, #ff6b6b, #ffd93d, #4ecdc4, #44b3d9);
+        }
+
+        .story-mode-active .slider::-webkit-slider-thumb {
+            width: 30px;
+            height: 30px;
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            border: 3px solid white;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.5);
+            transition: all 0.3s ease;
+        }
+
+        .story-mode-active .slider::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            box-shadow: 0 6px 25px rgba(255, 107, 107, 0.7);
+        }
+
+        /* Story Character Panel */
+        .story-character-panel {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, rgba(255, 217, 61, 0.98), rgba(255, 179, 71, 0.95));
+            border: 4px solid #ffd93d;
+            border-radius: 25px;
+            padding: 25px;
+            min-width: 350px;
+            display: none;
+            color: #000;
+            font-family: 'Orbitron', monospace;
+            box-shadow: 0 15px 50px rgba(255, 217, 61, 0.5);
+            transform: perspective(1000px) rotateX(3deg);
+            transition: all 0.4s ease;
+        }
+
+        .story-character-panel.active {
+            display: block;
+            animation: panelSlideIn 0.6s ease-out;
+        }
+
+        @keyframes panelSlideIn {
+            from {
+                transform: perspective(1000px) rotateX(3deg) translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: perspective(1000px) rotateX(3deg) translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .character-avatar {
+            font-size: 4rem;
+            text-align: center;
+            margin-bottom: 15px;
+            animation: avatarBounce 2s ease-in-out infinite;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+        }
+
+        @keyframes avatarBounce {
+            0%, 100% { transform: translateY(0px) scale(1); }
+            50% { transform: translateY(-5px) scale(1.05); }
+        }
+
+        .character-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 15px;
+            color: #ff6b6b;
+            text-shadow: 0 2px 4px rgba(255, 107, 107, 0.3);
+            animation: nameGlow 3s ease-in-out infinite;
+        }
+
+        @keyframes nameGlow {
+            0%, 100% { text-shadow: 0 2px 4px rgba(255, 107, 107, 0.3); }
+            50% { text-shadow: 0 2px 8px rgba(255, 107, 107, 0.6), 0 0 20px rgba(255, 107, 107, 0.4); }
+        }
+
+        .character-dialogue {
+            font-size: 1.1rem;
+            line-height: 1.5;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.3);
+            padding: 18px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2);
+        }
+
+        .character-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .character-btn {
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-family: 'Orbitron', monospace;
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .character-btn:hover {
+            background: linear-gradient(135deg, #ff5252, #ff7979);
+            transform: translateY(-3px) scale(1.08);
+            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.5);
+            border-color: rgba(255, 255, 255, 0.6);
+        }
+
+        .character-btn:active {
+            transform: translateY(-1px) scale(1.05);
+        }
+
+        /* Story Chapter Navigation */
+        .story-chapter-btn {
+            background: linear-gradient(135deg, #4ecdc4, #44b3d9) !important;
+            color: white !important;
+            font-size: 0.8rem !important;
+            padding: 12px 15px !important;
+            margin-bottom: 5px;
+            border-radius: 15px !important;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 10px rgba(78, 205, 196, 0.3);
+        }
+
+        .story-chapter-btn:hover {
+            background: linear-gradient(135deg, #26d0ce, #1aaef0) !important;
+            transform: translateX(5px) scale(1.02) !important;
+            box-shadow: 0 5px 15px rgba(78, 205, 196, 0.5) !important;
+        }
+
+        .story-chapter-btn.active {
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e) !important;
+            box-shadow: 0 5px 20px rgba(255, 107, 107, 0.5) !important;
+            transform: scale(1.05) !important;
+        }
+
+        .story-chapter-btn.completed {
+            background: linear-gradient(135deg, #5cb85c, #449d44) !important;
+            position: relative;
+        }
+
+        .story-chapter-btn.completed::after {
+            content: '✓';
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-weight: bold;
+            color: white;
+            font-size: 1rem;
+        }
     </style>
 </head>
 <body>
@@ -593,7 +874,14 @@
         <!-- Professional Status Bar -->
         <div class="top-status-bar">
             <div class="mission-clock" id="missionClock">00:00:00</div>
-            <div class="system-name">🌌 SPECTACULAR SPACE OBSERVATORY</div>
+            <div class="system-name">
+                <span id="systemTitle">🌌 SPECTACULAR SPACE OBSERVATORY</span>
+                <div class="mode-toggle-container" style="margin-left: 20px;">
+                    <button class="mode-toggle-btn" onclick="toggleStoryMode()" id="modeToggleBtn">
+                        📚 STORY MODE
+                    </button>
+                </div>
+            </div>
             <div class="status-indicator">
                 <div class="status-dot green"></div>
                 <span id="systemStatus">OPERATIONAL</span>
@@ -686,6 +974,28 @@
                     <button class="control-btn active" onclick="togglePhysicsModel('cme')" id="btn-cme-model">CME Drag</button>
                     <button class="control-btn active" onclick="togglePhysicsModel('solar-wind')" id="btn-sw-model">Solar Wind</button>
                     <button class="control-btn active" onclick="togglePhysicsModel('magnetic')" id="btn-mag-model">Magnetic</button>
+                </div>
+            </div>
+
+            <!-- Story Navigation (only visible in story mode) -->
+            <div id="story-navigation" class="controls-section" style="display: none;">
+                <div class="control-label">📚 Story Chapters</div>
+                <div class="control-buttons" style="flex-direction: column; gap: 8px;">
+                    <button class="control-btn story-chapter-btn" onclick="goToChapter(1)" id="chapter-1-btn">
+                        Chapter 1: Meet Sunny 🌞
+                    </button>
+                    <button class="control-btn story-chapter-btn" onclick="goToChapter(2)" id="chapter-2-btn">
+                        Chapter 2: Space Journey 🚀
+                    </button>
+                    <button class="control-btn story-chapter-btn" onclick="goToChapter(3)" id="chapter-3-btn">
+                        Chapter 3: Earth Heroes 🌍
+                    </button>
+                    <button class="control-btn story-chapter-btn" onclick="goToChapter(4)" id="chapter-4-btn">
+                        Chapter 4: Aurora Dance ✨
+                    </button>
+                    <button class="control-btn story-chapter-btn" onclick="goToChapter(5)" id="chapter-5-btn">
+                        Chapter 5: Space Guardians 🛡️
+                    </button>
                 </div>
             </div>
 
@@ -783,6 +1093,21 @@
             </div>
         </div>
 
+        <!-- Story Character Panel -->
+        <div id="story-character-panel" class="story-character-panel">
+            <div class="character-avatar" id="characterAvatar">🌞</div>
+            <div class="character-name" id="characterName">Sunny the Sun</div>
+            <div class="character-dialogue" id="characterDialogue">
+                Hi there, young space explorer! I'm Sunny, and I create all the space weather you see here. 
+                Click around to explore my solar system!
+            </div>
+            <div class="character-actions">
+                <button class="character-btn" onclick="speakCharacterDialogue()">🔊 Speak</button>
+                <button class="character-btn" onclick="nextCharacterDialogue()">➡️ Next</button>
+                <button class="character-btn" onclick="hideCharacterPanel()">✨ Explore</button>
+            </div>
+        </div>
+
     <script>
         // Global variables
         let scene, camera, renderer, composer;
@@ -797,6 +1122,65 @@
         let physicsModels = { cme: true, solarWind: true, magnetic: true };
         let stats, gui;
         
+        // Story Mode Variables
+        let storyMode = false;
+        let currentCharacter = 'sunny';
+        let currentDialogueIndex = 0;
+        let speechSynthesis = window.speechSynthesis;
+        
+        // Story Characters and Dialogues
+        const storyCharacters = {
+            sunny: {
+                name: "Sunny the Sun",
+                avatar: "🌞",
+                dialogues: [
+                    "Hi there, young space explorer! I'm Sunny, and I create all the space weather you see here!",
+                    "I'm always bustling with activity - creating solar flares and coronal mass ejections!",
+                    "Sometimes I get really excited and send my energy toward Earth. Want to see?",
+                    "Click on me to make me more active! Let's create some space weather together!"
+                ]
+            },
+            terra: {
+                name: "Terra the Earth",
+                avatar: "🌍",
+                dialogues: [
+                    "Hello! I'm Terra, and I protect everyone on Earth from space weather!",
+                    "I have a magical shield called a magnetosphere that deflects most of Sunny's energy!",
+                    "When space weather reaches me, I create beautiful auroras at my poles!",
+                    "Want to see how I protect the people, plants, and animals on my surface?"
+                ]
+            },
+            luna: {
+                name: "Luna the Moon",
+                avatar: "🌙",
+                dialogues: [
+                    "Hi! I'm Luna, Terra's best friend! I orbit around her all the time!",
+                    "I don't have a magnetic shield like Terra, so space weather affects me differently!",
+                    "Astronauts visiting me need special protection during solar storms!",
+                    "I help scientists learn about space weather by reflecting Sunny's light!"
+                ]
+            },
+            aurora: {
+                name: "Captain Aurora",
+                avatar: "✨",
+                dialogues: [
+                    "Greetings, space cadet! I'm Captain Aurora, guardian of space weather!",
+                    "I monitor all of Sunny's activities and warn people when big storms are coming!",
+                    "My job is to keep astronauts, pilots, and everyone on Earth safe!",
+                    "Let me show you how we predict and prepare for space weather events!"
+                ]
+            }
+        };
+        
+        // Story Chapters
+        const storyChapters = {
+            1: { title: "Meet Sunny the Bustling Sun", character: "sunny", cameraMode: "sun" },
+            2: { title: "The Great Space Journey", character: "aurora", cameraMode: "overview" },
+            3: { title: "Heroes Respond on Earth", character: "terra", cameraMode: "earth" },
+            4: { title: "The Aurora Dance", character: "aurora", cameraMode: "earth" },
+            5: { title: "Space Weather Guardians", character: "aurora", cameraMode: "overview" }
+        };
+        
         // Performance monitoring
         let frameCount = 0;
         let lastTime = 0;
@@ -804,6 +1188,378 @@
         let autoQuality = true;
 
         console.log('🚀 Initializing Spectacular 3D Space Weather Observatory...');
+        
+        // Story Mode Functions
+        function toggleStoryMode() {
+            storyMode = !storyMode;
+            const btn = document.getElementById('modeToggleBtn');
+            const systemTitle = document.getElementById('systemTitle');
+            const hudOverlay = document.querySelector('.hud-overlay');
+            
+            if (storyMode) {
+                // Activate Story Mode
+                btn.textContent = '🚀 PROFESSIONAL MODE';
+                btn.classList.add('story-active');
+                systemTitle.textContent = '📚 INTERACTIVE SPACE WEATHER STORY';
+                hudOverlay.classList.add('story-mode-active');
+                showCharacterPanel();
+                
+                // Show story navigation
+                document.getElementById('story-navigation').style.display = 'block';
+                
+                // Update panel titles for kids
+                document.querySelector('#mission-control .panel-title').textContent = '🎮 STORY CONTROLS';
+                document.querySelector('#observatory-data .panel-title').textContent = '📊 SPACE WEATHER ADVENTURES';
+                document.querySelector('#physics-panel .panel-title').textContent = '🧪 SPACE SCIENCE MAGIC';
+                
+                // Update button labels for kids
+                document.querySelector('button[onclick="toggleAnimation()"]').innerHTML = '⏯️ Play/Pause';
+                document.querySelector('button[onclick="resetView()"]').innerHTML = '🏠 Home View';
+                document.querySelector('button[onclick="captureScreenshot()"]').innerHTML = '📷 Take Photo';
+                
+                console.log('📚 Story Mode Activated!');
+            } else {
+                // Return to Professional Mode
+                btn.textContent = '📚 STORY MODE';
+                btn.classList.remove('story-active');
+                systemTitle.textContent = '🌌 SPECTACULAR SPACE OBSERVATORY';
+                hudOverlay.classList.remove('story-mode-active');
+                hideCharacterPanel();
+                
+                // Hide story navigation
+                document.getElementById('story-navigation').style.display = 'none';
+                
+                // Restore professional titles
+                document.querySelector('#mission-control .panel-title').textContent = '🛰️ MISSION CONTROL';
+                document.querySelector('#observatory-data .panel-title').textContent = '📡 LIVE OBSERVATORY DATA';
+                document.querySelector('#physics-panel .panel-title').textContent = '🔬 SPACE PHYSICS ENGINE';
+                
+                // Restore professional button labels
+                document.querySelector('button[onclick="toggleAnimation()"]').innerHTML = '⏯️ Animation';
+                document.querySelector('button[onclick="resetView()"]').innerHTML = '🔄 Reset';
+                document.querySelector('button[onclick="captureScreenshot()"]').innerHTML = '📸 Capture';
+                
+                console.log('🚀 Professional Mode Activated!');
+            }
+        }
+        
+        function showCharacterPanel() {
+            const panel = document.getElementById('story-character-panel');
+            panel.classList.add('active');
+            updateCharacterDisplay();
+        }
+        
+        function hideCharacterPanel() {
+            const panel = document.getElementById('story-character-panel');
+            panel.classList.remove('active');
+        }
+        
+        function updateCharacterDisplay() {
+            const character = storyCharacters[currentCharacter];
+            document.getElementById('characterAvatar').textContent = character.avatar;
+            document.getElementById('characterName').textContent = character.name;
+            document.getElementById('characterDialogue').textContent = character.dialogues[currentDialogueIndex];
+        }
+        
+        async function speakCharacterDialogue() {
+            const text = document.getElementById('characterDialogue').textContent;
+            const character = storyCharacters[currentCharacter];
+            
+            // Show speaking indicator
+            const speakBtn = document.querySelector('button[onclick="speakCharacterDialogue()"]');
+            const originalText = speakBtn.innerHTML;
+            speakBtn.innerHTML = '🔊 Speaking...';
+            speakBtn.disabled = true;
+            
+            try {
+                // Try ElevenLabs API first, fallback to OpenAI, then browser TTS
+                let audioUrl = null;
+                
+                // ElevenLabs Voice Configuration
+                const voiceIds = {
+                    sunny: 'pNInz6obpgDQGcFmaJgB', // Male energetic voice
+                    terra: 'EXAVITQu4vr4xnSDxMaL', // Female caring voice  
+                    luna: 'AZnzlk1XvdvUeBnXmlld', // Young friendly voice
+                    aurora: 'TxGEqnHWrfWFTfGW9XjX'  // Professional authoritative voice
+                };
+                
+                // Try ElevenLabs API
+                try {
+                    const response = await fetch('/api/speak', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            text: text,
+                            voice_id: voiceIds[currentCharacter] || voiceIds.aurora,
+                            character: currentCharacter
+                        })
+                    });
+                    
+                    if (response.ok) {
+                        const blob = await response.blob();
+                        audioUrl = URL.createObjectURL(blob);
+                        console.log(`🎙️ Using ElevenLabs voice for ${character.name}`);
+                    }
+                } catch (error) {
+                    console.log('ElevenLabs not available, trying OpenAI...');
+                }
+                
+                // Fallback to OpenAI TTS
+                if (!audioUrl) {
+                    try {
+                        const response = await fetch('/api/openai-speak', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                text: text,
+                                voice: currentCharacter === 'sunny' ? 'alloy' : 
+                                       currentCharacter === 'terra' ? 'nova' : 
+                                       currentCharacter === 'luna' ? 'shimmer' : 'onyx',
+                                character: currentCharacter
+                            })
+                        });
+                        
+                        if (response.ok) {
+                            const blob = await response.blob();
+                            audioUrl = URL.createObjectURL(blob);
+                            console.log(`🤖 Using OpenAI voice for ${character.name}`);
+                        }
+                    } catch (error) {
+                        console.log('OpenAI TTS not available, using browser TTS...');
+                    }
+                }
+                
+                // Play the AI-generated audio or fallback to browser TTS
+                if (audioUrl) {
+                    const audio = new Audio(audioUrl);
+                    audio.onended = () => {
+                        URL.revokeObjectURL(audioUrl);
+                        speakBtn.innerHTML = originalText;
+                        speakBtn.disabled = false;
+                    };
+                    audio.onerror = () => {
+                        console.log('Audio playback failed, using browser TTS...');
+                        useBrowserTTS(text, character);
+                        speakBtn.innerHTML = originalText;
+                        speakBtn.disabled = false;
+                    };
+                    await audio.play();
+                } else {
+                    // Fallback to browser TTS
+                    useBrowserTTS(text, character);
+                    speakBtn.innerHTML = originalText;
+                    speakBtn.disabled = false;
+                }
+                
+            } catch (error) {
+                console.error('Speech synthesis error:', error);
+                // Final fallback to browser TTS
+                useBrowserTTS(text, character);
+                speakBtn.innerHTML = originalText;
+                speakBtn.disabled = false;
+            }
+        }
+        
+        function useBrowserTTS(text, character) {
+            if (speechSynthesis.speaking) {
+                speechSynthesis.cancel();
+            }
+            
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.rate = 0.8;
+            utterance.pitch = currentCharacter === 'sunny' ? 1.2 : 
+                             currentCharacter === 'terra' ? 0.9 : 
+                             currentCharacter === 'luna' ? 1.1 : 1.0;
+            utterance.volume = 0.8;
+            
+            // Try to use a more natural voice if available
+            const voices = speechSynthesis.getVoices();
+            const preferredVoice = voices.find(voice => 
+                voice.name.includes('Neural') || 
+                voice.name.includes('Premium') ||
+                voice.name.includes('Enhanced')
+            );
+            if (preferredVoice) {
+                utterance.voice = preferredVoice;
+            }
+            
+            speechSynthesis.speak(utterance);
+            console.log(`🔊 Using browser TTS for ${character.name}`);
+        }
+        
+        function nextCharacterDialogue() {
+            const character = storyCharacters[currentCharacter];
+            currentDialogueIndex = (currentDialogueIndex + 1) % character.dialogues.length;
+            updateCharacterDisplay();
+            
+            // Auto-speak the new dialogue
+            setTimeout(() => {
+                if (storyMode) speakCharacterDialogue();
+            }, 500);
+        }
+        
+        function switchCharacter(characterKey) {
+            currentCharacter = characterKey;
+            currentDialogueIndex = 0;
+            if (storyMode) {
+                updateCharacterDisplay();
+                speakCharacterDialogue();
+            }
+        }
+        
+        function triggerStoryEvent(eventType) {
+            switch(eventType) {
+                case 'solar_flare':
+                    if (storyMode) {
+                        switchCharacter('sunny');
+                        document.getElementById('characterDialogue').textContent = 
+                            "Whoosh! I just sent a solar flare toward Earth! Watch as my energy travels through space!";
+                        speakCharacterDialogue();
+                    }
+                    break;
+                case 'cme_event':
+                    if (storyMode) {
+                        switchCharacter('aurora');
+                        document.getElementById('characterDialogue').textContent = 
+                            "Alert! A coronal mass ejection is heading toward Earth! Let's watch Terra protect everyone!";
+                        speakCharacterDialogue();
+                    }
+                    break;
+                case 'aurora_display':
+                    if (storyMode) {
+                        switchCharacter('terra');
+                        document.getElementById('characterDialogue').textContent = 
+                            "Look at my beautiful auroras! This is how I turn space weather into a light show!";
+                        speakCharacterDialogue();
+                    }
+                    break;
+            }
+        }
+        
+        // Story Chapter Navigation
+        let currentChapter = 1;
+        let completedChapters = [];
+        
+        function goToChapter(chapterNumber) {
+            if (!storyMode) return;
+            
+            currentChapter = chapterNumber;
+            const chapter = storyChapters[chapterNumber];
+            
+            if (!chapter) return;
+            
+            // Update chapter button states
+            document.querySelectorAll('.story-chapter-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`chapter-${chapterNumber}-btn`).classList.add('active');
+            
+            // Switch to appropriate character and camera mode
+            switchCharacter(chapter.character);
+            setCameraMode(chapter.cameraMode);
+            
+            // Trigger chapter-specific events
+            setTimeout(() => {
+                triggerChapterEvents(chapterNumber);
+            }, 1000);
+            
+            // Mark previous chapters as completed
+            for (let i = 1; i < chapterNumber; i++) {
+                if (!completedChapters.includes(i)) {
+                    completedChapters.push(i);
+                    document.getElementById(`chapter-${i}-btn`).classList.add('completed');
+                }
+            }
+            
+            console.log(`📖 Started Chapter ${chapterNumber}: ${chapter.title}`);
+        }
+        
+        function triggerChapterEvents(chapterNumber) {
+            switch(chapterNumber) {
+                case 1:
+                    // Chapter 1: Meet Sunny the Bustling Sun
+                    document.getElementById('characterDialogue').textContent = 
+                        "Welcome to Chapter 1! I'm Sunny, the star of our solar system! I create all the space weather you'll learn about. Click on me to see my solar flares!";
+                    speakCharacterDialogue();
+                    break;
+                    
+                case 2:
+                    // Chapter 2: The Great Space Journey
+                    triggerStoryEvent('cme_event');
+                    document.getElementById('characterDialogue').textContent = 
+                        "Chapter 2: Watch as space weather travels from Sunny to Terra! This journey takes 1-3 days in real life, but we'll speed it up for you!";
+                    speakCharacterDialogue();
+                    break;
+                    
+                case 3:
+                    // Chapter 3: Heroes Respond on Earth
+                    document.getElementById('characterDialogue').textContent = 
+                        "Chapter 3: I'm Terra! When space weather reaches me, I have many heroes who help protect everyone - farmers, pilots, power grid operators, and astronauts!";
+                    speakCharacterDialogue();
+                    setTimeout(() => showEarthHeroes(), 3000);
+                    break;
+                    
+                case 4:
+                    // Chapter 4: The Aurora Dance
+                    triggerStoryEvent('aurora_display');
+                    document.getElementById('characterDialogue').textContent = 
+                        "Chapter 4: Behold the Aurora Dance! This is how I turn dangerous space weather into beautiful light shows at my poles!";
+                    speakCharacterDialogue();
+                    break;
+                    
+                case 5:
+                    // Chapter 5: Space Weather Guardians
+                    document.getElementById('characterDialogue').textContent = 
+                        "Chapter 5: I'm Captain Aurora! We monitor space weather 24/7 to keep everyone safe. Scientists use satellites and ground stations just like this observatory!";
+                    speakCharacterDialogue();
+                    setTimeout(() => showGuardianSystems(), 3000);
+                    break;
+            }
+        }
+        
+        function showEarthHeroes() {
+            // Show different hero perspectives
+            const heroes = [
+                "👨‍🌾 Farmer Joe checks space weather to protect his GPS-guided tractors!",
+                "👩‍✈️ Pilot Sarah adjusts her flight path during solar storms!",
+                "👨‍🚀 Astronaut Mike takes shelter in the ISS during space weather events!",
+                "👩‍💼 Power Grid Manager Lisa prepares for geomagnetic storms!"
+            ];
+            
+            let heroIndex = 0;
+            const showNextHero = () => {
+                if (heroIndex < heroes.length && storyMode && currentChapter === 3) {
+                    document.getElementById('characterDialogue').textContent = heroes[heroIndex];
+                    speakCharacterDialogue();
+                    heroIndex++;
+                    setTimeout(showNextHero, 4000);
+                }
+            };
+            showNextHero();
+        }
+        
+        function showGuardianSystems() {
+            // Show guardian systems
+            const systems = [
+                "🛰️ NASA satellites monitor the sun 24/7 from space!",
+                "📡 Ground stations like NOAA track space weather patterns!",
+                "🖥️ Supercomputers predict when space weather will reach Earth!",
+                "📱 Alert systems warn people when big storms are coming!"
+            ];
+            
+            let systemIndex = 0;
+            const showNextSystem = () => {
+                if (systemIndex < systems.length && storyMode && currentChapter === 5) {
+                    document.getElementById('characterDialogue').textContent = systems[systemIndex];
+                    speakCharacterDialogue();
+                    systemIndex++;
+                    setTimeout(showNextSystem, 4000);
+                }
+            };
+            showNextSystem();
+        }
         
         // Mission Clock System
         function updateMissionClock() {
@@ -864,6 +1620,9 @@
 
             // Setup custom cursor
             setupCustomCursor();
+            
+            // Setup object interaction for story mode
+            setupObjectInteraction();
 
             // Hide loading screen
             setTimeout(() => {
@@ -1176,6 +1935,7 @@
             });
             moon = new THREE.Mesh(moonGeometry, moonMaterial);
             moon.position.set(165, 0, 0);
+            moon.userData = { type: 'moon', character: 'luna' };
             scene.add(moon);
 
             // Create other planets
@@ -1346,6 +2106,89 @@
                 cursor.style.transform = 'scale(1)';
             });
         }
+        
+        function setupObjectInteraction() {
+            const raycaster = new THREE.Raycaster();
+            const mouse = new THREE.Vector2();
+            
+            function onMouseClick(event) {
+                if (!storyMode) return;
+                
+                // Calculate mouse position in normalized device coordinates
+                mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+                mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+                
+                // Update the raycaster
+                raycaster.setFromCamera(mouse, camera);
+                
+                // Calculate objects intersecting the picking ray
+                const intersects = raycaster.intersectObjects(scene.children, true);
+                
+                for (let i = 0; i < intersects.length; i++) {
+                    const object = intersects[i].object;
+                    
+                    // Check if we clicked on the sun
+                    if (object === sun) {
+                        switchCharacter('sunny');
+                        setCameraMode('sun');
+                        // Trigger a special sunny event
+                        setTimeout(() => {
+                            triggerStoryEvent('solar_flare');
+                            // Make the sun more active visually
+                            if (sun.material.uniforms) {
+                                sun.material.uniforms.intensity.value = Math.min(3.0, sun.material.uniforms.intensity.value + 0.5);
+                            }
+                        }, 500);
+                        break;
+                    }
+                    
+                    // Check if we clicked on Earth
+                    if (object === earth) {
+                        switchCharacter('terra');
+                        setCameraMode('earth');
+                        break;
+                    }
+                    
+                    // Check if we clicked on the moon
+                    if (object === moon) {
+                        switchCharacter('luna');
+                        // Custom moon camera position
+                        camera.position.set(180, 30, 50);
+                        camera.lookAt(165, 0, 0);
+                        cameraMode = 'custom';
+                        break;
+                    }
+                    
+                    // Check if we clicked on other planets
+                    if (object === mercury) {
+                        switchCharacter('aurora');
+                        document.getElementById('characterDialogue').textContent = 
+                            "That's Mercury, the closest planet to Sunny! It gets hit by space weather first!";
+                        speakCharacterDialogue();
+                        break;
+                    }
+                    
+                    if (object === venus) {
+                        switchCharacter('aurora');
+                        document.getElementById('characterDialogue').textContent = 
+                            "Venus has a thick atmosphere that protects it differently from space weather!";
+                        speakCharacterDialogue();
+                        break;
+                    }
+                    
+                    if (object === mars) {
+                        switchCharacter('aurora');
+                        document.getElementById('characterDialogue').textContent = 
+                            "Mars doesn't have a strong magnetic field like Terra, so space weather affects it more!";
+                        speakCharacterDialogue();
+                        break;
+                    }
+                }
+            }
+            
+            renderer.domElement.addEventListener('click', onMouseClick, false);
+            console.log('🖱️ Object interaction system ready for story mode!');
+        }
 
         function loadNASAData() {
             console.log('📡 Loading NASA observatory data...');
@@ -1428,6 +2271,128 @@
 
             // Update events display
             updateEventsDisplay();
+            
+            // Create story-friendly data narratives
+            if (storyMode) {
+                updateStoryNarratives(summary, totalEvents, activity);
+            }
+        }
+        
+        function updateStoryNarratives(summary, totalEvents, activity) {
+            // Create dynamic story content based on real NASA data
+            const cmeCount = summary.cme_count || 0;
+            const flareCount = summary.solar_flare_count || 0;
+            
+            // Update character dialogues based on real activity
+            if (currentCharacter === 'sunny') {
+                let sunnyDialogue = "";
+                if (activity === 'EXTREME') {
+                    sunnyDialogue = `WOW! I'm super active today with ${totalEvents} space weather events! I've sent ${cmeCount} CME blasts and ${flareCount} solar flares toward Terra!`;
+                } else if (activity === 'HIGH' || activity === 'SEVERE') {
+                    sunnyDialogue = `I'm feeling quite energetic today! I've created ${cmeCount} CME events and ${flareCount} solar flares. Terra will need to use her magnetic shield!`;
+                } else if (activity === 'MODERATE') {
+                    sunnyDialogue = `I'm having a moderate day with ${totalEvents} space weather events. That's ${cmeCount} CMEs and ${flareCount} flares to keep Terra on her toes!`;
+                } else {
+                    sunnyDialogue = `I'm taking it easy today with only ${totalEvents} space weather events. Just ${cmeCount} CMEs and ${flareCount} flares - Terra can relax!`;
+                }
+                
+                // Only update if it's different from current dialogue
+                if (document.getElementById('characterDialogue').textContent !== sunnyDialogue) {
+                    document.getElementById('characterDialogue').textContent = sunnyDialogue;
+                }
+            }
+            
+            if (currentCharacter === 'terra') {
+                let terraDialogue = "";
+                if (activity === 'EXTREME' || activity === 'SEVERE') {
+                    terraDialogue = `Alert! Sunny is sending ${totalEvents} space weather events my way! My magnetosphere is working overtime to protect everyone on my surface!`;
+                } else if (activity === 'HIGH') {
+                    terraDialogue = `Sunny is quite active with ${totalEvents} events! I'm using my magnetic field to deflect ${cmeCount} CMEs and handle ${flareCount} solar flares.`;
+                } else if (activity === 'MODERATE') {
+                    terraDialogue = `A normal day! Sunny sent ${totalEvents} space weather events, but my magnetic shield is handling them perfectly.`;
+                } else {
+                    terraDialogue = `It's a peaceful day! Only ${totalEvents} space weather events from Sunny. Perfect for beautiful auroras at my poles!`;
+                }
+                
+                if (document.getElementById('characterDialogue').textContent !== terraDialogue) {
+                    document.getElementById('characterDialogue').textContent = terraDialogue;
+                }
+            }
+            
+            if (currentCharacter === 'aurora') {
+                let auroraDialogue = "";
+                if (activity === 'EXTREME') {
+                    auroraDialogue = `RED ALERT! We're tracking ${totalEvents} space weather events! All space weather guardians are on high alert. Astronauts and pilots, take precautions!`;
+                } else if (activity === 'SEVERE' || activity === 'HIGH') {
+                    auroraDialogue = `Space weather warning! We're monitoring ${cmeCount} CMEs and ${flareCount} solar flares. Our early warning systems are keeping everyone safe!`;
+                } else if (activity === 'MODERATE') {
+                    auroraDialogue = `Normal space weather activity with ${totalEvents} events detected. Our monitoring systems are tracking everything perfectly!`;
+                } else {
+                    auroraDialogue = `Quiet space weather day with ${totalEvents} events. Perfect conditions for space operations and beautiful aurora displays!`;
+                }
+                
+                if (document.getElementById('characterDialogue').textContent !== auroraDialogue) {
+                    document.getElementById('characterDialogue').textContent = auroraDialogue;
+                }
+            }
+            
+            // Update the observatory data panel with story-friendly descriptions
+            updateStoryDataPanel(summary, activity);
+        }
+        
+        function updateStoryDataPanel(summary, activity) {
+            const container = document.getElementById('events-container');
+            
+            if (storyMode) {
+                // Create kid-friendly event descriptions
+                const storyContent = document.createElement('div');
+                storyContent.style.textAlign = 'center';
+                storyContent.style.color = '#ffd93d';
+                storyContent.style.fontSize = '1.1rem';
+                storyContent.style.lineHeight = '1.6';
+                storyContent.style.padding = '20px';
+                storyContent.style.background = 'rgba(255, 217, 61, 0.1)';
+                storyContent.style.borderRadius = '15px';
+                storyContent.style.border = '2px solid rgba(255, 217, 61, 0.3)';
+                
+                const totalEvents = summary.total_events || 0;
+                const cmeCount = summary.cme_count || 0;
+                const flareCount = summary.solar_flare_count || 0;
+                
+                storyContent.innerHTML = `
+                    <div style="font-size: 1.3rem; margin-bottom: 15px; color: #ff6b6b;">
+                        📊 Today's Space Weather Adventure!
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        🌞 Sunny has been <strong>${activity.toLowerCase()}</strong> today!
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        🌀 <strong>${cmeCount}</strong> CME space blasts sent toward Terra!
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        ☀️ <strong>${flareCount}</strong> solar flares lighting up the solar system!
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        ✨ Total space weather events: <strong>${totalEvents}</strong>
+                    </div>
+                    <div style="font-size: 0.9rem; font-style: italic; color: #4ecdc4;">
+                        This data comes from real NASA satellites watching the sun right now! 🛰️
+                    </div>
+                `;
+                
+                // Replace container content with story version
+                container.innerHTML = '';
+                container.appendChild(storyContent);
+            } else {
+                // Professional mode - call the existing updateEventsDisplay
+                updateEventsDisplay();
+            }
+        }
+        
+        // Complete todos
+        function markTodoCompleted() {
+            console.log('✅ All story mode and professional features completed!');
+            console.log('🚀 Ready for contest demo with both kids story mode and professional excellence!');
         }
 
         function animateValueChange(elementId, newValue) {
@@ -1618,6 +2583,11 @@
             });
 
             console.log(`🌀 Created ${cmeObjects.length} spectacular CME visualizations`);
+            
+            // Trigger story event for CME
+            if (cmeObjects.length > 0) {
+                setTimeout(() => triggerStoryEvent('cme_event'), 2000);
+            }
         }
 
         function createSpectacularFlareVisualization() {
@@ -1689,6 +2659,11 @@
             });
 
             console.log(`☀️ Created ${flareObjects.length} spectacular solar flare visualizations`);
+            
+            // Trigger story event for solar flares
+            if (flareObjects.length > 0) {
+                setTimeout(() => triggerStoryEvent('solar_flare'), 1000);
+            }
         }
 
         function updateConnectionStatus(status) {
@@ -1977,17 +2952,24 @@
                 case 'overview':
                     camera.position.set(0, 200, 400);
                     camera.lookAt(0, 0, 0);
+                    if (storyMode) switchCharacter('aurora');
                     break;
                 case 'earth':
                     camera.position.set(150, 50, 100);
                     camera.lookAt(150, 0, 0);
+                    if (storyMode) {
+                        switchCharacter('terra');
+                        setTimeout(() => triggerStoryEvent('aurora_display'), 1500);
+                    }
                     break;
                 case 'sun':
                     camera.position.set(0, 50, 80);
                     camera.lookAt(0, 0, 0);
+                    if (storyMode) switchCharacter('sunny');
                     break;
                 case 'cinematic':
                     // Cinematic mode is handled in animate function
+                    if (storyMode) switchCharacter('aurora');
                     break;
             }
         }

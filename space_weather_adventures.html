@@ -1,0 +1,1117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌌 Space Weather Adventures - Interactive Story Platform</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;600;700&family=Orbitron:wght@400;700;900&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 70%, rgba(87, 189, 232, 0.1) 0%, transparent 50%);
+            animation: nebula 30s ease-in-out infinite;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        @keyframes nebula {
+            0%, 100% { opacity: 0.8; transform: scale(1) rotate(0deg); }
+            50% { opacity: 1; transform: scale(1.1) rotate(2deg); }
+        }
+        
+        .header {
+            background: linear-gradient(90deg, #1e3c72 0%, #2a5298 100%);
+            padding: 20px 0;
+            box-shadow: 0 4px 30px rgba(0, 255, 255, 0.3);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 30px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .logo h1 {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #ffffff;
+            text-shadow: 0 0 15px rgba(0, 255, 255, 0.8);
+        }
+
+        .mode-toggle-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .mode-toggle-btn {
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-family: 'Orbitron', monospace;
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+        }
+
+        .mode-toggle-btn:hover {
+            background: linear-gradient(135deg, #ff5252, #ff7979);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(255, 107, 107, 0.5);
+        }
+
+        .mode-toggle-btn.story-active {
+            background: linear-gradient(135deg, #ffd93d, #ffb347);
+            color: #000;
+            box-shadow: 0 4px 15px rgba(255, 217, 61, 0.5);
+        }
+        
+        .status-badge {
+            background: linear-gradient(145deg, #00ff00, #00cc00);
+            color: #000;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+        
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 30px;
+            position: relative;
+        }
+        
+        .mission-title {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        
+        .mission-title h2 {
+            font-family: 'Orbitron', monospace;
+            font-size: 3rem;
+            color: #00ffff;
+            margin-bottom: 15px;
+            text-shadow: 0 0 30px rgba(0, 255, 255, 1);
+            transition: all 0.3s ease;
+        }
+
+        .story-mode-active .mission-title h2 {
+            color: #ffd93d;
+            text-shadow: 0 0 30px rgba(255, 217, 61, 1);
+            animation: titlePulse 2s ease-in-out infinite;
+        }
+
+        @keyframes titlePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .mission-title p {
+            font-size: 1.3rem;
+            color: #ffffff;
+            opacity: 0.9;
+            transition: all 0.3s ease;
+        }
+
+        .story-mode-active .mission-title p {
+            color: #ffd93d;
+            opacity: 1;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+        
+        .dashboard-card {
+            background: linear-gradient(145deg, rgba(26, 26, 46, 0.95), rgba(22, 33, 62, 0.95));
+            border: 3px solid rgba(0, 255, 255, 0.4);
+            border-radius: 20px;
+            padding: 30px;
+            backdrop-filter: blur(15px);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .story-mode-active .dashboard-card {
+            background: linear-gradient(145deg, rgba(255, 217, 61, 0.15), rgba(255, 179, 71, 0.15));
+            border: 3px solid rgba(255, 217, 61, 0.6);
+            box-shadow: 0 8px 32px rgba(255, 217, 61, 0.3);
+        }
+        
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 255, 255, 0.3);
+            border-color: rgba(0, 255, 255, 0.8);
+        }
+
+        .story-mode-active .dashboard-card:hover {
+            box-shadow: 0 15px 40px rgba(255, 217, 61, 0.5);
+            border-color: rgba(255, 217, 61, 0.8);
+            transform: translateY(-5px) scale(1.02);
+        }
+        
+        .card-icon {
+            font-size: 3rem;
+            color: #00ffff;
+            text-align: center;
+            margin-bottom: 20px;
+            text-shadow: 0 0 20px rgba(0, 255, 255, 0.8);
+            transition: all 0.3s ease;
+        }
+
+        .story-mode-active .card-icon {
+            color: #ffd93d;
+            text-shadow: 0 0 20px rgba(255, 217, 61, 0.8);
+            animation: iconBounce 2s ease-in-out infinite;
+        }
+
+        @keyframes iconBounce {
+            0%, 100% { transform: translateY(0px) scale(1); }
+            50% { transform: translateY(-5px) scale(1.1); }
+        }
+        
+        .card-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.4rem;
+            color: #ffffff;
+            margin-bottom: 15px;
+            text-align: center;
+            font-weight: 700;
+            transition: all 0.3s ease;
+        }
+
+        .story-mode-active .card-title {
+            color: #ffd93d;
+            font-size: 1.5rem;
+        }
+        
+        .card-description {
+            color: #cccccc;
+            margin-bottom: 20px;
+            text-align: center;
+            line-height: 1.5;
+            transition: all 0.3s ease;
+        }
+
+        .story-mode-active .card-description {
+            color: #ffffff;
+            font-weight: 500;
+        }
+
+        /* Story Character Panel */
+        .story-character-panel {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, rgba(255, 217, 61, 0.98), rgba(255, 179, 71, 0.95));
+            border: 4px solid #ffd93d;
+            border-radius: 25px;
+            padding: 25px;
+            min-width: 350px;
+            display: none;
+            color: #000;
+            font-family: 'Orbitron', monospace;
+            box-shadow: 0 15px 50px rgba(255, 217, 61, 0.5);
+            z-index: 2000;
+            animation: panelSlideIn 0.6s ease-out;
+        }
+
+        .story-character-panel.active {
+            display: block;
+        }
+
+        @keyframes panelSlideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .character-avatar {
+            font-size: 4rem;
+            text-align: center;
+            margin-bottom: 15px;
+            animation: avatarBounce 2s ease-in-out infinite;
+        }
+
+        @keyframes avatarBounce {
+            0%, 100% { transform: translateY(0px) scale(1); }
+            50% { transform: translateY(-5px) scale(1.05); }
+        }
+
+        .character-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 15px;
+            color: #ff6b6b;
+            animation: nameGlow 3s ease-in-out infinite;
+        }
+
+        @keyframes nameGlow {
+            0%, 100% { text-shadow: 0 2px 4px rgba(255, 107, 107, 0.3); }
+            50% { text-shadow: 0 2px 8px rgba(255, 107, 107, 0.6), 0 0 20px rgba(255, 107, 107, 0.4); }
+        }
+
+        .character-dialogue {
+            font-size: 1.1rem;
+            line-height: 1.5;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.3);
+            padding: 18px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .character-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .character-btn {
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-family: 'Orbitron', monospace;
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .character-btn:hover {
+            background: linear-gradient(135deg, #ff5252, #ff7979);
+            transform: translateY(-3px) scale(1.08);
+        }
+
+        /* Chapter Navigation */
+        .chapter-navigation {
+            display: none;
+            background: linear-gradient(135deg, rgba(255, 217, 61, 0.15), rgba(255, 179, 71, 0.15));
+            border: 3px solid rgba(255, 217, 61, 0.6);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .chapter-navigation.active {
+            display: block;
+        }
+
+        .chapter-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.5rem;
+            color: #ffd93d;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .chapter-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .chapter-btn {
+            background: linear-gradient(135deg, #4ecdc4, #44b3d9);
+            color: white;
+            border: none;
+            padding: 15px 20px;
+            border-radius: 15px;
+            font-family: 'Orbitron', monospace;
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .chapter-btn:hover {
+            background: linear-gradient(135deg, #26d0ce, #1aaef0);
+            transform: translateY(-2px) scale(1.02);
+        }
+
+        .chapter-btn.active {
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+        }
+
+        .chapter-btn.completed::after {
+            content: ' ✓';
+            color: #00ff00;
+            font-weight: bold;
+        }
+
+        /* Live Data Panel */
+        .live-data-panel {
+            background: linear-gradient(145deg, rgba(26, 26, 46, 0.95), rgba(22, 33, 62, 0.95));
+            border: 3px solid rgba(0, 255, 255, 0.4);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            transition: all 0.3s ease;
+        }
+
+        .story-mode-active .live-data-panel {
+            background: linear-gradient(135deg, rgba(255, 217, 61, 0.15), rgba(255, 179, 71, 0.15));
+            border: 3px solid rgba(255, 217, 61, 0.6);
+        }
+
+        .data-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .data-metric {
+            text-align: center;
+            padding: 20px;
+            background: rgba(0, 255, 255, 0.1);
+            border: 2px solid rgba(0, 255, 255, 0.3);
+            border-radius: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .story-mode-active .data-metric {
+            background: rgba(255, 217, 61, 0.2);
+            border: 2px solid rgba(255, 217, 61, 0.5);
+            transform: perspective(1000px) rotateX(5deg);
+        }
+
+        .metric-value {
+            font-family: 'Orbitron', monospace;
+            font-size: 2rem;
+            font-weight: 700;
+            color: #00ff00;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .story-mode-active .metric-value {
+            color: #ff6b6b;
+            animation: numberBounce 1.5s ease-in-out infinite;
+        }
+
+        @keyframes numberBounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .metric-label {
+            color: #ffffff;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .story-mode-active .metric-label {
+            color: #ffd93d;
+            font-weight: 700;
+        }
+
+        /* Professional Toggle */
+        .professional-features {
+            display: block;
+        }
+
+        .story-mode-active .professional-features {
+            display: none;
+        }
+
+        .story-features {
+            display: none;
+        }
+
+        .story-mode-active .story-features {
+            display: block;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .story-character-panel {
+                bottom: 10px;
+                right: 10px;
+                left: 10px;
+                min-width: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <div class="logo">
+                <h1 id="systemTitle">🌌 Space Weather Adventures</h1>
+            </div>
+            <div class="mode-toggle-container">
+                <button class="mode-toggle-btn" onclick="toggleStoryMode()" id="modeToggleBtn">
+                    📚 STORY MODE
+                </button>
+                <div class="status-badge" id="statusBadge">PROFESSIONAL</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-container" id="mainContainer">
+        <div class="mission-title">
+            <h2 id="missionTitle">Interactive Space Weather Platform</h2>
+            <p id="missionSubtitle">Real-time NASA data • Professional visualization • Educational storytelling</p>
+        </div>
+
+        <!-- Live Data Panel -->
+        <div class="live-data-panel">
+            <h3 style="font-family: 'Orbitron', monospace; color: #00ffff; text-align: center; margin-bottom: 20px; font-size: 1.5rem;" id="dataPanelTitle">📡 Live NASA Space Weather Data</h3>
+            <div class="data-grid">
+                <div class="data-metric">
+                    <div class="metric-value" id="cme-count">0</div>
+                    <div class="metric-label">CME Events</div>
+                </div>
+                <div class="data-metric">
+                    <div class="metric-value" id="flare-count">0</div>
+                    <div class="metric-label">Solar Flares</div>
+                </div>
+                <div class="data-metric">
+                    <div class="metric-value" id="activity-level">LOADING</div>
+                    <div class="metric-label">Activity Level</div>
+                </div>
+                <div class="data-metric">
+                    <div class="metric-value" id="last-update">--:--</div>
+                    <div class="metric-label">Last Update</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chapter Navigation (Story Mode Only) -->
+        <div class="chapter-navigation story-features" id="chapterNav">
+            <div class="chapter-title">📚 Story Chapters</div>
+            <div class="chapter-buttons">
+                <button class="chapter-btn" onclick="goToChapter(1)" id="chapter-1-btn">
+                    Chapter 1: Meet Sunny 🌞
+                </button>
+                <button class="chapter-btn" onclick="goToChapter(2)" id="chapter-2-btn">
+                    Chapter 2: Space Journey 🚀
+                </button>
+                <button class="chapter-btn" onclick="goToChapter(3)" id="chapter-3-btn">
+                    Chapter 3: Earth Heroes 🌍
+                </button>
+                <button class="chapter-btn" onclick="goToChapter(4)" id="chapter-4-btn">
+                    Chapter 4: Aurora Dance ✨
+                </button>
+                <button class="chapter-btn" onclick="goToChapter(5)" id="chapter-5-btn">
+                    Chapter 5: Space Guardians 🛡️
+                </button>
+            </div>
+        </div>
+
+        <!-- Dashboard Cards -->
+        <div class="dashboard-grid">
+            <div class="dashboard-card" onclick="openDashboard('spectacular_3d_space_weather.html')">
+                <div class="card-icon">🌌</div>
+                <div class="card-title">Spectacular 3D Observatory</div>
+                <div class="card-description">Interactive 3D space weather visualization with real-time NASA data and immersive storytelling</div>
+                <div class="professional-features">
+                    <ul style="list-style: none; color: #00ffff;">
+                        <li>• Real-time CME tracking</li>
+                        <li>• Professional physics models</li>
+                        <li>• Enterprise-grade visualization</li>
+                    </ul>
+                </div>
+                <div class="story-features">
+                    <ul style="list-style: none; color: #ffd93d;">
+                        <li>• Meet Sunny the Sun 🌞</li>
+                        <li>• Interactive space adventures</li>
+                        <li>• Learn with fun characters</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="dashboard-card" onclick="openDashboard('dashboard_hub.html')">
+                <div class="card-icon">🚀</div>
+                <div class="card-title">Professional Hub</div>
+                <div class="card-description">Comprehensive space weather monitoring platform for professional forecasters and researchers</div>
+                <div class="professional-features">
+                    <ul style="list-style: none; color: #00ffff;">
+                        <li>• Multi-dashboard access</li>
+                        <li>• Professional analytics</li>
+                        <li>• Research tools</li>
+                    </ul>
+                </div>
+                <div class="story-features">
+                    <ul style="list-style: none; color: #ffd93d;">
+                        <li>• Space Weather Heroes 🦸‍♀️</li>
+                        <li>• Learn about space guardians</li>
+                        <li>• Discover how we stay safe</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="dashboard-card" onclick="openDashboard('expert_dashboard.html')">
+                <div class="card-icon">🔬</div>
+                <div class="card-title">Expert Analysis</div>
+                <div class="card-description">Advanced space weather analysis tools with machine learning predictions and expert insights</div>
+                <div class="professional-features">
+                    <ul style="list-style: none; color: #00ffff;">
+                        <li>• AI-powered forecasting</li>
+                        <li>• Advanced physics models</li>
+                        <li>• Expert-level tools</li>
+                    </ul>
+                </div>
+                <div class="story-features">
+                    <ul style="list-style: none; color: #ffd93d;">
+                        <li>• Captain Aurora's Lab ✨</li>
+                        <li>• Science experiments</li>
+                        <li>• Discover space secrets</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="dashboard-card" onclick="openDashboard('nasa_heliophysics_observatory.html')">
+                <div class="card-icon">🛰️</div>
+                <div class="card-title">NASA Observatory</div>
+                <div class="card-description">Real NASA heliophysics data from space-based and ground-based observatories worldwide</div>
+                <div class="professional-features">
+                    <ul style="list-style: none; color: #00ffff;">
+                        <li>• Real NASA satellite data</li>
+                        <li>• DONKI integration</li>
+                        <li>• Scientific accuracy</li>
+                    </ul>
+                </div>
+                <div class="story-features">
+                    <ul style="list-style: none; color: #ffd93d;">
+                        <li>• Real space missions 🚀</li>
+                        <li>• Satellite adventures</li>
+                        <li>• NASA explorer stories</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Story Character Panel -->
+    <div id="story-character-panel" class="story-character-panel">
+        <div class="character-avatar" id="characterAvatar">🌞</div>
+        <div class="character-name" id="characterName">Sunny the Sun</div>
+        <div class="character-dialogue" id="characterDialogue">
+            Hi there, young space explorer! I'm Sunny, and I create all the space weather you see here. 
+            Ready for an amazing space adventure?
+        </div>
+        <div class="character-actions">
+            <button class="character-btn" onclick="speakCharacterDialogue()">🔊 Speak</button>
+            <button class="character-btn" onclick="nextCharacterDialogue()">➡️ Next</button>
+            <button class="character-btn" onclick="hideCharacterPanel()">✨ Explore</button>
+        </div>
+    </div>
+
+    <script>
+        // Story Mode Variables
+        let storyMode = false;
+        let currentCharacter = 'sunny';
+        let currentDialogueIndex = 0;
+        let currentChapter = 1;
+        let completedChapters = [];
+        let speechSynthesis = window.speechSynthesis;
+        
+        // Story Characters and Dialogues
+        const storyCharacters = {
+            sunny: {
+                name: "Sunny the Sun",
+                avatar: "🌞",
+                dialogues: [
+                    "Hi there, young space explorer! I'm Sunny, and I create all the space weather you see here!",
+                    "I'm always bustling with activity - creating solar flares and coronal mass ejections!",
+                    "Sometimes I get really excited and send my energy toward Earth. Want to explore?",
+                    "Click on different adventures to learn how space weather affects everyone!"
+                ]
+            },
+            terra: {
+                name: "Terra the Earth",
+                avatar: "🌍",
+                dialogues: [
+                    "Hello! I'm Terra, and I protect everyone on Earth from space weather!",
+                    "I have a magical shield called a magnetosphere that deflects most of Sunny's energy!",
+                    "When space weather reaches me, I create beautiful auroras at my poles!",
+                    "Want to see how I protect the people, plants, and animals on my surface?"
+                ]
+            },
+            luna: {
+                name: "Luna the Moon",
+                avatar: "🌙",
+                dialogues: [
+                    "Hi! I'm Luna, Terra's best friend! I orbit around her all the time!",
+                    "I don't have a magnetic shield like Terra, so space weather affects me differently!",
+                    "Astronauts visiting me need special protection during solar storms!",
+                    "I help scientists learn about space weather by being their stepping stone to space!"
+                ]
+            },
+            aurora: {
+                name: "Captain Aurora",
+                avatar: "✨",
+                dialogues: [
+                    "Greetings, space cadet! I'm Captain Aurora, guardian of space weather!",
+                    "I monitor all of Sunny's activities and warn people when big storms are coming!",
+                    "My job is to keep astronauts, pilots, and everyone on Earth safe!",
+                    "Let me show you how we predict and prepare for space weather events!"
+                ]
+            }
+        };
+
+        // Story Chapters
+        const storyChapters = {
+            1: { title: "Meet Sunny the Bustling Sun", character: "sunny" },
+            2: { title: "The Great Space Journey", character: "aurora" },
+            3: { title: "Heroes Respond on Earth", character: "terra" },
+            4: { title: "The Aurora Dance", character: "aurora" },
+            5: { title: "Space Weather Guardians", character: "aurora" }
+        };
+
+        // NASA Data
+        let nasaData = null;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Space Weather Adventures Platform initialized!');
+            loadNASAData();
+            updateClock();
+            setInterval(updateClock, 1000);
+        });
+
+        function toggleStoryMode() {
+            storyMode = !storyMode;
+            const btn = document.getElementById('modeToggleBtn');
+            const statusBadge = document.getElementById('statusBadge');
+            const systemTitle = document.getElementById('systemTitle');
+            const missionTitle = document.getElementById('missionTitle');
+            const missionSubtitle = document.getElementById('missionSubtitle');
+            const mainContainer = document.getElementById('mainContainer');
+            const dataPanelTitle = document.getElementById('dataPanelTitle');
+            const chapterNav = document.getElementById('chapterNav');
+            
+            if (storyMode) {
+                // Activate Story Mode
+                btn.textContent = '🚀 PROFESSIONAL MODE';
+                btn.classList.add('story-active');
+                statusBadge.textContent = 'STORY MODE';
+                statusBadge.style.background = 'linear-gradient(145deg, #ffd93d, #ffb347)';
+                systemTitle.textContent = '📚 Space Weather Adventures';
+                missionTitle.textContent = 'Interactive Space Weather Stories';
+                missionSubtitle.textContent = 'Learn with Sunny the Sun • Meet Terra the Earth • Space heroes everywhere!';
+                dataPanelTitle.textContent = '📊 Today\'s Space Weather Adventure!';
+                mainContainer.classList.add('story-mode-active');
+                chapterNav.classList.add('active');
+                showCharacterPanel();
+                
+                console.log('📚 Story Mode Activated!');
+            } else {
+                // Return to Professional Mode
+                btn.textContent = '📚 STORY MODE';
+                btn.classList.remove('story-active');
+                statusBadge.textContent = 'PROFESSIONAL';
+                statusBadge.style.background = 'linear-gradient(145deg, #00ff00, #00cc00)';
+                systemTitle.textContent = '🌌 Space Weather Adventures';
+                missionTitle.textContent = 'Interactive Space Weather Platform';
+                missionSubtitle.textContent = 'Real-time NASA data • Professional visualization • Educational storytelling';
+                dataPanelTitle.textContent = '📡 Live NASA Space Weather Data';
+                mainContainer.classList.remove('story-mode-active');
+                chapterNav.classList.remove('active');
+                hideCharacterPanel();
+                
+                console.log('🚀 Professional Mode Activated!');
+            }
+        }
+
+        function showCharacterPanel() {
+            const panel = document.getElementById('story-character-panel');
+            panel.classList.add('active');
+            updateCharacterDisplay();
+        }
+        
+        function hideCharacterPanel() {
+            const panel = document.getElementById('story-character-panel');
+            panel.classList.remove('active');
+        }
+        
+        function updateCharacterDisplay() {
+            const character = storyCharacters[currentCharacter];
+            document.getElementById('characterAvatar').textContent = character.avatar;
+            document.getElementById('characterName').textContent = character.name;
+            document.getElementById('characterDialogue').textContent = character.dialogues[currentDialogueIndex];
+        }
+
+        async function speakCharacterDialogue() {
+            const text = document.getElementById('characterDialogue').textContent;
+            const character = storyCharacters[currentCharacter];
+            
+            // Show speaking indicator
+            const speakBtn = document.querySelector('button[onclick="speakCharacterDialogue()"]');
+            const originalText = speakBtn.innerHTML;
+            speakBtn.innerHTML = '🔊 Speaking...';
+            speakBtn.disabled = true;
+            
+            try {
+                // Try ElevenLabs API first, fallback to OpenAI, then browser TTS
+                let audioUrl = null;
+                
+                // ElevenLabs Voice Configuration
+                const voiceIds = {
+                    sunny: 'pNInz6obpgDQGcFmaJgB', // Male energetic voice
+                    terra: 'EXAVITQu4vr4xnSDxMaL', // Female caring voice  
+                    luna: 'AZnzlk1XvdvUeBnXmlld', // Young friendly voice
+                    aurora: 'TxGEqnHWrfWFTfGW9XjX'  // Professional authoritative voice
+                };
+                
+                // Try ElevenLabs API
+                try {
+                    const response = await fetch('/api/speak', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            text: text,
+                            voice_id: voiceIds[currentCharacter] || voiceIds.aurora,
+                            character: currentCharacter
+                        })
+                    });
+                    
+                    if (response.ok) {
+                        const blob = await response.blob();
+                        audioUrl = URL.createObjectURL(blob);
+                        console.log(`🎙️ Using ElevenLabs voice for ${character.name}`);
+                    }
+                } catch (error) {
+                    console.log('ElevenLabs not available, trying OpenAI...');
+                }
+                
+                // Fallback to OpenAI TTS
+                if (!audioUrl) {
+                    try {
+                        const response = await fetch('/api/openai-speak', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                text: text,
+                                voice: currentCharacter === 'sunny' ? 'alloy' : 
+                                       currentCharacter === 'terra' ? 'nova' : 
+                                       currentCharacter === 'luna' ? 'shimmer' : 'onyx',
+                                character: currentCharacter
+                            })
+                        });
+                        
+                        if (response.ok) {
+                            const blob = await response.blob();
+                            audioUrl = URL.createObjectURL(blob);
+                            console.log(`🤖 Using OpenAI voice for ${character.name}`);
+                        }
+                    } catch (error) {
+                        console.log('OpenAI TTS not available, using browser TTS...');
+                    }
+                }
+                
+                // Play the AI-generated audio or fallback to browser TTS
+                if (audioUrl) {
+                    const audio = new Audio(audioUrl);
+                    audio.onended = () => {
+                        URL.revokeObjectURL(audioUrl);
+                        speakBtn.innerHTML = originalText;
+                        speakBtn.disabled = false;
+                    };
+                    audio.onerror = () => {
+                        console.log('Audio playback failed, using browser TTS...');
+                        useBrowserTTS(text, character);
+                        speakBtn.innerHTML = originalText;
+                        speakBtn.disabled = false;
+                    };
+                    await audio.play();
+                } else {
+                    // Fallback to browser TTS
+                    useBrowserTTS(text, character);
+                    speakBtn.innerHTML = originalText;
+                    speakBtn.disabled = false;
+                }
+                
+            } catch (error) {
+                console.error('Speech synthesis error:', error);
+                // Final fallback to browser TTS
+                useBrowserTTS(text, character);
+                speakBtn.innerHTML = originalText;
+                speakBtn.disabled = false;
+            }
+        }
+        
+        function useBrowserTTS(text, character) {
+            if (speechSynthesis.speaking) {
+                speechSynthesis.cancel();
+            }
+            
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.rate = 0.8;
+            utterance.pitch = currentCharacter === 'sunny' ? 1.2 : 
+                             currentCharacter === 'terra' ? 0.9 : 
+                             currentCharacter === 'luna' ? 1.1 : 1.0;
+            utterance.volume = 0.8;
+            
+            speechSynthesis.speak(utterance);
+            console.log(`🔊 Using browser TTS for ${character.name}`);
+        }
+        
+        function nextCharacterDialogue() {
+            const character = storyCharacters[currentCharacter];
+            currentDialogueIndex = (currentDialogueIndex + 1) % character.dialogues.length;
+            updateCharacterDisplay();
+            
+            // Auto-speak the new dialogue
+            setTimeout(() => {
+                if (storyMode) speakCharacterDialogue();
+            }, 500);
+        }
+        
+        function switchCharacter(characterKey) {
+            currentCharacter = characterKey;
+            currentDialogueIndex = 0;
+            if (storyMode) {
+                updateCharacterDisplay();
+                speakCharacterDialogue();
+            }
+        }
+
+        function goToChapter(chapterNumber) {
+            if (!storyMode) return;
+            
+            currentChapter = chapterNumber;
+            const chapter = storyChapters[chapterNumber];
+            
+            if (!chapter) return;
+            
+            // Update chapter button states
+            document.querySelectorAll('.chapter-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`chapter-${chapterNumber}-btn`).classList.add('active');
+            
+            // Switch to appropriate character
+            switchCharacter(chapter.character);
+            
+            // Mark previous chapters as completed
+            for (let i = 1; i < chapterNumber; i++) {
+                if (!completedChapters.includes(i)) {
+                    completedChapters.push(i);
+                    document.getElementById(`chapter-${i}-btn`).classList.add('completed');
+                }
+            }
+            
+            // Trigger chapter-specific content
+            setTimeout(() => {
+                triggerChapterEvents(chapterNumber);
+            }, 1000);
+            
+            console.log(`📖 Started Chapter ${chapterNumber}: ${chapter.title}`);
+        }
+
+        function triggerChapterEvents(chapterNumber) {
+            switch(chapterNumber) {
+                case 1:
+                    document.getElementById('characterDialogue').textContent = 
+                        "Welcome to Chapter 1! I'm Sunny, the star of our solar system! I create all the space weather you'll learn about. Ready to explore?";
+                    speakCharacterDialogue();
+                    break;
+                    
+                case 2:
+                    document.getElementById('characterDialogue').textContent = 
+                        "Chapter 2: Watch as space weather travels from Sunny to Terra! This journey takes 1-3 days in real life!";
+                    speakCharacterDialogue();
+                    break;
+                    
+                case 3:
+                    document.getElementById('characterDialogue').textContent = 
+                        "Chapter 3: I'm Terra! When space weather reaches me, I have many heroes who help protect everyone!";
+                    speakCharacterDialogue();
+                    break;
+                    
+                case 4:
+                    document.getElementById('characterDialogue').textContent = 
+                        "Chapter 4: Watch the Aurora Dance! This is how I turn space weather into beautiful light shows!";
+                    speakCharacterDialogue();
+                    break;
+                    
+                case 5:
+                    document.getElementById('characterDialogue').textContent = 
+                        "Chapter 5: I'm Captain Aurora! We monitor space weather 24/7 to keep everyone safe!";
+                    speakCharacterDialogue();
+                    break;
+            }
+        }
+
+        function openDashboard(url) {
+            if (storyMode) {
+                // Add story mode parameter
+                window.open(url + '?story=true', '_blank');
+            } else {
+                window.open(url, '_blank');
+            }
+        }
+
+        function loadNASAData() {
+            // Simulate loading NASA data
+            console.log('📡 Loading NASA space weather data...');
+            
+            // Simulated data - in production this would fetch from real NASA APIs
+            nasaData = {
+                summary: {
+                    cme_count: Math.floor(Math.random() * 15) + 1,
+                    solar_flare_count: Math.floor(Math.random() * 10) + 1,
+                    total_events: 0
+                }
+            };
+            
+            nasaData.summary.total_events = nasaData.summary.cme_count + nasaData.summary.solar_flare_count;
+            
+            updateDataDisplay();
+        }
+
+        function updateDataDisplay() {
+            if (!nasaData) return;
+
+            const summary = nasaData.summary;
+            
+            // Update metrics
+            animateValueChange('cme-count', summary.cme_count || 0);
+            animateValueChange('flare-count', summary.solar_flare_count || 0);
+            
+            // Determine activity level
+            const totalEvents = summary.total_events || 0;
+            let activity = 'QUIET';
+            if (totalEvents > 20) activity = 'EXTREME';
+            else if (totalEvents > 15) activity = 'HIGH';
+            else if (totalEvents > 10) activity = 'MODERATE';
+            else if (totalEvents > 5) activity = 'LOW';
+            
+            document.getElementById('activity-level').textContent = activity;
+            
+            // Update character dialogues based on real activity
+            if (storyMode) {
+                updateStoryNarratives(summary, totalEvents, activity);
+            }
+        }
+
+        function updateStoryNarratives(summary, totalEvents, activity) {
+            const cmeCount = summary.cme_count || 0;
+            const flareCount = summary.solar_flare_count || 0;
+            
+            // Update character dialogues based on real activity
+            if (currentCharacter === 'sunny') {
+                let sunnyDialogue = "";
+                if (activity === 'EXTREME') {
+                    sunnyDialogue = `WOW! I'm super active today with ${totalEvents} space weather events! I've sent ${cmeCount} CME blasts and ${flareCount} solar flares toward Terra!`;
+                } else if (activity === 'HIGH') {
+                    sunnyDialogue = `I'm feeling quite energetic today! I've created ${cmeCount} CME events and ${flareCount} solar flares. Terra will need to use her magnetic shield!`;
+                } else if (activity === 'MODERATE') {
+                    sunnyDialogue = `I'm having a moderate day with ${totalEvents} space weather events. That's ${cmeCount} CMEs and ${flareCount} flares!`;
+                } else {
+                    sunnyDialogue = `I'm taking it easy today with only ${totalEvents} space weather events. Just ${cmeCount} CMEs and ${flareCount} flares!`;
+                }
+                
+                if (document.getElementById('characterDialogue').textContent !== sunnyDialogue) {
+                    document.getElementById('characterDialogue').textContent = sunnyDialogue;
+                }
+            }
+        }
+
+        function animateValueChange(elementId, newValue) {
+            const element = document.getElementById(elementId);
+            const currentValue = parseInt(element.textContent) || 0;
+            
+            if (currentValue !== newValue) {
+                let step = 0;
+                const steps = 20;
+                const increment = (newValue - currentValue) / steps;
+                
+                const animation = setInterval(() => {
+                    step++;
+                    const value = Math.round(currentValue + increment * step);
+                    element.textContent = value;
+                    
+                    if (step >= steps) {
+                        clearInterval(animation);
+                        element.textContent = newValue;
+                    }
+                }, 50);
+            }
+        }
+
+        function updateClock() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString();
+            document.getElementById('last-update').textContent = timeString;
+        }
+    </script>
+</body>
+</html>
