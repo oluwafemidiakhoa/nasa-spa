@@ -2382,24 +2382,89 @@
             try {
                 showExportProgress('Capturing dashboard screenshots...');
                 
-                // Simulate screenshot capture for available dashboards
-                const dashboards = [
-                    'Advanced Master Dashboard',
-                    'Expert Physics Analysis', 
-                    '3D Solar System',
-                    'Professional Mission Control'
-                ];
-
-                for (let dashboard of dashboards) {
-                    // In a real implementation, this would capture actual screenshots
-                    console.log(`Capturing ${dashboard}...`);
+                // Import JSZip for creating ZIP files
+                if (typeof JSZip === 'undefined') {
+                    const script = document.createElement('script');
+                    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
+                    script.onload = () => exportDashboardScreenshots();
+                    document.head.appendChild(script);
+                    return;
                 }
-
+                
+                const zip = new JSZip();
+                const screenshots = [];
+                
+                // Capture current dashboard sections
+                const sections = [
+                    { name: 'Main_Dashboard', element: document.querySelector('.dashboard-container') },
+                    { name: 'Data_Grid', element: document.querySelector('.data-grid') },
+                    { name: 'Activity_Summary', element: document.querySelector('.activity-summary') },
+                    { name: 'Real_Time_Data', element: document.querySelector('.real-time-section') }
+                ];
+                
+                // Use html2canvas for screenshot capture
+                if (typeof html2canvas === 'undefined') {
+                    const script = document.createElement('script');
+                    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+                    script.onload = () => exportDashboardScreenshots();
+                    document.head.appendChild(script);
+                    return;
+                }
+                
+                showExportProgress('Processing dashboard sections...');
+                
+                for (let section of sections) {
+                    if (section.element) {
+                        try {
+                            const canvas = await html2canvas(section.element, {
+                                backgroundColor: '#0a0a0a',
+                                scale: 2,
+                                useCORS: true,
+                                allowTaint: true
+                            });
+                            
+                            const imgData = canvas.toDataURL('image/png').split(',')[1];
+                            zip.file(`${section.name}_${new Date().toISOString().slice(0,10)}.png`, imgData, {base64: true});
+                            
+                        } catch (err) {
+                            console.warn(`Could not capture ${section.name}:`, err);
+                        }
+                    }
+                }
+                
+                // Add metadata file
+                const metadata = {
+                    exportDate: new Date().toISOString(),
+                    platform: 'HelioEarth Professional Observatory',
+                    version: '2.0',
+                    sections: sections.map(s => s.name),
+                    totalScreenshots: sections.length,
+                    instructions: 'These screenshots capture the current state of your professional space weather dashboard.'
+                };
+                
+                zip.file('export_info.json', JSON.stringify(metadata, null, 2));
+                
+                showExportProgress('Generating ZIP file...');
+                
+                // Generate and download ZIP file
+                const content = await zip.generateAsync({type: 'blob'});
+                const fileName = `dashboard_captures_${new Date().toISOString().slice(0,10)}.zip`;
+                
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(content);
+                link.download = fileName;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(link.href);
+                
                 hideExportProgress();
-                showExportSuccess('Dashboard Screenshots', 'dashboard_captures_' + new Date().toISOString().slice(0,10) + '.zip');
+                showExportSuccess('Dashboard Screenshots', fileName);
+                
             } catch (error) {
                 hideExportProgress();
                 showExportError('Failed to capture screenshots: ' + error.message);
+                console.error('Screenshot export error:', error);
             }
         }
 
