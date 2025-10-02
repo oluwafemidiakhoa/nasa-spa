@@ -52,6 +52,35 @@
             color: #ffffff;
             text-shadow: 0 0 15px rgba(0, 255, 255, 0.8);
         }
+
+        .mode-toggle-btn {
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+            margin-left: 20px;
+        }
+
+        .mode-toggle-btn:hover {
+            background: linear-gradient(135deg, #ff5252, #ff7979);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(255, 107, 107, 0.5);
+        }
+
+        .mode-toggle-btn.story-active {
+            background: linear-gradient(135deg, #ffd93d, #ffb347);
+            color: #000;
+            box-shadow: 0 4px 15px rgba(255, 217, 61, 0.5);
+        }
         
         .status-badge {
             background: linear-gradient(145deg, #00ff00, #00cc00);
@@ -1184,6 +1213,9 @@
             <div class="logo">
                 <i class="fas fa-satellite-dish" style="font-size: 2rem; color: #00ffff;"></i>
                 <h1>HELIOEARTH PROFESSIONAL PLATFORM</h1>
+                <button class="mode-toggle-btn" onclick="window.open('space_weather_adventures.html', '_blank')">
+                    📚 STORY MODE
+                </button>
             </div>
             <div style="display: flex; align-items: center; gap: 20px;">
                 <button class="help-btn" onclick="openHelpCenter()">
@@ -1227,6 +1259,33 @@
         </div>
 
         <div class="dashboard-grid">
+            <!-- FEATURED: Space Weather Adventures for Kids -->
+            <div class="dashboard-card" style="border: 4px solid rgba(255, 20, 147, 0.8); background: linear-gradient(145deg, rgba(138, 43, 226, 0.2), rgba(255, 20, 147, 0.15)); position: relative; overflow: hidden;">
+                <div style="position: absolute; top: -10px; right: -10px; background: #ff1493; color: white; padding: 5px 15px; border-radius: 15px; font-weight: bold; font-size: 12px; transform: rotate(15deg);">🏆 NASA CHALLENGE</div>
+                <div class="card-icon">
+                    <div style="font-size: 3rem; animation: bounce 2s infinite;">🚀📚</div>
+                </div>
+                <div class="card-title" style="color: #ff69b4; font-size: 1.8rem; text-shadow: 0 0 10px rgba(255, 20, 147, 0.5);">🌟 SPACE WEATHER ADVENTURES</div>
+                <div class="card-description" style="color: #ffb6c1; font-size: 1.1rem;">
+                    <strong>Interactive Children's Story Platform!</strong><br>
+                    Join Sunny the Solar Flare on an epic journey from the Sun to Earth! Experience space weather through the eyes of heroes - farmers, pilots, astronauts, and space weather guardians protecting our planet.
+                </div>
+                <ul class="card-features" style="color: #ffc0cb;">
+                    <li>🌞 Meet Sunny the Solar Flare - your friendly guide</li>
+                    <li>🚀 Interactive journey from Sun to Earth with real NASA data</li>
+                    <li>👨‍🌾 Hero stories: Farmers, Pilots, Astronauts</li>
+                    <li>🌈 Aurora Dance - see the magical lights come alive</li>
+                    <li>🛡️ Become a Space Weather Guardian</li>
+                    <li>🎮 Kid-friendly controls with educational fun</li>
+                </ul>
+                <a href="space_weather_adventures.html" class="launch-btn" target="_blank" style="background: linear-gradient(145deg, #ff1493, #ff69b4); color: #fff; font-size: 1.2rem; box-shadow: 0 0 20px rgba(255, 20, 147, 0.5);">
+                    <i class="fas fa-play"></i> START ADVENTURE!
+                </a>
+                <button class="capture-btn" onclick="captureDashboard('space_weather_adventures.html', 'Space Weather Adventures')" style="border-color: #ff69b4; color: #ff69b4;">
+                    <i class="fas fa-camera"></i> Capture Magic
+                </button>
+            </div>
+            
             <!-- Advanced Master Dashboard -->
             <div class="dashboard-card" style="border: 3px solid rgba(255, 215, 0, 0.6); background: linear-gradient(145deg, rgba(50, 50, 20, 0.95), rgba(70, 60, 0, 0.95));">
                 <div class="card-icon">

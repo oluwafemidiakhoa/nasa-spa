@@ -1,8 +1,12 @@
 from http.server import BaseHTTPRequestHandler
 import json
 import os
+import asyncio
+import aiohttp
 from datetime import datetime
 from urllib.parse import urlparse, parse_qs
+import io
+import base64
 
 class handler(BaseHTTPRequestHandler):
     def do_GET(self):
@@ -267,6 +271,140 @@ class handler(BaseHTTPRequestHandler):
             }
             self.wfile.write(json.dumps(error_response).encode())
     
+    def do_POST(self):
+        # Handle POST requests (mainly for TTS APIs)
+        parsed_path = urlparse(self.path)
+        path = parsed_path.path
+        
+        try:
+            if path == '/api/speak':
+                # Handle ElevenLabs TTS requests
+                content_length = int(self.headers['Content-Length'])
+                post_data = self.rfile.read(content_length)
+                request_data = json.loads(post_data.decode('utf-8'))
+                
+                # Get ElevenLabs API key
+                elevenlabs_key = os.getenv("ELEVENLABS_API_KEY")
+                
+                if not elevenlabs_key:
+                    self.send_response(400)
+                    self.send_header('Content-type', 'application/json')
+                    self.send_header('Access-Control-Allow-Origin', '*')
+                    self.end_headers()
+                    self.wfile.write(json.dumps({"error": "ElevenLabs API key not configured"}).encode())
+                    return
+                
+                try:
+                    # Call ElevenLabs API
+                    import requests
+                    
+                    voice_id = request_data.get('voice_id', 'TxGEqnHWrfWFTfGW9XjX')
+                    text = request_data.get('text', '')
+                    
+                    url = f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}"
+                    headers = {
+                        "Accept": "audio/mpeg",
+                        "Content-Type": "application/json",
+                        "xi-api-key": elevenlabs_key
+                    }
+                    data = {
+                        "text": text,
+                        "model_id": "eleven_monolingual_v1",
+                        "voice_settings": {
+                            "stability": 0.5,
+                            "similarity_boost": 0.5
+                        }
+                    }
+                    
+                    response = requests.post(url, json=data, headers=headers)
+                    
+                    if response.status_code == 200:
+                        self.send_response(200)
+                        self.send_header('Content-type', 'audio/mpeg')
+                        self.send_header('Access-Control-Allow-Origin', '*')
+                        self.end_headers()
+                        self.wfile.write(response.content)
+                    else:
+                        self.send_response(response.status_code)
+                        self.send_header('Content-type', 'application/json')
+                        self.send_header('Access-Control-Allow-Origin', '*')
+                        self.end_headers()
+                        self.wfile.write(json.dumps({"error": "ElevenLabs API error"}).encode())
+                        
+                except Exception as e:
+                    self.send_response(500)
+                    self.send_header('Content-type', 'application/json')
+                    self.send_header('Access-Control-Allow-Origin', '*')
+                    self.end_headers()
+                    self.wfile.write(json.dumps({"error": str(e)}).encode())
+                return
+            
+            elif path == '/api/openai-speak':
+                # Handle OpenAI TTS requests
+                content_length = int(self.headers['Content-Length'])
+                post_data = self.rfile.read(content_length)
+                request_data = json.loads(post_data.decode('utf-8'))
+                
+                # Get OpenAI API key
+                openai_key = os.getenv("OPENAI_API_KEY")
+                
+                if not openai_key:
+                    self.send_response(400)
+                    self.send_header('Content-type', 'application/json')
+                    self.send_header('Access-Control-Allow-Origin', '*')
+                    self.end_headers()
+                    self.wfile.write(json.dumps({"error": "OpenAI API key not configured"}).encode())
+                    return
+                
+                try:
+                    # Call OpenAI TTS API
+                    import requests
+                    
+                    voice = request_data.get('voice', 'alloy')
+                    text = request_data.get('text', '')
+                    
+                    url = "https://api.openai.com/v1/audio/speech"
+                    headers = {
+                        "Authorization": f"Bearer {openai_key}",
+                        "Content-Type": "application/json"
+                    }
+                    data = {
+                        "model": "tts-1",
+                        "input": text,
+                        "voice": voice,
+                        "response_format": "mp3"
+                    }
+                    
+                    response = requests.post(url, json=data, headers=headers)
+                    
+                    if response.status_code == 200:
+                        self.send_response(200)
+                        self.send_header('Content-type', 'audio/mpeg')
+                        self.send_header('Access-Control-Allow-Origin', '*')
+                        self.end_headers()
+                        self.wfile.write(response.content)
+                    else:
+                        self.send_response(response.status_code)
+                        self.send_header('Content-type', 'application/json')
+                        self.send_header('Access-Control-Allow-Origin', '*')
+                        self.end_headers()
+                        self.wfile.write(json.dumps({"error": "OpenAI TTS API error"}).encode())
+                        
+                except Exception as e:
+                    self.send_response(500)
+                    self.send_header('Content-type', 'application/json')
+                    self.send_header('Access-Control-Allow-Origin', '*')
+                    self.end_headers()
+                    self.wfile.write(json.dumps({"error": str(e)}).encode())
+                return
+                
+        except Exception as e:
+            self.send_response(500)
+            self.send_header('Content-type', 'application/json')
+            self.send_header('Access-Control-Allow-Origin', '*')
+            self.end_headers()
+            self.wfile.write(json.dumps({"error": str(e)}).encode())
+
     def do_OPTIONS(self):
         # Handle CORS preflight requests
         self.send_response(200)
