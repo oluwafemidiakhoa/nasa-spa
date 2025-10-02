@@ -1733,7 +1733,15 @@
         }
 
         function dismissAlert() {
-            document.getElementById('alert-panel').style.display = 'none';
+            const alertPanel = document.getElementById('alert-panel');
+            if (alertPanel) {
+                alertPanel.style.display = 'none';
+                alertPanel.style.visibility = 'hidden';
+                alertPanel.style.opacity = '0';
+                // Remove from DOM flow completely
+                alertPanel.remove();
+                console.log('Alert dismissed successfully');
+            }
         }
 
         function animate() {
