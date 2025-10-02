@@ -742,6 +742,9 @@
             loadNASAData();
             updateClock();
             setInterval(updateClock, 1000);
+            
+            // Initialize character display
+            updateCharacterDisplay();
         });
 
         function toggleStoryMode() {
@@ -767,7 +770,12 @@
                 dataPanelTitle.textContent = '📊 Today\'s Space Weather Adventure!';
                 mainContainer.classList.add('story-mode-active');
                 chapterNav.classList.add('active');
-                showCharacterPanel();
+                
+                // Ensure character panel shows and is properly initialized
+                setTimeout(() => {
+                    showCharacterPanel();
+                    updateCharacterDisplay();
+                }, 100);
                 
                 console.log('📚 Story Mode Activated!');
             } else {
@@ -790,8 +798,14 @@
 
         function showCharacterPanel() {
             const panel = document.getElementById('story-character-panel');
-            panel.classList.add('active');
-            updateCharacterDisplay();
+            if (panel) {
+                panel.classList.add('active');
+                panel.style.display = 'block';
+                updateCharacterDisplay();
+                console.log('📚 Character panel activated');
+            } else {
+                console.error('Character panel not found!');
+            }
         }
         
         function hideCharacterPanel() {
@@ -801,9 +815,18 @@
         
         function updateCharacterDisplay() {
             const character = storyCharacters[currentCharacter];
-            document.getElementById('characterAvatar').textContent = character.avatar;
-            document.getElementById('characterName').textContent = character.name;
-            document.getElementById('characterDialogue').textContent = character.dialogues[currentDialogueIndex];
+            const avatarEl = document.getElementById('characterAvatar');
+            const nameEl = document.getElementById('characterName');
+            const dialogueEl = document.getElementById('characterDialogue');
+            
+            if (avatarEl && nameEl && dialogueEl && character) {
+                avatarEl.textContent = character.avatar;
+                nameEl.textContent = character.name;
+                dialogueEl.textContent = character.dialogues[currentDialogueIndex];
+                console.log(`📚 Updated character display: ${character.name}`);
+            } else {
+                console.error('Character display elements not found or character data missing');
+            }
         }
 
         async function speakCharacterDialogue() {
