@@ -1209,6 +1209,9 @@
                 hudOverlay.classList.add('story-mode-active');
                 showCharacterPanel();
                 
+                // Hide any active alerts in story mode
+                hideAllAlerts();
+                
                 // Show story navigation
                 document.getElementById('story-navigation').style.display = 'block';
                 
@@ -2264,9 +2267,9 @@
                 createSpectacularFlareVisualization();
                 updateConnectionStatus('online');
                 
-                // Check for high-speed CMEs and show alert
+                // Check for high-speed CMEs and show alert (only in professional mode)
                 const highSpeedCMEs = nasaData.events.cmes.filter(cme => (cme.speed || 0) > 1000);
-                if (highSpeedCMEs.length > 0) {
+                if (highSpeedCMEs.length > 0 && !storyMode) {
                     showEmergencyAlert(highSpeedCMEs[0]);
                 }
                 
@@ -2305,9 +2308,11 @@
             createSpectacularCMEVisualization();
             createSpectacularFlareVisualization();
             
-            // Show simulation alert for X-class flare
+            // Show simulation alert for X-class flare (only in professional mode)
             setTimeout(() => {
-                showEmergencyAlert(nasaData.events.cmes[1]);
+                if (!storyMode) {
+                    showEmergencyAlert(nasaData.events.cmes[1]);
+                }
             }, 5000);
         }
 
@@ -2345,7 +2350,7 @@
             const cmeCount = summary.cme_count || 0;
             const flareCount = summary.solar_flare_count || 0;
             
-            // Update character dialogues based on real activity
+            // Update character dialogues based on real activity and sync with story data
             if (currentCharacter === 'sunny') {
                 let sunnyDialogue = "";
                 if (activity === 'EXTREME') {
@@ -2358,10 +2363,9 @@
                     sunnyDialogue = `I'm taking it easy today with only ${totalEvents} space weather events. Just ${cmeCount} CMEs and ${flareCount} flares - Terra can relax!`;
                 }
                 
-                // Only update if it's different from current dialogue
-                if (document.getElementById('characterDialogue').textContent !== sunnyDialogue) {
-                    document.getElementById('characterDialogue').textContent = sunnyDialogue;
-                }
+                // Update the character data structure AND the display
+                storyCharacters.sunny.dialogues[currentDialogueIndex] = sunnyDialogue;
+                updateCharacterDisplay();
             }
             
             if (currentCharacter === 'terra') {
@@ -2376,9 +2380,9 @@
                     terraDialogue = `It's a peaceful day! Only ${totalEvents} space weather events from Sunny. Perfect for beautiful auroras at my poles!`;
                 }
                 
-                if (document.getElementById('characterDialogue').textContent !== terraDialogue) {
-                    document.getElementById('characterDialogue').textContent = terraDialogue;
-                }
+                // Update the character data structure AND the display
+                storyCharacters.terra.dialogues[currentDialogueIndex] = terraDialogue;
+                updateCharacterDisplay();
             }
             
             if (currentCharacter === 'aurora') {
@@ -2393,9 +2397,9 @@
                     auroraDialogue = `Quiet space weather day with ${totalEvents} events. Perfect conditions for space operations and beautiful aurora displays!`;
                 }
                 
-                if (document.getElementById('characterDialogue').textContent !== auroraDialogue) {
-                    document.getElementById('characterDialogue').textContent = auroraDialogue;
-                }
+                // Update the character data structure AND the display
+                storyCharacters.aurora.dialogues[currentDialogueIndex] = auroraDialogue;
+                updateCharacterDisplay();
             }
             
             // Update the observatory data panel with story-friendly descriptions
@@ -2748,6 +2752,14 @@
         }
 
         function showEmergencyAlert(cme) {
+            // In story mode, show friendly notification instead of alert
+            if (storyMode) {
+                const speed = cme.speed || 1000;
+                showNotification(`🌞 Sunny is sending a fast solar wind at ${speed.toLocaleString()} km/s! Terra's magnetic shield will protect us! 🛡️`, 'info');
+                return;
+            }
+            
+            // Professional mode - show full alert
             const alertPanel = document.getElementById('alert-panel');
             const alertContent = document.getElementById('alert-content');
             
@@ -2773,11 +2785,14 @@
             const alertPanel = document.getElementById('alert-panel');
             if (alertPanel) {
                 alertPanel.style.display = 'none';
-                alertPanel.style.visibility = 'hidden';
-                alertPanel.style.opacity = '0';
-                // Remove from DOM flow completely
-                alertPanel.remove();
                 console.log('Alert dismissed successfully');
+            }
+        }
+
+        function hideAllAlerts() {
+            const alertPanel = document.getElementById('alert-panel');
+            if (alertPanel) {
+                alertPanel.style.display = 'none';
             }
         }
 
