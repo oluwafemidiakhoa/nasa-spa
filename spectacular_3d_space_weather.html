@@ -1268,6 +1268,24 @@
             document.getElementById('characterName').textContent = character.name;
             document.getElementById('characterDialogue').textContent = character.dialogues[currentDialogueIndex];
         }
+
+        function setCharacterDialogue(text, autoSpeak = true) {
+            // Stop any currently playing voice
+            if (isVoicePlaying) {
+                stopCurrentVoice();
+            }
+            
+            // Update the current character's dialogue
+            storyCharacters[currentCharacter].dialogues[currentDialogueIndex] = text;
+            document.getElementById('characterDialogue').textContent = text;
+            
+            // Auto-speak if requested
+            if (autoSpeak && storyMode) {
+                setTimeout(() => {
+                    speakCharacterDialogue();
+                }, 300);
+            }
+        }
         
         // Voice management globals
         let currentAudio = null;
@@ -1472,29 +1490,25 @@
         }
         
         function triggerStoryEvent(eventType) {
+            if (!storyMode) return;
+            
             switch(eventType) {
                 case 'solar_flare':
-                    if (storyMode) {
-                        switchCharacter('sunny');
-                        document.getElementById('characterDialogue').textContent = 
-                            "Whoosh! I just sent a solar flare toward Earth! Watch as my energy travels through space!";
-                        speakCharacterDialogue();
+                    // Don't switch character during chapter navigation
+                    if (currentChapter === 1) {
+                        setCharacterDialogue("Whoosh! I just sent a solar flare toward Earth! Watch as my energy travels through space!");
                     }
                     break;
                 case 'cme_event':
-                    if (storyMode) {
-                        switchCharacter('aurora');
-                        document.getElementById('characterDialogue').textContent = 
-                            "Alert! A coronal mass ejection is heading toward Earth! Let's watch Terra protect everyone!";
-                        speakCharacterDialogue();
+                    // Only trigger if not in chapter mode
+                    if (currentChapter === 2) {
+                        setCharacterDialogue("Alert! A coronal mass ejection is heading toward Earth! Let's watch Terra protect everyone!");
                     }
                     break;
                 case 'aurora_display':
-                    if (storyMode) {
-                        switchCharacter('terra');
-                        document.getElementById('characterDialogue').textContent = 
-                            "Look at my beautiful auroras! This is how I turn space weather into a light show!";
-                        speakCharacterDialogue();
+                    // Only trigger if in chapter 4
+                    if (currentChapter === 4) {
+                        setCharacterDialogue("Look at my beautiful auroras! This is how I turn space weather into a light show!");
                     }
                     break;
             }
@@ -1545,40 +1559,30 @@
             switch(chapterNumber) {
                 case 1:
                     // Chapter 1: Meet Sunny the Bustling Sun
-                    document.getElementById('characterDialogue').textContent = 
-                        "Welcome to Chapter 1! I'm Sunny, the star of our solar system! I create all the space weather you'll learn about. Click on me to see my solar flares!";
-                    speakCharacterDialogue();
+                    setCharacterDialogue("Welcome to Chapter 1! I'm Sunny, the star of our solar system! I create all the space weather you'll learn about. Click on me to see my solar flares!");
                     break;
                     
                 case 2:
                     // Chapter 2: The Great Space Journey
+                    setCharacterDialogue("Chapter 2: Watch as space weather travels from Sunny to Terra! This journey takes 1-3 days in real life, but we'll speed it up for you!");
                     triggerStoryEvent('cme_event');
-                    document.getElementById('characterDialogue').textContent = 
-                        "Chapter 2: Watch as space weather travels from Sunny to Terra! This journey takes 1-3 days in real life, but we'll speed it up for you!";
-                    speakCharacterDialogue();
                     break;
                     
                 case 3:
                     // Chapter 3: Heroes Respond on Earth
-                    document.getElementById('characterDialogue').textContent = 
-                        "Chapter 3: I'm Terra! When space weather reaches me, I have many heroes who help protect everyone - farmers, pilots, power grid operators, and astronauts!";
-                    speakCharacterDialogue();
+                    setCharacterDialogue("Chapter 3: I'm Terra! When space weather reaches me, I have many heroes who help protect everyone - farmers, pilots, power grid operators, and astronauts!");
                     setTimeout(() => showEarthHeroes(), 3000);
                     break;
                     
                 case 4:
                     // Chapter 4: The Aurora Dance
+                    setCharacterDialogue("Chapter 4: Behold the Aurora Dance! This is how I turn dangerous space weather into beautiful light shows at my poles!");
                     triggerStoryEvent('aurora_display');
-                    document.getElementById('characterDialogue').textContent = 
-                        "Chapter 4: Behold the Aurora Dance! This is how I turn dangerous space weather into beautiful light shows at my poles!";
-                    speakCharacterDialogue();
                     break;
                     
                 case 5:
                     // Chapter 5: Space Weather Guardians
-                    document.getElementById('characterDialogue').textContent = 
-                        "Chapter 5: I'm Captain Aurora! We monitor space weather 24/7 to keep everyone safe. Scientists use satellites and ground stations just like this observatory!";
-                    speakCharacterDialogue();
+                    setCharacterDialogue("Chapter 5: I'm Captain Aurora! We monitor space weather 24/7 to keep everyone safe. Scientists use satellites and ground stations just like this observatory!");
                     setTimeout(() => showGuardianSystems(), 3000);
                     break;
             }
@@ -1596,8 +1600,7 @@
             let heroIndex = 0;
             const showNextHero = () => {
                 if (heroIndex < heroes.length && storyMode && currentChapter === 3) {
-                    document.getElementById('characterDialogue').textContent = heroes[heroIndex];
-                    speakCharacterDialogue();
+                    setCharacterDialogue(heroes[heroIndex]);
                     heroIndex++;
                     setTimeout(showNextHero, 4000);
                 }
@@ -1617,8 +1620,7 @@
             let systemIndex = 0;
             const showNextSystem = () => {
                 if (systemIndex < systems.length && storyMode && currentChapter === 5) {
-                    document.getElementById('characterDialogue').textContent = systems[systemIndex];
-                    speakCharacterDialogue();
+                    setCharacterDialogue(systems[systemIndex]);
                     systemIndex++;
                     setTimeout(showNextSystem, 4000);
                 }
@@ -2227,25 +2229,19 @@
                     // Check if we clicked on other planets
                     if (object === mercury) {
                         switchCharacter('aurora');
-                        document.getElementById('characterDialogue').textContent = 
-                            "That's Mercury, the closest planet to Sunny! It gets hit by space weather first!";
-                        speakCharacterDialogue();
+                        setCharacterDialogue("That's Mercury, the closest planet to Sunny! It gets hit by space weather first!");
                         break;
                     }
                     
                     if (object === venus) {
                         switchCharacter('aurora');
-                        document.getElementById('characterDialogue').textContent = 
-                            "Venus has a thick atmosphere that protects it differently from space weather!";
-                        speakCharacterDialogue();
+                        setCharacterDialogue("Venus has a thick atmosphere that protects it differently from space weather!");
                         break;
                     }
                     
                     if (object === mars) {
                         switchCharacter('aurora');
-                        document.getElementById('characterDialogue').textContent = 
-                            "Mars doesn't have a strong magnetic field like Terra, so space weather affects it more!";
-                        speakCharacterDialogue();
+                        setCharacterDialogue("Mars doesn't have a strong magnetic field like Terra, so space weather affects it more!");
                         break;
                     }
                 }
@@ -2346,60 +2342,33 @@
         }
         
         function updateStoryNarratives(summary, totalEvents, activity) {
-            // Create dynamic story content based on real NASA data
+            // Don't interfere with chapter navigation or user interactions
+            if (currentChapter > 1) return;
+            
+            // Create dynamic story content based on real NASA data (only for initial dialogue)
             const cmeCount = summary.cme_count || 0;
             const flareCount = summary.solar_flare_count || 0;
             
-            // Update character dialogues based on real activity and sync with story data
-            if (currentCharacter === 'sunny') {
-                let sunnyDialogue = "";
-                if (activity === 'EXTREME') {
-                    sunnyDialogue = `WOW! I'm super active today with ${totalEvents} space weather events! I've sent ${cmeCount} CME blasts and ${flareCount} solar flares toward Terra!`;
-                } else if (activity === 'HIGH' || activity === 'SEVERE') {
-                    sunnyDialogue = `I'm feeling quite energetic today! I've created ${cmeCount} CME events and ${flareCount} solar flares. Terra will need to use her magnetic shield!`;
-                } else if (activity === 'MODERATE') {
-                    sunnyDialogue = `I'm having a moderate day with ${totalEvents} space weather events. That's ${cmeCount} CMEs and ${flareCount} flares to keep Terra on her toes!`;
-                } else {
-                    sunnyDialogue = `I'm taking it easy today with only ${totalEvents} space weather events. Just ${cmeCount} CMEs and ${flareCount} flares - Terra can relax!`;
+            // Only update if we're on the first dialogue of each character
+            if (currentDialogueIndex === 0) {
+                if (currentCharacter === 'sunny') {
+                    let sunnyDialogue = "";
+                    if (activity === 'EXTREME') {
+                        sunnyDialogue = `WOW! I'm super active today with ${totalEvents} space weather events! I've sent ${cmeCount} CME blasts and ${flareCount} solar flares toward Terra!`;
+                    } else if (activity === 'HIGH' || activity === 'SEVERE') {
+                        sunnyDialogue = `I'm feeling quite energetic today! I've created ${cmeCount} CME events and ${flareCount} solar flares. Terra will need to use her magnetic shield!`;
+                    } else if (activity === 'MODERATE') {
+                        sunnyDialogue = `I'm having a moderate day with ${totalEvents} space weather events. That's ${cmeCount} CMEs and ${flareCount} flares to keep Terra on her toes!`;
+                    } else {
+                        sunnyDialogue = `I'm taking it easy today with only ${totalEvents} space weather events. Just ${cmeCount} CMEs and ${flareCount} flares - Terra can relax!`;
+                    }
+                    
+                    // Update only the current dialogue, don't call updateCharacterDisplay
+                    storyCharacters.sunny.dialogues[0] = sunnyDialogue;
+                    if (currentCharacter === 'sunny' && currentDialogueIndex === 0) {
+                        document.getElementById('characterDialogue').textContent = sunnyDialogue;
+                    }
                 }
-                
-                // Update the character data structure AND the display
-                storyCharacters.sunny.dialogues[currentDialogueIndex] = sunnyDialogue;
-                updateCharacterDisplay();
-            }
-            
-            if (currentCharacter === 'terra') {
-                let terraDialogue = "";
-                if (activity === 'EXTREME' || activity === 'SEVERE') {
-                    terraDialogue = `Alert! Sunny is sending ${totalEvents} space weather events my way! My magnetosphere is working overtime to protect everyone on my surface!`;
-                } else if (activity === 'HIGH') {
-                    terraDialogue = `Sunny is quite active with ${totalEvents} events! I'm using my magnetic field to deflect ${cmeCount} CMEs and handle ${flareCount} solar flares.`;
-                } else if (activity === 'MODERATE') {
-                    terraDialogue = `A normal day! Sunny sent ${totalEvents} space weather events, but my magnetic shield is handling them perfectly.`;
-                } else {
-                    terraDialogue = `It's a peaceful day! Only ${totalEvents} space weather events from Sunny. Perfect for beautiful auroras at my poles!`;
-                }
-                
-                // Update the character data structure AND the display
-                storyCharacters.terra.dialogues[currentDialogueIndex] = terraDialogue;
-                updateCharacterDisplay();
-            }
-            
-            if (currentCharacter === 'aurora') {
-                let auroraDialogue = "";
-                if (activity === 'EXTREME') {
-                    auroraDialogue = `RED ALERT! We're tracking ${totalEvents} space weather events! All space weather guardians are on high alert. Astronauts and pilots, take precautions!`;
-                } else if (activity === 'SEVERE' || activity === 'HIGH') {
-                    auroraDialogue = `Space weather warning! We're monitoring ${cmeCount} CMEs and ${flareCount} solar flares. Our early warning systems are keeping everyone safe!`;
-                } else if (activity === 'MODERATE') {
-                    auroraDialogue = `Normal space weather activity with ${totalEvents} events detected. Our monitoring systems are tracking everything perfectly!`;
-                } else {
-                    auroraDialogue = `Quiet space weather day with ${totalEvents} events. Perfect conditions for space operations and beautiful aurora displays!`;
-                }
-                
-                // Update the character data structure AND the display
-                storyCharacters.aurora.dialogues[currentDialogueIndex] = auroraDialogue;
-                updateCharacterDisplay();
             }
             
             // Update the observatory data panel with story-friendly descriptions
