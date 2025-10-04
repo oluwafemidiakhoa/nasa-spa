@@ -1213,17 +1213,14 @@
             <div class="logo">
                 <i class="fas fa-satellite-dish" style="font-size: 2rem; color: #00ffff;"></i>
                 <h1>HELIOEARTH PROFESSIONAL PLATFORM</h1>
-                <button class="mode-toggle-btn" onclick="window.open('space_weather_adventures.html', '_blank')">
-                    📚 STORY MODE
+                <button class="mode-toggle-btn" onclick="window.location.href='space_weather_chatbot.html'" style="background: linear-gradient(135deg, #9d50bb, #6e48aa);">
+                    🤖 AI SPACE WEATHER TUTOR
                 </button>
             </div>
             <div style="display: flex; align-items: center; gap: 20px;">
                 <button class="help-btn" onclick="openHelpCenter()">
                     <i class="fas fa-question-circle"></i> Help & Support
                 </button>
-                <div class="status-badge">
-                    🔬 ADVANCED ANALYTICS
-                </div>
             </div>
         </div>
     </header>
@@ -1268,34 +1265,31 @@
         </div>
 
         <div class="dashboard-grid">
-            <!-- Educational Outreach Platform -->
-            <div class="dashboard-card">
-                <div class="card-icon">
-                    <i class="fas fa-graduation-cap"></i>
+            <!-- Space Explorers Academy - KIDS EDUCATION PLATFORM -->
+            <div class="dashboard-card" style="border: 3px solid rgba(255, 215, 0, 0.8); background: linear-gradient(145deg, rgba(102, 126, 234, 0.15), rgba(118, 75, 162, 0.15));">
+                <div class="card-icon" style="background: linear-gradient(145deg, #667eea, #764ba2); box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);">
+                    <i class="fas fa-graduation-cap" style="color: #fff;"></i>
                 </div>
-                <div class="card-title">EDUCATIONAL OUTREACH PLATFORM</div>
-                <div class="card-description">
-                    Professional dual-mode space weather platform combining enterprise-grade monitoring with educational accessibility. Features interactive storytelling for public engagement and scientific education.
+                <div class="card-title" style="color: #667eea; text-shadow: 0 0 10px rgba(102, 126, 234, 0.5);">🚀 SPACE EXPLORERS ACADEMY 🌟</div>
+                <div class="card-description" style="font-size: 1.05rem; line-height: 1.6;">
+                    <strong style="color: #ffd700;">Interactive Kids Education Platform</strong> - Learn about space weather with AI character friends! Features ElevenLabs voice synthesis, interactive lessons, fun quizzes, and real NASA data explained for young explorers.
                 </div>
                 <ul class="card-features">
-                    <li>Dual-mode interface: Professional and Educational</li>
-                    <li>Real-time NASA data integration with storytelling</li>
-                    <li>Multi-perspective educational content</li>
-                    <li>Interactive space weather visualization</li>
-                    <li>AI-powered voice synthesis for accessibility</li>
-                    <li>Professional-grade performance optimization</li>
+                    <li><strong>🎙️ AI Voice Characters:</strong> Sunny (Sun), Terra (Earth), Aurora (Lights), Parker (Probe)</li>
+                    <li><strong>🎓 Interactive Lessons:</strong> Solar flares, CMEs, magnetosphere, auroras & more</li>
+                    <li><strong>🎮 Fun Quizzes:</strong> Test your space weather knowledge!</li>
+                    <li><strong>📊 Progress Tracking:</strong> Watch your learning journey grow</li>
+                    <li><strong>✨ ElevenLabs TTS:</strong> Professional AI voice narration</li>
+                    <li><strong>🌈 Kid-Friendly:</strong> Colorful, engaging, and educational</li>
                 </ul>
-                <a href="space_weather_adventures.html" class="launch-btn" target="_blank">
-                    <i class="fas fa-rocket"></i> Launch Educational Platform
+                <a href="space_explorers_academy.html" class="launch-btn" target="_blank" style="background: linear-gradient(145deg, #667eea, #764ba2); color: #fff; margin-top: 15px;">
+                    <i class="fas fa-rocket"></i> Launch Learning Academy
                 </a>
-                <button class="capture-btn" onclick="captureDashboard('space_weather_adventures.html', 'Educational Outreach Platform')">
-                    <i class="fas fa-camera"></i> Capture Dashboard
-                </button>
-                <button class="launch-btn" onclick="openExportModal()" style="background: linear-gradient(145deg, #28a745, #20c997); margin-top: 10px;">
-                    <i class="fas fa-download"></i> Access Export Center
+                <button class="capture-btn" onclick="captureDashboard('space_explorers_academy.html', 'Space Explorers Academy')" style="margin-top: 10px;">
+                    <i class="fas fa-camera"></i> Capture
                 </button>
             </div>
-            
+
             <!-- Advanced Master Dashboard -->
             <div class="dashboard-card" style="border: 3px solid rgba(255, 215, 0, 0.6); background: linear-gradient(145deg, rgba(50, 50, 20, 0.95), rgba(70, 60, 0, 0.95));">
                 <div class="card-icon">
@@ -2202,12 +2196,172 @@
                 <div>Loading Dashboard...</div>
             `;
             document.body.appendChild(loadingDiv);
-            
+
             // Simulate loading time for professional UX
             setTimeout(() => {
                 window.open(url, '_blank');
                 loadingDiv.remove();
             }, 800);
+        }
+
+        // Open Story Mode with current dashboard data
+        function openStoryMode() {
+            console.log('🚀 Opening Interactive Story Mode...');
+            // Open the story adventures page
+            window.location.href = 'space_weather_adventures_new.html';
+        }
+
+        // Educational Voice System
+        let currentCharacterIndex = 0;
+        const educationalCharacters = [
+            {
+                name: "Sunny the Sun",
+                emoji: "🌞",
+                dialogue: "Hi there! I'm Sunny, your guide to space weather! Did you know I send out solar flares and coronal mass ejections that can affect Earth? These powerful bursts of energy travel through space and can impact satellites, power grids, and even create beautiful auroras!"
+            },
+            {
+                name: "Aurora the Northern Lights",
+                emoji: "🌌",
+                dialogue: "Hello! I'm Aurora, and I dance in the sky when solar particles meet Earth's magnetic field! I appear in beautiful green, pink, and purple colors near the poles. When the Sun is very active, I can be seen at lower latitudes too!"
+            },
+            {
+                name: "Magnetia the Earth",
+                emoji: "🌍",
+                dialogue: "Greetings! I'm Magnetia, Earth's protective magnetic field! I shield our planet from harmful solar radiation and charged particles. When solar storms hit me, I can wobble and flex, which creates space weather effects on the ground!"
+            },
+            {
+                name: "Parker the Solar Probe",
+                emoji: "🛰️",
+                dialogue: "Hey! I'm Parker, and I fly closer to the Sun than any spacecraft before! I measure solar wind, magnetic fields, and help scientists predict space weather. My data helps protect astronauts and technology in space!"
+            }
+        ];
+
+        async function speakEducationalDialogue() {
+            const character = educationalCharacters[currentCharacterIndex];
+
+            // Cancel any ongoing speech
+            if (window.speechSynthesis.speaking) {
+                window.speechSynthesis.cancel();
+            }
+
+            try {
+                // ElevenLabs Voice Configuration
+                const voiceIds = {
+                    0: 'pNInz6obpgDQGcFmaJgB', // Sunny - Male energetic voice
+                    1: 'TxGEqnHWrfWFTfGW9XjX', // Aurora - Professional voice
+                    2: 'EXAVITQu4vr4xnSDxMaL', // Magnetia - Female caring voice
+                    3: 'AZnzlk1XvdvUeBnXmlld'  // Parker - Young friendly voice
+                };
+
+                let audioUrl = null;
+
+                // Try ElevenLabs API first
+                try {
+                    const response = await fetch('/api/speak', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            text: character.dialogue,
+                            voice_id: voiceIds[currentCharacterIndex] || voiceIds[0],
+                            character: character.name
+                        })
+                    });
+
+                    if (response.ok) {
+                        const blob = await response.blob();
+                        audioUrl = URL.createObjectURL(blob);
+                        console.log(`🎙️ Using ElevenLabs voice for ${character.name}`);
+                    }
+                } catch (error) {
+                    console.log('ElevenLabs not available, trying OpenAI...');
+                }
+
+                // Fallback to OpenAI TTS
+                if (!audioUrl) {
+                    try {
+                        const openaiVoices = ['alloy', 'nova', 'shimmer', 'onyx'];
+                        const response = await fetch('/api/openai-speak', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                text: character.dialogue,
+                                voice: openaiVoices[currentCharacterIndex] || 'alloy',
+                                character: character.name
+                            })
+                        });
+
+                        if (response.ok) {
+                            const blob = await response.blob();
+                            audioUrl = URL.createObjectURL(blob);
+                            console.log(`🤖 Using OpenAI voice for ${character.name}`);
+                        }
+                    } catch (error) {
+                        console.log('OpenAI TTS not available, using browser TTS...');
+                    }
+                }
+
+                // Play the AI-generated audio or fallback to browser TTS
+                if (audioUrl) {
+                    const audio = new Audio(audioUrl);
+                    audio.onended = () => {
+                        URL.revokeObjectURL(audioUrl);
+                    };
+                    audio.onerror = () => {
+                        console.log('Audio playback failed, using browser TTS...');
+                        useBrowserTTS(character.dialogue, character);
+                    };
+                    await audio.play();
+                } else {
+                    // Final fallback to browser TTS
+                    useBrowserTTS(character.dialogue, character);
+                }
+            } catch (error) {
+                console.error('Speech error:', error);
+                // Fallback to browser TTS
+                useBrowserTTS(character.dialogue, character);
+            }
+        }
+
+        // Browser TTS fallback function
+        function useBrowserTTS(text, character) {
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.rate = 0.9;
+            utterance.pitch = 1.0;
+            utterance.volume = 1.0;
+
+            // Select appropriate voice
+            const voices = window.speechSynthesis.getVoices();
+            const preferredVoice = voices.find(voice =>
+                voice.name.includes('Google') ||
+                voice.name.includes('Microsoft') ||
+                voice.lang.startsWith('en')
+            );
+            if (preferredVoice) {
+                utterance.voice = preferredVoice;
+            }
+
+            window.speechSynthesis.speak(utterance);
+            console.log(`🔊 Using browser TTS for ${character.name || character.emoji}`);
+        }
+
+        function nextEducationalCharacter() {
+            currentCharacterIndex = (currentCharacterIndex + 1) % educationalCharacters.length;
+            const character = educationalCharacters[currentCharacterIndex];
+
+            // Update the display
+            const characterDisplay = document.querySelector('.educational-demo p');
+            if (characterDisplay) {
+                characterDisplay.innerHTML = `
+                    <strong style="font-size: 1.3rem;">${character.emoji} ${character.name}</strong><br>
+                    ${character.dialogue}
+                `;
+            }
+
+            console.log(`Switched to ${character.name}`);
         }
 
         // Initialize system

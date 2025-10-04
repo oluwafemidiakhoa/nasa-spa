@@ -1,0 +1,1288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚀 Space Explorers Academy - Learn About Space Weather!</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Animated starfield background */
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 3s infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            padding: 40px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 30px;
+            margin-bottom: 30px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .header h1 {
+            font-size: 3.5rem;
+            color: #fff;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+            margin-bottom: 15px;
+            animation: bounce 2s infinite;
+        }
+
+        .header p {
+            font-size: 1.3rem;
+            color: #ffd700;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Navigation Buttons */
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .nav-btn {
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            color: #fff;
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+        }
+
+        .nav-btn.dashboard {
+            background: linear-gradient(135deg, #00d4ff, #0099cc);
+        }
+
+        .nav-btn.adventures {
+            background: linear-gradient(135deg, #ffd700, #ffaa00);
+            color: #000;
+        }
+
+        /* Main Content Grid */
+        .content-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        /* Character Card */
+        .character-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 25px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 4px solid;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .character-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .character-card.sunny {
+            border-color: #ffd700;
+            background: linear-gradient(135deg, #fff9e6 0%, #ffffff 100%);
+        }
+
+        .character-card.terra {
+            border-color: #00cc66;
+            background: linear-gradient(135deg, #e6fff2 0%, #ffffff 100%);
+        }
+
+        .character-card.aurora {
+            border-color: #9d50bb;
+            background: linear-gradient(135deg, #f3e6ff 0%, #ffffff 100%);
+        }
+
+        .character-card.parker {
+            border-color: #00d4ff;
+            background: linear-gradient(135deg, #e6f9ff 0%, #ffffff 100%);
+        }
+
+        .character-avatar {
+            font-size: 6rem;
+            text-align: center;
+            margin-bottom: 20px;
+            animation: float 3s infinite ease-in-out;
+        }
+
+        .character-name {
+            font-size: 2rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .character-title {
+            font-size: 1.1rem;
+            text-align: center;
+            color: #666;
+            margin-bottom: 20px;
+            font-style: italic;
+        }
+
+        .character-description {
+            font-size: 1.05rem;
+            line-height: 1.8;
+            color: #444;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .character-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .char-btn {
+            padding: 12px 25px;
+            font-size: 1rem;
+            font-weight: 700;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .char-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .char-btn.speak {
+            background: linear-gradient(135deg, #00ff88, #00cc66);
+            color: #000;
+        }
+
+        .char-btn.learn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #fff;
+        }
+
+        .char-btn.quiz {
+            background: linear-gradient(135deg, #ffd700, #ffaa00);
+            color: #000;
+        }
+
+        .char-btn.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        /* Learning Section */
+        .learning-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 25px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            margin-bottom: 30px;
+            border: 4px solid #ffd700;
+        }
+
+        .learning-section h2 {
+            font-size: 2.5rem;
+            color: #667eea;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .lesson-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .lesson-card {
+            background: linear-gradient(135deg, #f8f9ff 0%, #ffffff 100%);
+            padding: 25px;
+            border-radius: 20px;
+            border: 3px solid #667eea;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .lesson-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+            border-color: #764ba2;
+        }
+
+        .lesson-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+
+        .lesson-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .lesson-desc {
+            font-size: 0.95rem;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        /* Quiz Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 25px;
+            padding: 40px;
+            max-width: 700px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 2rem;
+            cursor: pointer;
+            color: #999;
+            border: none;
+            background: none;
+            transition: all 0.3s;
+        }
+
+        .modal-close:hover {
+            color: #333;
+            transform: scale(1.2);
+        }
+
+        .quiz-question {
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 25px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .quiz-option {
+            padding: 20px;
+            background: linear-gradient(135deg, #f8f9ff 0%, #ffffff 100%);
+            border: 3px solid #667eea;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1.1rem;
+            text-align: center;
+        }
+
+        .quiz-option:hover {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            transform: translateX(10px);
+        }
+
+        .quiz-option.correct {
+            background: linear-gradient(135deg, #00ff88 0%, #00cc66 100%);
+            border-color: #00cc66;
+            color: #000;
+        }
+
+        .quiz-option.wrong {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+            border-color: #ee5a6f;
+            color: white;
+        }
+
+        .quiz-feedback {
+            font-size: 1.2rem;
+            text-align: center;
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 20px;
+            font-weight: 600;
+        }
+
+        .quiz-feedback.correct {
+            background: linear-gradient(135deg, #00ff88 0%, #00cc66 100%);
+            color: #000;
+        }
+
+        .quiz-feedback.wrong {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+            color: white;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 25px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .progress-title {
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 15px;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 30px;
+            background: #e0e0e0;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+        }
+
+        /* Voice Indicator */
+        .voice-indicator {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, #00ff88, #00cc66);
+            color: #000;
+            padding: 20px 30px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            box-shadow: 0 10px 30px rgba(0, 255, 136, 0.4);
+            display: none;
+            align-items: center;
+            gap: 10px;
+            z-index: 999;
+            animation: pulse 1.5s infinite;
+        }
+
+        .voice-indicator.active {
+            display: flex;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                box-shadow: 0 10px 30px rgba(0, 255, 136, 0.4);
+            }
+            50% {
+                box-shadow: 0 10px 50px rgba(0, 255, 136, 0.8);
+            }
+        }
+
+        .sound-wave {
+            display: flex;
+            gap: 3px;
+            align-items: center;
+        }
+
+        .wave-bar {
+            width: 4px;
+            height: 20px;
+            background: #000;
+            border-radius: 2px;
+            animation: wave 0.8s infinite;
+        }
+
+        .wave-bar:nth-child(2) { animation-delay: 0.1s; }
+        .wave-bar:nth-child(3) { animation-delay: 0.2s; }
+        .wave-bar:nth-child(4) { animation-delay: 0.3s; }
+
+        @keyframes wave {
+            0%, 100% { height: 10px; }
+            50% { height: 25px; }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .header p {
+                font-size: 1rem;
+            }
+
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .character-avatar {
+                font-size: 4rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Stars Background -->
+    <div class="stars" id="starsContainer"></div>
+
+    <!-- Voice Indicator -->
+    <div class="voice-indicator" id="voiceIndicator">
+        <div class="sound-wave">
+            <div class="wave-bar"></div>
+            <div class="wave-bar"></div>
+            <div class="wave-bar"></div>
+            <div class="wave-bar"></div>
+        </div>
+        <span>Speaking...</span>
+    </div>
+
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🚀 Space Explorers Academy 🌟</h1>
+            <p>Learn about Space Weather with your AI friends!</p>
+            <div class="nav-buttons">
+                <button class="nav-btn dashboard" onclick="window.location.href='dashboard_hub.html'">
+                    <i class="fas fa-home"></i> Dashboard
+                </button>
+                <button class="nav-btn adventures" onclick="window.location.href='space_weather_adventures_new.html'">
+                    <i class="fas fa-book"></i> Story Adventures
+                </button>
+            </div>
+        </div>
+
+        <!-- Progress Tracker -->
+        <div class="progress-container">
+            <div class="progress-title">🏆 Your Learning Progress</div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 0%;">0%</div>
+            </div>
+        </div>
+
+        <!-- Character Cards -->
+        <div class="content-grid">
+            <!-- Sunny -->
+            <div class="character-card sunny" onclick="selectCharacter('sunny')">
+                <div class="character-avatar">🌞</div>
+                <div class="character-name">Sunny the Sun</div>
+                <div class="character-title">The Energy Master</div>
+                <div class="character-description">
+                    Hi! I'm Sunny! I create all the energy in our solar system and send out amazing solar flares and CMEs!
+                </div>
+                <div class="character-buttons">
+                    <button class="char-btn speak" onclick="event.stopPropagation(); speakCharacter('sunny')">
+                        <i class="fas fa-volume-up"></i> Meet Me
+                    </button>
+                    <button class="char-btn learn" onclick="event.stopPropagation(); openLesson('sunny')">
+                        <i class="fas fa-book-open"></i> Learn
+                    </button>
+                    <button class="char-btn quiz" onclick="event.stopPropagation(); openQuiz('sunny')">
+                        <i class="fas fa-question-circle"></i> Quiz
+                    </button>
+                </div>
+            </div>
+
+            <!-- Terra -->
+            <div class="character-card terra" onclick="selectCharacter('terra')">
+                <div class="character-avatar">🌍</div>
+                <div class="character-name">Terra the Earth</div>
+                <div class="character-title">The Protector</div>
+                <div class="character-description">
+                    Hello! I'm Terra! I protect all life on Earth with my magnetic shield and create beautiful auroras!
+                </div>
+                <div class="character-buttons">
+                    <button class="char-btn speak" onclick="event.stopPropagation(); speakCharacter('terra')">
+                        <i class="fas fa-volume-up"></i> Meet Me
+                    </button>
+                    <button class="char-btn learn" onclick="event.stopPropagation(); openLesson('terra')">
+                        <i class="fas fa-book-open"></i> Learn
+                    </button>
+                    <button class="char-btn quiz" onclick="event.stopPropagation(); openQuiz('terra')">
+                        <i class="fas fa-question-circle"></i> Quiz
+                    </button>
+                </div>
+            </div>
+
+            <!-- Aurora -->
+            <div class="character-card aurora" onclick="selectCharacter('aurora')">
+                <div class="character-avatar">✨</div>
+                <div class="character-name">Aurora the Guardian</div>
+                <div class="character-title">The Light Dancer</div>
+                <div class="character-description">
+                    Greetings! I'm Aurora! I dance in the sky when solar particles meet Earth's magnetic field!
+                </div>
+                <div class="character-buttons">
+                    <button class="char-btn speak" onclick="event.stopPropagation(); speakCharacter('aurora')">
+                        <i class="fas fa-volume-up"></i> Meet Me
+                    </button>
+                    <button class="char-btn learn" onclick="event.stopPropagation(); openLesson('aurora')">
+                        <i class="fas fa-book-open"></i> Learn
+                    </button>
+                    <button class="char-btn quiz" onclick="event.stopPropagation(); openQuiz('aurora')">
+                        <i class="fas fa-question-circle"></i> Quiz
+                    </button>
+                </div>
+            </div>
+
+            <!-- Parker -->
+            <div class="character-card parker" onclick="selectCharacter('parker')">
+                <div class="character-avatar">🛰️</div>
+                <div class="character-name">Parker the Probe</div>
+                <div class="character-title">The Explorer</div>
+                <div class="character-description">
+                    Hey! I'm Parker! I fly closer to the Sun than any spacecraft and measure space weather!
+                </div>
+                <div class="character-buttons">
+                    <button class="char-btn speak" onclick="event.stopPropagation(); speakCharacter('parker')">
+                        <i class="fas fa-volume-up"></i> Meet Me
+                    </button>
+                    <button class="char-btn learn" onclick="event.stopPropagation(); openLesson('parker')">
+                        <i class="fas fa-book-open"></i> Learn
+                    </button>
+                    <button class="char-btn quiz" onclick="event.stopPropagation(); openQuiz('parker')">
+                        <i class="fas fa-question-circle"></i> Quiz
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Learning Section -->
+        <div class="learning-section">
+            <h2>🎓 Space Weather Lessons</h2>
+            <p style="text-align: center; font-size: 1.1rem; color: #666; margin-bottom: 20px;">
+                Click on any topic to learn with your AI friends!
+            </p>
+            <div class="lesson-grid">
+                <div class="lesson-card" onclick="openLesson('solar-flares')">
+                    <div class="lesson-icon">⚡</div>
+                    <div class="lesson-title">Solar Flares</div>
+                    <div class="lesson-desc">Learn about the Sun's powerful explosions!</div>
+                </div>
+                <div class="lesson-card" onclick="openLesson('cme')">
+                    <div class="lesson-icon">💥</div>
+                    <div class="lesson-title">CMEs</div>
+                    <div class="lesson-desc">Discover coronal mass ejections and their journey!</div>
+                </div>
+                <div class="lesson-card" onclick="openLesson('magnetosphere')">
+                    <div class="lesson-icon">🛡️</div>
+                    <div class="lesson-title">Earth's Shield</div>
+                    <div class="lesson-desc">How Earth protects us from space weather!</div>
+                </div>
+                <div class="lesson-card" onclick="openLesson('auroras')">
+                    <div class="lesson-icon">🌈</div>
+                    <div class="lesson-title">Auroras</div>
+                    <div class="lesson-desc">The beautiful lights in the sky!</div>
+                </div>
+                <div class="lesson-card" onclick="openLesson('solar-wind')">
+                    <div class="lesson-icon">🌊</div>
+                    <div class="lesson-title">Solar Wind</div>
+                    <div class="lesson-desc">The constant stream of particles from the Sun!</div>
+                </div>
+                <div class="lesson-card" onclick="openLesson('space-weather')">
+                    <div class="lesson-icon">🌌</div>
+                    <div class="lesson-title">Space Weather</div>
+                    <div class="lesson-desc">How the Sun affects Earth and technology!</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quiz Modal -->
+    <div class="modal" id="quizModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+            <div id="quizContent"></div>
+        </div>
+    </div>
+
+    <!-- Lesson Modal -->
+    <div class="modal" id="lessonModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+            <div id="lessonContent"></div>
+        </div>
+    </div>
+
+    <script>
+        // Create animated stars
+        function createStars() {
+            const container = document.getElementById('starsContainer');
+            for (let i = 0; i < 100; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.width = star.style.height = Math.random() * 3 + 1 + 'px';
+                star.style.animationDelay = Math.random() * 3 + 's';
+                container.appendChild(star);
+            }
+        }
+        createStars();
+
+        // Character data
+        const characters = {
+            sunny: {
+                name: "Sunny the Sun",
+                avatar: "🌞",
+                voiceId: "pNInz6obpgDQGcFmaJgB",
+                intro: "Hi there, young explorer! I'm Sunny, the star at the center of our solar system! I'm a massive ball of super-hot gas, about 93 million miles from Earth. Every second, I convert millions of tons of hydrogen into energy through nuclear fusion! This energy travels through space and gives life to Earth. I also create solar flares - powerful bursts of radiation - and coronal mass ejections, which are huge clouds of particles that can affect Earth's technology. Isn't space weather amazing?",
+                facts: [
+                    "I'm 109 times wider than Earth!",
+                    "My surface temperature is 10,000°F (5,500°C)",
+                    "I'm about 4.6 billion years old",
+                    "Every second, I produce enough energy to power Earth for 500,000 years!"
+                ]
+            },
+            terra: {
+                name: "Terra the Earth",
+                avatar: "🌍",
+                voiceId: "EXAVITQu4vr4xnSDxMaL",
+                intro: "Hello, space explorer! I'm Terra, your home planet Earth! I have a special invisible shield called the magnetosphere that protects all life from harmful solar radiation. When Sunny sends solar particles my way, my magnetic field deflects most of them! But some particles get caught in my magnetic field lines near the poles, and that's when the magic happens - beautiful auroras light up the night sky! I also rotate once every 24 hours, giving you day and night, and I orbit around Sunny once every 365 days, creating the seasons you experience!",
+                facts: [
+                    "My magnetosphere extends 370,000 miles into space!",
+                    "I have one moon that helps stabilize my rotation",
+                    "70% of my surface is covered by water",
+                    "I'm the only known planet with life!"
+                ]
+            },
+            aurora: {
+                name: "Aurora the Guardian",
+                avatar: "✨",
+                voiceId: "TxGEqnHWrfWFTfGW9XjX",
+                intro: "Greetings, young scientist! I'm Aurora, the beautiful dancing lights you see near Earth's poles! I appear when charged particles from the Sun collide with gases in Earth's atmosphere. Different gases create different colors - oxygen creates green and red lights, while nitrogen creates blue and purple! I'm strongest during solar storms when Sunny is very active. You can see me best in places like Alaska, Canada, Iceland, and Scandinavia. Scientists study me to learn about space weather and how it affects Earth. I'm nature's most spectacular light show!",
+                facts: [
+                    "I can appear in different colors: green, red, blue, and purple!",
+                    "Ancient people thought I was the spirits of their ancestors",
+                    "I occur on other planets too, like Jupiter and Saturn!",
+                    "During strong solar storms, I can be seen much farther south than usual"
+                ]
+            },
+            parker: {
+                name: "Parker the Probe",
+                avatar: "🛰️",
+                voiceId: "AZnzlk1XvdvUeBnXmlld",
+                intro: "Hey there, future astronaut! I'm Parker, the Parker Solar Probe! I'm the fastest human-made object ever built, traveling at speeds up to 430,000 miles per hour! My mission is to fly closer to the Sun than any spacecraft in history - I get within 4 million miles of Sunny's surface! That's really close! I have a special heat shield that protects my instruments from temperatures over 2,500°F. I measure the solar wind, magnetic fields, and energy particles to help scientists predict space weather. The data I collect helps protect satellites, astronauts, and technology on Earth. I'm like a weather station in space!",
+                facts: [
+                    "I was launched in 2018 and will study the Sun until 2025",
+                    "My heat shield is 4.5 inches thick",
+                    "I orbit the Sun 24 times during my mission",
+                    "I'm named after Eugene Parker, a solar scientist who predicted solar wind!"
+                ]
+            }
+        };
+
+        // Lesson content
+        const lessons = {
+            'solar-flares': {
+                title: '⚡ Solar Flares',
+                content: `
+                    <h2 style="color: #667eea; text-align: center; margin-bottom: 20px;">⚡ What are Solar Flares?</h2>
+                    <div style="font-size: 1.1rem; line-height: 1.8; color: #333;">
+                        <p>Solar flares are like the Sun's giant fireworks! They happen when magnetic energy that has built up in the Sun's atmosphere is suddenly released.</p>
+
+                        <h3 style="color: #764ba2; margin-top: 25px;">🌟 How Strong Are They?</h3>
+                        <p>Scientists classify solar flares into different classes:</p>
+                        <ul style="margin-left: 30px; margin-top: 10px;">
+                            <li><strong>A-Class:</strong> Very small flares</li>
+                            <li><strong>B-Class:</strong> Small flares</li>
+                            <li><strong>C-Class:</strong> Medium flares</li>
+                            <li><strong>M-Class:</strong> Large flares that can cause radio blackouts</li>
+                            <li><strong>X-Class:</strong> Extreme flares that can affect satellites and power grids!</li>
+                        </ul>
+
+                        <h3 style="color: #764ba2; margin-top: 25px;">🚀 Cool Facts!</h3>
+                        <ul style="margin-left: 30px; margin-top: 10px;">
+                            <li>A single flare can release as much energy as a billion nuclear bombs!</li>
+                            <li>The light from a flare reaches Earth in just 8 minutes</li>
+                            <li>Astronauts in space need special protection during large flares</li>
+                            <li>Solar flares can create beautiful auroras on Earth!</li>
+                        </ul>
+                    </div>
+                    <button class="char-btn speak" style="margin: 30px auto; display: block;" onclick="speakLesson('solar-flares')">
+                        <i class="fas fa-volume-up"></i> Hear Sunny Explain This!
+                    </button>
+                `
+            },
+            'cme': {
+                title: '💥 Coronal Mass Ejections',
+                content: `
+                    <h2 style="color: #667eea; text-align: center; margin-bottom: 20px;">💥 Coronal Mass Ejections (CMEs)</h2>
+                    <div style="font-size: 1.1rem; line-height: 1.8; color: #333;">
+                        <p>Imagine the Sun sneezing out a billion tons of material into space - that's a CME! These are huge bubbles of radiation and particles from the Sun's outer atmosphere.</p>
+
+                        <h3 style="color: #764ba2; margin-top: 25px;">🌊 The Journey to Earth</h3>
+                        <ul style="margin-left: 30px; margin-top: 10px;">
+                            <li>CMEs travel at speeds from 250 to 3000 kilometers per second!</li>
+                            <li>They can take 15-18 hours to reach Earth (if aimed at us)</li>
+                            <li>They carry magnetic fields that can interact with Earth's magnetosphere</li>
+                            <li>Not all CMEs hit Earth - space is really big!</li>
+                        </ul>
+
+                        <h3 style="color: #764ba2; margin-top: 25px;">🛡️ How Terra Protects Us</h3>
+                        <p>When a CME reaches Earth, our planet's magnetosphere acts like a shield, deflecting most of the particles around us. But this can cause:</p>
+                        <ul style="margin-left: 30px; margin-top: 10px;">
+                            <li>Beautiful auroras near the poles</li>
+                            <li>Temporary radio communication problems</li>
+                            <li>Effects on satellites and GPS systems</li>
+                            <li>Very rarely, power grid disturbances</li>
+                        </ul>
+                    </div>
+                    <button class="char-btn speak" style="margin: 30px auto; display: block;" onclick="speakLesson('cme')">
+                        <i class="fas fa-volume-up"></i> Hear Sunny Explain This!
+                    </button>
+                `
+            },
+            'magnetosphere': {
+                title: '🛡️ Earth\'s Magnetic Shield',
+                content: `
+                    <h2 style="color: #667eea; text-align: center; margin-bottom: 20px;">🛡️ Earth's Magnetosphere</h2>
+                    <div style="font-size: 1.1rem; line-height: 1.8; color: #333;">
+                        <p>Terra has an invisible force field called the magnetosphere! It's like Earth's superhero shield that protects us from harmful solar radiation.</p>
+
+                        <h3 style="color: #764ba2; margin-top: 25px;">🧲 How It Works</h3>
+                        <ul style="margin-left: 30px; margin-top: 10px;">
+                            <li>Earth's liquid iron core creates a giant magnetic field</li>
+                            <li>This field extends thousands of miles into space</li>
+                            <li>Solar wind compresses it on the day side and stretches it on the night side</li>
+                            <li>It deflects most harmful particles around Earth</li>
+                        </ul>
+
+                        <h3 style="color: #764ba2; margin-top: 25px;">🌍 Why It's Important</h3>
+                        <p>Without the magnetosphere:</p>
+                        <ul style="margin-left: 30px; margin-top: 10px;">
+                            <li>Solar wind would slowly strip away our atmosphere</li>
+                            <li>Harmful radiation would reach the surface</li>
+                            <li>Life as we know it couldn't exist!</li>
+                            <li>We'd be like Mars - no atmosphere and no magnetic field</li>
+                        </ul>
+
+                        <h3 style="color: #764ba2; margin-top: 25px;">✨ Cool Fact!</h3>
+                        <p>The magnetosphere creates the Van Allen radiation belts - doughnut-shaped zones of trapped particles that astronauts need to avoid!</p>
+                    </div>
+                    <button class="char-btn speak" style="margin: 30px auto; display: block;" onclick="speakLesson('magnetosphere')">
+                        <i class="fas fa-volume-up"></i> Hear Terra Explain This!
+                    </button>
+                `
+            },
+            'auroras': {
+                title: '🌈 The Northern and Southern Lights',
+                content: `
+                    <h2 style="color: #667eea; text-align: center; margin-bottom: 20px;">🌈 Auroras - Nature's Light Show</h2>
+                    <div style="font-size: 1.1rem; line-height: 1.8; color: #333;">
+                        <p>Auroras are like a magical light show in the sky! They happen when particles from the Sun collide with gases in Earth's atmosphere.</p>
+
+                        <h3 style="color: #764ba2; margin-top: 25px;">🎨 The Colors</h3>
+                        <ul style="margin-left: 30px; margin-top: 10px;">
+                            <li><strong style="color: #00ff88;">Green:</strong> Oxygen at lower altitudes (most common!)</li>
+                            <li><strong style="color: #ff6b6b;">Red:</strong> Oxygen at higher altitudes</li>
+                            <li><strong style="color: #667eea;">Blue:</strong> Nitrogen</li>
+                            <li><strong style="color: #9d50bb;">Purple:</strong> Nitrogen at different altitudes</li>
+                        </ul>
+
+                        <h3 style="color: #764ba2; margin-top: 25px;">📍 Where to See Them</h3>
+                        <p>The best places to see auroras are near Earth's magnetic poles:</p>
+                        <ul style="margin-left: 30px; margin-top: 10px;">
+                            <li><strong>North (Aurora Borealis):</strong> Alaska, Canada, Iceland, Norway, Sweden, Finland</li>
+                            <li><strong>South (Aurora Australis):</strong> Antarctica, southern Australia, New Zealand</li>
+                            <li>During strong solar storms, they can appear much farther from the poles!</li>
+                        </ul>
+
+                        <h3 style="color: #764ba2; margin-top: 25px;">🌟 Amazing Facts!</h3>
+                        <ul style="margin-left: 30px; margin-top: 10px;">
+                            <li>Auroras occur 60-200 miles above Earth's surface</li>
+                            <li>Other planets have auroras too - Jupiter's are huge!</li>
+                            <li>They can make sounds - though scientists are still studying this</li>
+                            <li>Ancient people created myths about auroras - some thought they were spirits!</li>
+                        </ul>
+                    </div>
+                    <button class="char-btn speak" style="margin: 30px auto; display: block;" onclick="speakLesson('auroras')">
+                        <i class="fas fa-volume-up"></i> Hear Aurora Explain This!
+                    </button>
+                `
+            },
+            'solar-wind': {
+                title: '🌊 The Solar Wind',
+                content: `
+                    <h2 style="color: #667eea; text-align: center; margin-bottom: 20px;">🌊 Solar Wind</h2>
+                    <div style="font-size: 1.1rem; line-height: 1.8; color: #333;">
+                        <p>The solar wind is a constant stream of particles flowing from the Sun into space - like an invisible river in space!</p>
+
+                        <h3 style="color: #764ba2; margin-top: 25px;">⚡ What Is It?</h3>
+                        <ul style="margin-left: 30px; margin-top: 10px;">
+                            <li>Made mostly of electrons and protons (electrically charged particles)</li>
+                            <li>Flows at speeds of 250-750 kilometers per second</li>
+                            <li>Carries the Sun's magnetic field throughout the solar system</li>
+                            <li>Never stops - it's always flowing!</li>
+                        </ul>
+
+                        <h3 style="color: #764ba2; margin-top: 25px;">🚀 Effects on Our Solar System</h3>
+                        <ul style="margin-left: 30px; margin-top: 10px;">
+                            <li>Creates comet tails that always point away from the Sun</li>
+                            <li>Shapes Earth's magnetosphere</li>
+                            <li>Affects spacecraft navigation</li>
+                            <li>Can cause "space weather" throughout the solar system</li>
+                        </ul>
+
+                        <h3 style="color: #764ba2; margin-top: 25px;">🛰️ Studying the Solar Wind</h3>
+                        <p>Parker the Probe flies through the solar wind to study it! This helps scientists:</p>
+                        <ul style="margin-left: 30px; margin-top: 10px;">
+                            <li>Predict space weather that could affect satellites</li>
+                            <li>Protect astronauts on missions</li>
+                            <li>Understand how the Sun works</li>
+                            <li>Learn about other stars in the universe</li>
+                        </ul>
+                    </div>
+                    <button class="char-btn speak" style="margin: 30px auto; display: block;" onclick="speakLesson('solar-wind')">
+                        <i class="fas fa-volume-up"></i> Hear Parker Explain This!
+                    </button>
+                `
+            },
+            'space-weather': {
+                title: '🌌 What is Space Weather?',
+                content: `
+                    <h2 style="color: #667eea; text-align: center; margin-bottom: 20px;">🌌 Space Weather</h2>
+                    <div style="font-size: 1.1rem; line-height: 1.8; color: #333;">
+                        <p>Space weather is like Earth weather, but it happens in space! Instead of rain and wind, we have solar particles and magnetic storms.</p>
+
+                        <h3 style="color: #764ba2; margin-top: 25px;">☀️ What Causes Space Weather?</h3>
+                        <ul style="margin-left: 30px; margin-top: 10px;">
+                            <li>Solar flares from Sunny's surface</li>
+                            <li>Coronal mass ejections (CMEs)</li>
+                            <li>Solar wind speed changes</li>
+                            <li>Coronal holes on the Sun</li>
+                        </ul>
+
+                        <h3 style="color: #764ba2; margin-top: 25px;">🌍 How It Affects Earth</h3>
+                        <p><strong>Good Effects:</strong></p>
+                        <ul style="margin-left: 30px; margin-top: 10px;">
+                            <li>Beautiful auroras!</li>
+                            <li>Helps us study Earth's atmosphere</li>
+                            <li>Creates exciting scientific discoveries</li>
+                        </ul>
+                        <p style="margin-top: 15px;"><strong>Challenging Effects:</strong></p>
+                        <ul style="margin-left: 30px; margin-top: 10px;">
+                            <li>Can disrupt radio communications</li>
+                            <li>Affects GPS accuracy</li>
+                            <li>Can damage satellites</li>
+                            <li>Very strong storms can affect power grids</li>
+                            <li>Airlines may need to change flight routes</li>
+                        </ul>
+
+                        <h3 style="color: #764ba2; margin-top: 25px;">👨‍🔬 Space Weather Forecasters</h3>
+                        <p>Just like weather forecasters predict rain, space weather forecasters predict solar storms! They use:</p>
+                        <ul style="margin-left: 30px; margin-top: 10px;">
+                            <li>Satellites watching the Sun 24/7</li>
+                            <li>Ground-based telescopes and magnetometers</li>
+                            <li>Data from spacecraft like Parker Solar Probe</li>
+                            <li>Computer models that predict storm arrivals</li>
+                        </ul>
+                    </div>
+                    <button class="char-btn speak" style="margin: 30px auto; display: block;" onclick="speakLesson('space-weather')">
+                        <i class="fas fa-volume-up"></i> Hear All Friends Explain This!
+                    </button>
+                `
+            }
+        };
+
+        // Quiz questions
+        const quizzes = {
+            sunny: [
+                {
+                    question: "How far is the Sun from Earth?",
+                    options: ["93 million miles", "10 million miles", "200 million miles", "1 billion miles"],
+                    correct: 0,
+                    feedback: "Correct! The Sun is about 93 million miles from Earth. That's why sunlight takes about 8 minutes to reach us!"
+                },
+                {
+                    question: "What are solar flares?",
+                    options: ["Holes in the Sun", "Powerful bursts of radiation", "Cold spots", "Solar eclipses"],
+                    correct: 1,
+                    feedback: "Great job! Solar flares are powerful bursts of radiation from the Sun's surface!"
+                },
+                {
+                    question: "How old is the Sun?",
+                    options: ["100 million years", "1 billion years", "4.6 billion years", "10 billion years"],
+                    correct: 2,
+                    feedback: "Awesome! The Sun is about 4.6 billion years old - almost as old as our solar system!"
+                }
+            ],
+            terra: {
+                question: "What protects Earth from harmful solar radiation?",
+                options: ["The atmosphere only", "The magnetosphere", "The Moon", "Clouds"],
+                correct: 1,
+                feedback: "Perfect! Earth's magnetosphere is an invisible magnetic shield that protects us from harmful solar particles!"
+            },
+            aurora: {
+                question: "What creates the different colors in auroras?",
+                options: ["Different temperatures", "Different gases in the atmosphere", "Distance from Earth", "Time of day"],
+                correct: 1,
+                feedback: "Excellent! Different gases create different colors - oxygen makes green and red, nitrogen makes blue and purple!"
+            },
+            parker: {
+                question: "What is the Parker Solar Probe's mission?",
+                options: ["Land on the Sun", "Study the solar wind and Sun's atmosphere", "Find new planets", "Look for aliens"],
+                correct: 1,
+                feedback: "That's right! Parker studies the solar wind, magnetic fields, and the Sun's atmosphere to help us understand space weather!"
+            }
+        };
+
+        // Progress tracking
+        let completedLessons = new Set();
+        let completedQuizzes = new Set();
+
+        function updateProgress() {
+            const totalItems = Object.keys(lessons).length + Object.keys(quizzes).length;
+            const completed = completedLessons.size + completedQuizzes.size;
+            const percentage = Math.round((completed / totalItems) * 100);
+
+            const fill = document.getElementById('progressFill');
+            fill.style.width = percentage + '%';
+            fill.textContent = percentage + '%';
+        }
+
+        // Voice system
+        let currentAudio = null;
+
+        async function speakCharacter(character) {
+            const char = characters[character];
+            await speakText(char.intro, char.voiceId, char.name);
+        }
+
+        async function speakLesson(lessonKey) {
+            const lesson = lessons[lessonKey];
+            // Extract text from HTML
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = lesson.content;
+            const text = tempDiv.textContent.replace(/\s+/g, ' ').trim();
+
+            await speakText(text, characters.sunny.voiceId, "Your AI Teacher");
+        }
+
+        async function speakText(text, voiceId, characterName) {
+            // Stop any current speech
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio = null;
+            }
+
+            const indicator = document.getElementById('voiceIndicator');
+            indicator.classList.add('active');
+
+            try {
+                // Try ElevenLabs API
+                const response = await fetch('/api/speak', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        text: text,
+                        voice_id: voiceId,
+                        character: characterName
+                    })
+                });
+
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const audioUrl = URL.createObjectURL(blob);
+                    currentAudio = new Audio(audioUrl);
+
+                    currentAudio.onended = () => {
+                        URL.revokeObjectURL(audioUrl);
+                        indicator.classList.remove('active');
+                        currentAudio = null;
+                    };
+
+                    currentAudio.onerror = () => {
+                        console.log('Audio playback failed, trying browser TTS...');
+                        useBrowserTTS(text);
+                        indicator.classList.remove('active');
+                    };
+
+                    await currentAudio.play();
+                    console.log('🎙️ Speaking with ElevenLabs voice!');
+                } else {
+                    throw new Error('ElevenLabs API failed');
+                }
+            } catch (error) {
+                console.log('ElevenLabs not available, using browser TTS...', error);
+                useBrowserTTS(text);
+                indicator.classList.remove('active');
+            }
+        }
+
+        function useBrowserTTS(text) {
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.rate = 0.9;
+            utterance.pitch = 1.0;
+            utterance.volume = 1.0;
+
+            const voices = window.speechSynthesis.getVoices();
+            const preferredVoice = voices.find(voice =>
+                voice.name.includes('Google') ||
+                voice.name.includes('Microsoft') ||
+                voice.lang.startsWith('en')
+            );
+
+            if (preferredVoice) {
+                utterance.voice = preferredVoice;
+            }
+
+            const indicator = document.getElementById('voiceIndicator');
+            indicator.classList.add('active');
+
+            utterance.onend = () => {
+                indicator.classList.remove('active');
+            };
+
+            window.speechSynthesis.speak(utterance);
+            console.log('🔊 Speaking with browser TTS');
+        }
+
+        function selectCharacter(character) {
+            console.log(`Selected character: ${character}`);
+        }
+
+        function openLesson(lessonKey) {
+            const lesson = lessons[lessonKey];
+            if (!lesson) return;
+
+            const modal = document.getElementById('lessonModal');
+            const content = document.getElementById('lessonContent');
+
+            content.innerHTML = lesson.content;
+            modal.classList.add('active');
+
+            completedLessons.add(lessonKey);
+            updateProgress();
+        }
+
+        function openQuiz(character) {
+            const quiz = quizzes[character];
+            if (!quiz) {
+                alert('Quiz coming soon for ' + characters[character].name + '!');
+                return;
+            }
+
+            const questions = Array.isArray(quiz) ? quiz : [quiz];
+            let currentQ = 0;
+
+            function showQuestion() {
+                const q = questions[currentQ];
+                const content = document.getElementById('quizContent');
+
+                content.innerHTML = `
+                    <div style="text-align: center; margin-bottom: 20px;">
+                        <div style="font-size: 4rem; margin-bottom: 15px;">${characters[character].avatar}</div>
+                        <h2 style="color: #667eea; margin-bottom: 10px;">${characters[character].name}'s Quiz</h2>
+                        <p style="color: #666;">Question ${currentQ + 1} of ${questions.length}</p>
+                    </div>
+                    <div class="quiz-question">${q.question}</div>
+                    <div class="quiz-options" id="quizOptions"></div>
+                    <div id="quizFeedback"></div>
+                `;
+
+                const optionsContainer = document.getElementById('quizOptions');
+                q.options.forEach((option, index) => {
+                    const optionDiv = document.createElement('div');
+                    optionDiv.className = 'quiz-option';
+                    optionDiv.textContent = option;
+                    optionDiv.onclick = () => checkAnswer(index, q, optionDiv);
+                    optionsContainer.appendChild(optionDiv);
+                });
+            }
+
+            function checkAnswer(selected, question, optionElement) {
+                const feedbackDiv = document.getElementById('quizFeedback');
+                const allOptions = document.querySelectorAll('.quiz-option');
+
+                allOptions.forEach((opt, idx) => {
+                    opt.style.pointerEvents = 'none';
+                    if (idx === question.correct) {
+                        opt.classList.add('correct');
+                    } else if (idx === selected && selected !== question.correct) {
+                        opt.classList.add('wrong');
+                    }
+                });
+
+                if (selected === question.correct) {
+                    feedbackDiv.innerHTML = `
+                        <div class="quiz-feedback correct">
+                            <div style="font-size: 2rem; margin-bottom: 10px;">🎉</div>
+                            ${question.feedback}
+                        </div>
+                    `;
+                    speakText("Correct! " + question.feedback, characters[character].voiceId, characters[character].name);
+                } else {
+                    feedbackDiv.innerHTML = `
+                        <div class="quiz-feedback wrong">
+                            <div style="font-size: 2rem; margin-bottom: 10px;">💭</div>
+                            Not quite! ${question.feedback}
+                        </div>
+                    `;
+                    speakText("Not quite! " + question.feedback, characters[character].voiceId, characters[character].name);
+                }
+
+                if (currentQ < questions.length - 1) {
+                    setTimeout(() => {
+                        currentQ++;
+                        showQuestion();
+                    }, 4000);
+                } else {
+                    setTimeout(() => {
+                        feedbackDiv.innerHTML += `
+                            <div style="text-align: center; margin-top: 20px;">
+                                <button class="char-btn speak" onclick="closeModal(); completedQuizzes.add('${character}'); updateProgress();">
+                                    <i class="fas fa-check"></i> Complete Quiz
+                                </button>
+                            </div>
+                        `;
+                    }, 4000);
+                }
+            }
+
+            const modal = document.getElementById('quizModal');
+            modal.classList.add('active');
+            showQuestion();
+        }
+
+        function closeModal() {
+            document.getElementById('quizModal').classList.remove('active');
+            document.getElementById('lessonModal').classList.remove('active');
+
+            // Stop any speaking
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio = null;
+            }
+            window.speechSynthesis.cancel();
+            document.getElementById('voiceIndicator').classList.remove('active');
+        }
+
+        // Load voices for browser TTS
+        if (window.speechSynthesis) {
+            window.speechSynthesis.onvoiceschanged = () => {
+                window.speechSynthesis.getVoices();
+            };
+        }
+
+        console.log('🚀 Space Explorers Academy loaded!');
+        console.log('🎓 Interactive educational platform with ElevenLabs voice synthesis ready!');
+    </script>
+</body>
+</html>

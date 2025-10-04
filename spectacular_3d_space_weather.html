@@ -337,38 +337,50 @@
             background: linear-gradient(135deg, rgba(0, 20, 40, 0.95), rgba(0, 30, 60, 0.9));
             backdrop-filter: blur(10px);
             border-bottom: 2px solid rgba(74, 144, 226, 0.3);
-            display: flex;
+            display: grid;
+            grid-template-columns: 200px 1fr 200px;
             align-items: center;
-            justify-content: space-between;
-            padding: 0 30px;
+            gap: 20px;
+            padding: 0 20px;
             font-family: 'Orbitron', monospace;
             z-index: 1100;
             pointer-events: auto;
         }
 
         .mission-clock {
-            font-size: 1.8rem;
+            font-size: 1.4rem;
             font-weight: 700;
             color: #00ffff;
             text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
             font-family: 'Orbitron', monospace;
+            white-space: nowrap;
         }
 
         .system-name {
-            font-size: 1.2rem;
+            font-size: 0.9rem;
             font-weight: 600;
             color: #ffffff;
             text-transform: uppercase;
-            letter-spacing: 2px;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .system-name #systemTitle {
+            white-space: nowrap;
         }
 
         .status-indicator {
             display: flex;
             align-items: center;
-            gap: 10px;
-            font-size: 1rem;
+            justify-content: flex-end;
+            gap: 8px;
+            font-size: 0.9rem;
             font-weight: 600;
             color: #00ff00;
+            white-space: nowrap;
         }
 
         .status-dot {
@@ -585,16 +597,17 @@
             background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
             color: white;
             border: none;
-            padding: 10px 20px;
-            border-radius: 25px;
+            padding: 8px 16px;
+            border-radius: 20px;
             font-family: 'Orbitron', monospace;
-            font-size: 0.9rem;
+            font-size: 0.75rem;
             font-weight: 700;
             cursor: pointer;
             transition: all 0.3s ease;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+            letter-spacing: 0.5px;
+            box-shadow: 0 3px 10px rgba(255, 107, 107, 0.3);
+            white-space: nowrap;
         }
 
         .mode-toggle-btn:hover {
@@ -609,256 +622,318 @@
             box-shadow: 0 4px 15px rgba(255, 217, 61, 0.5);
         }
 
-        /* Story Mode Interface */
+        /* Story Mode Interface - Cleaner & Less Busy */
         .story-mode-active {
-            filter: saturate(1.8) brightness(1.3);
+            filter: saturate(1.4) brightness(1.15);
+        }
+
+        /* Hide observatory panel in story mode to reduce clutter */
+        .story-mode-active #observatory-data {
+            display: none !important;
+        }
+
+        /* Make panels more compact and subtle */
+        .story-mode-active #mission-control {
+            opacity: 0.92;
+            max-width: 240px;
+        }
+
+        .story-mode-active #physics-panel {
+            opacity: 0.92;
+            max-width: 270px;
         }
 
         .story-mode-active .hud-panel {
-            background: linear-gradient(135deg, rgba(255, 217, 61, 0.15), rgba(255, 179, 71, 0.15));
-            border: 3px solid rgba(255, 217, 61, 0.8);
-            border-radius: 20px;
-            box-shadow: 0 8px 32px rgba(255, 217, 61, 0.3);
+            background: linear-gradient(135deg, rgba(255, 217, 61, 0.12), rgba(255, 179, 71, 0.12));
+            border: 2px solid rgba(255, 217, 61, 0.6);
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(255, 217, 61, 0.25);
         }
 
         .story-mode-active .panel-title {
             color: #ffd93d;
-            font-size: 1.2rem;
-            text-shadow: 0 0 15px rgba(255, 217, 61, 0.8);
-            animation: titlePulse 2s ease-in-out infinite;
-        }
-
-        @keyframes titlePulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
+            font-size: 1rem;
+            text-shadow: 0 0 10px rgba(255, 217, 61, 0.6);
         }
 
         .story-mode-active .control-btn {
             background: linear-gradient(135deg, #ffd93d, #ffb347);
             color: #000;
-            font-weight: bold;
-            font-size: 0.9rem;
-            padding: 12px 18px;
-            border-radius: 25px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            padding: 10px 15px;
+            border-radius: 20px;
             border: 2px solid rgba(255, 255, 255, 0.3);
-            box-shadow: 0 6px 20px rgba(255, 217, 61, 0.4);
-            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 217, 61, 0.3);
+            transition: all 0.2s ease;
         }
 
         .story-mode-active .control-btn:hover {
             background: linear-gradient(135deg, #ffed4e, #ffc947);
-            transform: translateY(-4px) scale(1.08);
-            box-shadow: 0 10px 30px rgba(255, 217, 61, 0.6);
-            border-color: rgba(255, 255, 255, 0.6);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 217, 61, 0.4);
         }
 
-        /* Kid-Friendly Enhancements */
+        /* Kid-Friendly Enhancements - Toned Down */
         .story-mode-active .metric-value {
-            font-size: 1.4rem;
+            font-size: 1.2rem;
             color: #ff6b6b;
-            text-shadow: 0 0 8px rgba(255, 107, 107, 0.5);
-            animation: numberBounce 1.5s ease-in-out infinite;
-        }
-
-        @keyframes numberBounce {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
+            text-shadow: 0 0 5px rgba(255, 107, 107, 0.3);
         }
 
         .story-mode-active .status-metric {
-            background: linear-gradient(135deg, rgba(255, 107, 107, 0.2), rgba(255, 140, 140, 0.1));
-            border: 2px solid rgba(255, 107, 107, 0.5);
-            border-radius: 15px;
-            transform: perspective(1000px) rotateX(5deg);
+            background: linear-gradient(135deg, rgba(255, 107, 107, 0.15), rgba(255, 140, 140, 0.1));
+            border: 2px solid rgba(255, 107, 107, 0.4);
+            border-radius: 12px;
         }
 
         .story-mode-active .status-metric:hover {
-            transform: perspective(1000px) rotateX(0deg) scale(1.05);
-            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.3);
+            transform: scale(1.02);
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.25);
         }
 
-        /* Fun animations for kids */
+        /* Fun animations for kids - Simplified & Smooth */
         .story-mode-active .event-card {
-            background: linear-gradient(135deg, rgba(78, 205, 196, 0.3), rgba(68, 179, 217, 0.2));
-            border: 3px solid #4ecdc4;
-            border-radius: 20px;
-            transform: perspective(1000px) rotateY(2deg);
-            transition: all 0.4s ease;
-        }
-
-        .story-mode-active .event-card:hover {
-            transform: perspective(1000px) rotateY(0deg) scale(1.03);
-            box-shadow: 0 12px 40px rgba(78, 205, 196, 0.4);
-        }
-
-        /* Bigger, more fun sliders for kids */
-        .story-mode-active .slider {
-            height: 12px;
-            border-radius: 6px;
-            background: linear-gradient(90deg, #ff6b6b, #ffd93d, #4ecdc4, #44b3d9);
-        }
-
-        .story-mode-active .slider::-webkit-slider-thumb {
-            width: 30px;
-            height: 30px;
-            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
-            border: 3px solid white;
-            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.5);
+            background: linear-gradient(135deg, rgba(78, 205, 196, 0.2), rgba(68, 179, 217, 0.12));
+            border: 2px solid #4ecdc4;
+            border-radius: 15px;
             transition: all 0.3s ease;
         }
 
-        .story-mode-active .slider::-webkit-slider-thumb:hover {
-            transform: scale(1.2);
-            box-shadow: 0 6px 25px rgba(255, 107, 107, 0.7);
+        .story-mode-active .event-card:hover {
+            transform: scale(1.02);
+            box-shadow: 0 8px 25px rgba(78, 205, 196, 0.3);
         }
 
-        /* Story Character Panel */
+        /* Sliders - More accessible for kids but not overwhelming */
+        .story-mode-active .slider {
+            height: 10px;
+            border-radius: 5px;
+            background: linear-gradient(90deg, #ff6b6b, #ffd93d, #4ecdc4);
+        }
+
+        .story-mode-active .slider::-webkit-slider-thumb {
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            border: 2px solid white;
+            box-shadow: 0 3px 12px rgba(255, 107, 107, 0.4);
+            transition: all 0.2s ease;
+        }
+
+        .story-mode-active .slider::-webkit-slider-thumb:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 16px rgba(255, 107, 107, 0.5);
+        }
+
+        /* Story Character Panel - Simplified & Cleaner */
         .story-character-panel {
             position: absolute;
-            bottom: 20px;
-            right: 20px;
-            background: linear-gradient(135deg, rgba(255, 217, 61, 0.98), rgba(255, 179, 71, 0.95));
-            border: 4px solid #ffd93d;
-            border-radius: 25px;
-            padding: 25px;
-            min-width: 350px;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, rgba(255, 217, 61, 0.96), rgba(255, 179, 71, 0.94));
+            border: 3px solid #ffd93d;
+            border-radius: 20px;
+            padding: 20px 30px;
+            max-width: 600px;
+            width: 90%;
             display: none;
             color: #000;
             font-family: 'Orbitron', monospace;
-            box-shadow: 0 15px 50px rgba(255, 217, 61, 0.5);
-            transform: perspective(1000px) rotateX(3deg);
-            transition: all 0.4s ease;
+            box-shadow: 0 10px 40px rgba(255, 217, 61, 0.4);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
         }
 
         .story-character-panel.active {
-            display: block;
-            animation: panelSlideIn 0.6s ease-out;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            animation: panelSlideUp 0.5s ease-out;
         }
 
-        @keyframes panelSlideIn {
+        @keyframes panelSlideUp {
             from {
-                transform: perspective(1000px) rotateX(3deg) translateX(100%);
+                transform: translateX(-50%) translateY(100%);
                 opacity: 0;
             }
             to {
-                transform: perspective(1000px) rotateX(3deg) translateX(0);
+                transform: translateX(-50%) translateY(0);
                 opacity: 1;
             }
         }
 
         .character-avatar {
-            font-size: 4rem;
+            font-size: 3rem;
             text-align: center;
-            margin-bottom: 15px;
-            animation: avatarBounce 2s ease-in-out infinite;
-            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+            margin-bottom: 10px;
+            animation: gentlePulse 3s ease-in-out infinite;
+            filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.2));
         }
 
-        @keyframes avatarBounce {
-            0%, 100% { transform: translateY(0px) scale(1); }
-            50% { transform: translateY(-5px) scale(1.05); }
+        @keyframes gentlePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
         }
 
         .character-name {
-            font-size: 1.5rem;
+            font-size: 1.2rem;
             font-weight: 700;
             text-align: center;
-            margin-bottom: 15px;
-            color: #ff6b6b;
-            text-shadow: 0 2px 4px rgba(255, 107, 107, 0.3);
-            animation: nameGlow 3s ease-in-out infinite;
-        }
-
-        @keyframes nameGlow {
-            0%, 100% { text-shadow: 0 2px 4px rgba(255, 107, 107, 0.3); }
-            50% { text-shadow: 0 2px 8px rgba(255, 107, 107, 0.6), 0 0 20px rgba(255, 107, 107, 0.4); }
+            margin-bottom: 12px;
+            color: #d63031;
+            text-shadow: 0 1px 2px rgba(214, 48, 49, 0.3);
         }
 
         .character-dialogue {
-            font-size: 1.1rem;
-            line-height: 1.5;
+            font-size: 1rem;
+            line-height: 1.4;
             text-align: center;
-            background: rgba(255, 255, 255, 0.3);
-            padding: 18px;
-            border-radius: 15px;
-            margin-bottom: 20px;
-            border: 2px solid rgba(255, 255, 255, 0.5);
-            box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.4);
+            padding: 15px 20px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            border: 2px solid rgba(255, 255, 255, 0.6);
+            box-shadow: inset 0 1px 3px rgba(255, 255, 255, 0.3);
+            max-height: 120px;
+            overflow-y: auto;
+            transition: all 0.3s ease;
+        }
+
+        .character-dialogue.speaking {
+            background: rgba(255, 255, 255, 0.6);
+            border-color: rgba(255, 107, 107, 0.8);
+            box-shadow: 0 0 15px rgba(255, 107, 107, 0.4);
+            animation: speakingPulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes speakingPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
         }
 
         .character-actions {
             display: flex;
-            gap: 12px;
+            gap: 10px;
             justify-content: center;
             flex-wrap: wrap;
         }
 
         .character-btn {
-            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            background: linear-gradient(135deg, #e74c3c, #ec7063);
             color: white;
             border: none;
-            padding: 12px 20px;
-            border-radius: 25px;
+            padding: 10px 18px;
+            border-radius: 20px;
             font-family: 'Orbitron', monospace;
-            font-size: 0.9rem;
-            font-weight: 700;
+            font-size: 0.85rem;
+            font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
             border: 2px solid rgba(255, 255, 255, 0.3);
-            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+            box-shadow: 0 3px 10px rgba(231, 76, 60, 0.3);
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
+            position: relative;
         }
 
         .character-btn:hover {
-            background: linear-gradient(135deg, #ff5252, #ff7979);
-            transform: translateY(-3px) scale(1.08);
-            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.5);
-            border-color: rgba(255, 255, 255, 0.6);
+            background: linear-gradient(135deg, #c0392b, #e74c3c);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.4);
         }
 
         .character-btn:active {
-            transform: translateY(-1px) scale(1.05);
+            transform: translateY(0px);
         }
 
-        /* Story Chapter Navigation */
+        .character-btn.speak-btn {
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            animation: speakButtonPulse 2s ease-in-out infinite;
+        }
+
+        .character-btn.speak-btn:hover {
+            background: linear-gradient(135deg, #229954, #27ae60);
+        }
+
+        @keyframes speakButtonPulse {
+            0%, 100% { box-shadow: 0 3px 10px rgba(39, 174, 96, 0.3); }
+            50% { box-shadow: 0 5px 20px rgba(39, 174, 96, 0.6); }
+        }
+
+        /* Story Mode Notification */
+        .story-notification {
+            position: fixed;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #ffd93d, #ffb347);
+            color: #000;
+            padding: 15px 30px;
+            border-radius: 30px;
+            font-family: 'Orbitron', monospace;
+            font-weight: 700;
+            font-size: 1rem;
+            box-shadow: 0 10px 30px rgba(255, 217, 61, 0.5);
+            z-index: 10000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .story-notification.show {
+            opacity: 1;
+            animation: notificationSlide 0.5s ease-out;
+        }
+
+        @keyframes notificationSlide {
+            from { transform: translateX(-50%) translateY(-20px); }
+            to { transform: translateX(-50%) translateY(0); }
+        }
+
+        /* Story Chapter Navigation - Simplified */
         .story-chapter-btn {
-            background: linear-gradient(135deg, #4ecdc4, #44b3d9) !important;
+            background: linear-gradient(135deg, #3498db, #2980b9) !important;
             color: white !important;
-            font-size: 0.8rem !important;
-            padding: 12px 15px !important;
-            margin-bottom: 5px;
-            border-radius: 15px !important;
-            transition: all 0.3s ease;
-            box-shadow: 0 3px 10px rgba(78, 205, 196, 0.3);
+            font-size: 0.75rem !important;
+            padding: 8px 12px !important;
+            margin-bottom: 6px;
+            border-radius: 10px !important;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3);
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            overflow: hidden;
         }
 
         .story-chapter-btn:hover {
-            background: linear-gradient(135deg, #26d0ce, #1aaef0) !important;
-            transform: translateX(5px) scale(1.02) !important;
-            box-shadow: 0 5px 15px rgba(78, 205, 196, 0.5) !important;
+            background: linear-gradient(135deg, #2980b9, #3498db) !important;
+            transform: translateY(-1px) !important;
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.4) !important;
         }
 
         .story-chapter-btn.active {
-            background: linear-gradient(135deg, #ff6b6b, #ff8e8e) !important;
-            box-shadow: 0 5px 20px rgba(255, 107, 107, 0.5) !important;
-            transform: scale(1.05) !important;
+            background: linear-gradient(135deg, #e74c3c, #c0392b) !important;
+            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.5) !important;
+            font-weight: 700 !important;
         }
 
         .story-chapter-btn.completed {
-            background: linear-gradient(135deg, #5cb85c, #449d44) !important;
+            background: linear-gradient(135deg, #27ae60, #229954) !important;
             position: relative;
+            padding-right: 30px !important;
         }
 
         .story-chapter-btn.completed::after {
             content: '✓';
             position: absolute;
-            right: 10px;
+            right: 8px;
             top: 50%;
             transform: translateY(-50%);
             font-weight: bold;
             color: white;
-            font-size: 1rem;
+            font-size: 0.9rem;
         }
     </style>
 </head>
@@ -877,8 +952,8 @@
             <div class="system-name">
                 <span id="systemTitle">🌌 SPECTACULAR SPACE OBSERVATORY</span>
                 <div class="mode-toggle-container" style="margin-left: 20px;">
-                    <button class="mode-toggle-btn" onclick="toggleStoryMode()" id="modeToggleBtn">
-                        📚 STORY MODE
+                    <button class="mode-toggle-btn" onclick="window.location.href='dashboard_hub.html'" style="background: linear-gradient(135deg, #00d4ff, #0099cc);">
+                        🏠 DASHBOARD
                     </button>
                 </div>
             </div>
@@ -977,28 +1052,6 @@
                 </div>
             </div>
 
-            <!-- Story Navigation (only visible in story mode) -->
-            <div id="story-navigation" class="controls-section" style="display: none;">
-                <div class="control-label">📚 Story Chapters</div>
-                <div class="control-buttons" style="flex-direction: column; gap: 8px;">
-                    <button class="control-btn story-chapter-btn" onclick="goToChapter(1)" id="chapter-1-btn">
-                        Chapter 1: Meet Sunny 🌞
-                    </button>
-                    <button class="control-btn story-chapter-btn" onclick="goToChapter(2)" id="chapter-2-btn">
-                        Chapter 2: Space Journey 🚀
-                    </button>
-                    <button class="control-btn story-chapter-btn" onclick="goToChapter(3)" id="chapter-3-btn">
-                        Chapter 3: Earth Heroes 🌍
-                    </button>
-                    <button class="control-btn story-chapter-btn" onclick="goToChapter(4)" id="chapter-4-btn">
-                        Chapter 4: Aurora Dance ✨
-                    </button>
-                    <button class="control-btn story-chapter-btn" onclick="goToChapter(5)" id="chapter-5-btn">
-                        Chapter 5: Space Guardians 🛡️
-                    </button>
-                </div>
-            </div>
-
             <div style="margin-top: 20px; text-align: center;">
                 <button class="control-btn" onclick="openHelpCenter()" style="background: linear-gradient(135deg, #28a745, #20c997);">
                     ❓ Help & Guide
@@ -1017,16 +1070,18 @@
                 <button class="control-btn" onclick="dismissAlert()">ACKNOWLEDGE</button>
             </div>
         </div>
+    </div>
+    <!-- End HUD Overlay -->
 
-        <!-- Help Center Modal -->
-        <div id="help-center" class="help-modal" style="display: none;">
-            <div class="help-content">
-                <div class="help-header">
-                    <h2>🌌 3D Space Weather Observatory - Help Center</h2>
-                    <button class="help-close" onclick="closeHelpCenter()">&times;</button>
-                </div>
-                
-                <div class="help-sections">
+    <!-- Help Center Modal (Outside HUD) -->
+    <div id="help-center" class="help-modal" style="display: none;">
+        <div class="help-content">
+            <div class="help-header">
+                <h2>🌌 3D Space Weather Observatory - Help Center</h2>
+                <button class="help-close" onclick="closeHelpCenter()">&times;</button>
+            </div>
+
+            <div class="help-sections">
                     <div class="help-section">
                         <h3>🎮 Controls & Navigation</h3>
                         <ul>
@@ -1090,21 +1145,6 @@
                         <p>Training: Interactive 3D visualization tutorials available</p>
                     </div>
                 </div>
-            </div>
-        </div>
-
-        <!-- Story Character Panel -->
-        <div id="story-character-panel" class="story-character-panel">
-            <div class="character-avatar" id="characterAvatar">🌞</div>
-            <div class="character-name" id="characterName">Sunny the Sun</div>
-            <div class="character-dialogue" id="characterDialogue">
-                Hi there, young space explorer! I'm Sunny, and I create all the space weather you see here. 
-                Click around to explore my solar system!
-            </div>
-            <div class="character-actions">
-                <button class="character-btn" onclick="speakCharacterDialogue()">🔊 Speak</button>
-                <button class="character-btn" onclick="nextCharacterDialogue()">➡️ Next</button>
-                <button class="character-btn" onclick="hideCharacterPanel()">✨ Explore</button>
             </div>
         </div>
 
@@ -1188,6 +1228,19 @@
         let autoQuality = true;
 
         console.log('🚀 Initializing Spectacular 3D Space Weather Observatory...');
+
+        // Story Mode Notification System
+        function showStoryNotification(message, duration = 3000) {
+            const notification = document.getElementById('story-notification');
+            if (!notification) return;
+
+            notification.textContent = message;
+            notification.classList.add('show');
+
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, duration);
+        }
         
         // Story Mode Functions
         function toggleStoryMode() {
@@ -1208,24 +1261,40 @@
                 systemTitle.textContent = '📚 INTERACTIVE SPACE WEATHER STORY';
                 hudOverlay.classList.add('story-mode-active');
                 showCharacterPanel();
-                
+
                 // Hide any active alerts in story mode
                 hideAllAlerts();
-                
+
                 // Show story navigation
                 document.getElementById('story-navigation').style.display = 'block';
-                
+
+                // Initialize first chapter as active
+                currentChapter = 1;
+                document.querySelectorAll('.story-chapter-btn').forEach(btn => btn.classList.remove('active'));
+                const firstChapterBtn = document.getElementById('chapter-1-btn');
+                if (firstChapterBtn) {
+                    firstChapterBtn.classList.add('active');
+                }
+
                 // Update panel titles for kids
-                document.querySelector('#mission-control .panel-title').textContent = '🎮 STORY CONTROLS';
-                document.querySelector('#observatory-data .panel-title').textContent = '📊 SPACE WEATHER ADVENTURES';
-                document.querySelector('#physics-panel .panel-title').textContent = '🧪 SPACE SCIENCE MAGIC';
-                
+                const missionControlTitle = document.querySelector('#mission-control .panel-title');
+                const observatoryTitle = document.querySelector('#observatory-data .panel-title');
+                const physicsTitle = document.querySelector('#physics-panel .panel-title');
+
+                if (missionControlTitle) missionControlTitle.textContent = '🎮 STORY CONTROLS';
+                if (observatoryTitle) observatoryTitle.textContent = '📊 SPACE WEATHER ADVENTURES';
+                if (physicsTitle) physicsTitle.textContent = '🧪 SPACE SCIENCE MAGIC';
+
                 // Update button labels for kids
-                document.querySelector('button[onclick="toggleAnimation()"]').innerHTML = '⏯️ Play/Pause';
-                document.querySelector('button[onclick="resetView()"]').innerHTML = '🏠 Home View';
-                document.querySelector('button[onclick="captureScreenshot()"]').innerHTML = '📷 Take Photo';
-                
-                console.log('📚 Story Mode Activated!');
+                const animBtn = document.querySelector('button[onclick="toggleAnimation()"]');
+                const resetBtn = document.querySelector('button[onclick="resetView()"]');
+                const captureBtn = document.querySelector('button[onclick="captureScreenshot()"]');
+
+                if (animBtn) animBtn.innerHTML = '⏯️ Play/Pause';
+                if (resetBtn) resetBtn.innerHTML = '🏠 Home View';
+                if (captureBtn) captureBtn.innerHTML = '📷 Take Photo';
+
+                console.log('📚 Story Mode Activated! Starting at Chapter 1');
             } else {
                 // Return to Professional Mode
                 btn.textContent = '📚 STORY MODE';
@@ -1233,20 +1302,36 @@
                 systemTitle.textContent = '🌌 SPECTACULAR SPACE OBSERVATORY';
                 hudOverlay.classList.remove('story-mode-active');
                 hideCharacterPanel();
-                
+
                 // Hide story navigation
-                document.getElementById('story-navigation').style.display = 'none';
-                
+                const storyNav = document.getElementById('story-navigation');
+                if (storyNav) storyNav.style.display = 'none';
+
+                // Reset chapter state
+                currentChapter = 1;
+                completedChapters = [];
+                document.querySelectorAll('.story-chapter-btn').forEach(btn => {
+                    btn.classList.remove('active', 'completed');
+                });
+
                 // Restore professional titles
-                document.querySelector('#mission-control .panel-title').textContent = '🛰️ MISSION CONTROL';
-                document.querySelector('#observatory-data .panel-title').textContent = '📡 LIVE OBSERVATORY DATA';
-                document.querySelector('#physics-panel .panel-title').textContent = '🔬 SPACE PHYSICS ENGINE';
-                
+                const missionControlTitle = document.querySelector('#mission-control .panel-title');
+                const observatoryTitle = document.querySelector('#observatory-data .panel-title');
+                const physicsTitle = document.querySelector('#physics-panel .panel-title');
+
+                if (missionControlTitle) missionControlTitle.textContent = '🛰️ MISSION CONTROL';
+                if (observatoryTitle) observatoryTitle.textContent = '📡 LIVE OBSERVATORY DATA';
+                if (physicsTitle) physicsTitle.textContent = '🔬 SPACE PHYSICS ENGINE';
+
                 // Restore professional button labels
-                document.querySelector('button[onclick="toggleAnimation()"]').innerHTML = '⏯️ Animation';
-                document.querySelector('button[onclick="resetView()"]').innerHTML = '🔄 Reset';
-                document.querySelector('button[onclick="captureScreenshot()"]').innerHTML = '📸 Capture';
-                
+                const animBtn = document.querySelector('button[onclick="toggleAnimation()"]');
+                const resetBtn = document.querySelector('button[onclick="resetView()"]');
+                const captureBtn = document.querySelector('button[onclick="captureScreenshot()"]');
+
+                if (animBtn) animBtn.innerHTML = '⏯️ Animation';
+                if (resetBtn) resetBtn.innerHTML = '🔄 Reset';
+                if (captureBtn) captureBtn.innerHTML = '📸 Capture';
+
                 console.log('🚀 Professional Mode Activated!');
             }
         }
@@ -1260,6 +1345,45 @@
         function hideCharacterPanel() {
             const panel = document.getElementById('story-character-panel');
             panel.classList.remove('active');
+
+            // Stop any playing voice when hiding
+            if (isVoicePlaying) {
+                stopCurrentVoice();
+            }
+        }
+
+        function toggleCharacterPanel() {
+            console.log('✨ ========== HIDE/SHOW BUTTON CLICKED ==========');
+
+            try {
+                const panel = document.getElementById('story-character-panel');
+                if (!panel) {
+                    console.error('❌ Character panel not found!');
+                    alert('ERROR: Character panel not found!');
+                    return;
+                }
+
+                console.log('✅ Panel found:', panel);
+
+                const isHidden = panel.style.display === 'none';
+                console.log(`Panel currently hidden: ${isHidden}`);
+
+                if (isHidden) {
+                    // Show the panel
+                    panel.style.display = 'block';
+                    console.log('✅ Character panel SHOWN');
+                } else {
+                    // Hide the panel
+                    panel.style.display = 'none';
+                    if (typeof isVoicePlaying !== 'undefined' && isVoicePlaying) {
+                        stopCurrentVoice();
+                    }
+                    console.log('✅ Character panel HIDDEN');
+                }
+            } catch (error) {
+                console.error('❌ Error in toggleCharacterPanel:', error);
+                alert('Error toggling panel: ' + error.message);
+            }
         }
         
         function updateCharacterDisplay() {
@@ -1269,57 +1393,160 @@
             document.getElementById('characterDialogue').textContent = character.dialogues[currentDialogueIndex];
         }
 
-        function setCharacterDialogue(text, autoSpeak = true) {
+        function setCharacterDialogue(text, autoSpeak = false) {
+            // Clear any pending voice actions
+            if (voiceTimeout) clearTimeout(voiceTimeout);
+
             // Stop any currently playing voice
             if (isVoicePlaying) {
                 stopCurrentVoice();
             }
-            
+
             // Update the current character's dialogue
             storyCharacters[currentCharacter].dialogues[currentDialogueIndex] = text;
-            document.getElementById('characterDialogue').textContent = text;
-            
-            // Auto-speak if requested
-            if (autoSpeak && storyMode) {
-                setTimeout(() => {
-                    speakCharacterDialogue();
-                }, 300);
+            const dialogueElement = document.getElementById('characterDialogue');
+            if (dialogueElement) {
+                dialogueElement.textContent = text;
             }
+
+            // DISABLED AUTO-SPEAK - Let user click Speak button manually
+            // This prevents voice interruptions and incomplete sentences
+            console.log(`📝 Dialogue updated: "${text.substring(0, 50)}..." (Auto-speak disabled)`);
         }
         
         // Voice management globals
         let currentAudio = null;
         let isVoicePlaying = false;
 
-        async function speakCharacterDialogue() {
-            // Stop any currently playing voice
-            if (isVoicePlaying) {
-                stopCurrentVoice();
+        // VOICE SYSTEM: Working version from space_weather_adventures.html
+        async function speakNow() {
+            console.log('🔊 SPEAK BUTTON CLICKED!');
+
+            const dialogueElement = document.getElementById('characterDialogue');
+            if (!dialogueElement) {
+                alert('ERROR: Dialogue element not found!');
                 return;
             }
 
+            const text = dialogueElement.textContent;
+            console.log('Text:', text);
+
+            const character = storyCharacters[currentCharacter];
+            console.log('Character:', character);
+
+            // Show speaking indicator
+            const speakBtn = document.getElementById('speakBtn');
+            if (!speakBtn) {
+                alert('ERROR: Speak button not found!');
+                return;
+            }
+
+            const originalText = speakBtn.innerHTML;
+            speakBtn.innerHTML = '🔊 Speaking...';
+            speakBtn.disabled = true;
+
+            try {
+                // Try ElevenLabs API first, fallback to browser TTS
+                let audioUrl = null;
+
+                // ElevenLabs Voice Configuration
+                const voiceIds = {
+                    sunny: 'pNInz6obpgDQGcFmaJgB',
+                    terra: 'EXAVITQu4vr4xnSDxMaL',
+                    luna: 'AZnzlk1XvdvUeBnXmlld',
+                    aurora: 'TxGEqnHWrfWFTfGW9XjX'
+                };
+
+                // Try ElevenLabs API
+                try {
+                    const response = await fetch('/api/speak', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            text: text,
+                            voice_id: voiceIds[currentCharacter] || voiceIds.aurora,
+                            character: currentCharacter
+                        })
+                    });
+
+                    if (response.ok) {
+                        const blob = await response.blob();
+                        audioUrl = URL.createObjectURL(blob);
+                        console.log(`🎙️ Using ElevenLabs voice for ${character.name}`);
+                    }
+                } catch (error) {
+                    console.log('ElevenLabs not available, using browser TTS...');
+                }
+
+                // Play the AI-generated audio or fallback to browser TTS
+                if (audioUrl) {
+                    const audio = new Audio(audioUrl);
+                    audio.onended = () => {
+                        URL.revokeObjectURL(audioUrl);
+                        speakBtn.innerHTML = originalText;
+                        speakBtn.disabled = false;
+                    };
+                    audio.onerror = () => {
+                        console.log('Audio playback failed, using browser TTS...');
+                        useBrowserTTS(text);
+                        speakBtn.innerHTML = originalText;
+                        speakBtn.disabled = false;
+                    };
+                    await audio.play();
+                } else {
+                    // Fallback to browser TTS
+                    useBrowserTTS(text);
+                    speakBtn.innerHTML = originalText;
+                    speakBtn.disabled = false;
+                }
+
+            } catch (error) {
+                console.error('Speech synthesis error:', error);
+                useBrowserTTS(text);
+                speakBtn.innerHTML = originalText;
+                speakBtn.disabled = false;
+            }
+        }
+
+        // Browser TTS fallback function
+        function useBrowserTTS(text, character) {
+            if (speechSynthesis.speaking) {
+                speechSynthesis.cancel();
+            }
+
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.rate = 0.8;
+            utterance.pitch = currentCharacter === 'sunny' ? 1.2 :
+                             currentCharacter === 'terra' ? 0.9 :
+                             currentCharacter === 'luna' ? 1.1 : 1.0;
+            utterance.volume = 0.8;
+
+            speechSynthesis.speak(utterance);
+            console.log(`🔊 Using browser TTS for ${character ? character.name : 'character'}`);
+        }
+
+        async function speakCharacterDialogue() {
             const text = document.getElementById('characterDialogue').textContent;
             const character = storyCharacters[currentCharacter];
-            
+
             // Show speaking indicator
             const speakBtn = document.querySelector('button[onclick="speakCharacterDialogue()"]');
             const originalText = speakBtn.innerHTML;
-            speakBtn.innerHTML = '🔇 Stop Voice';
-            speakBtn.disabled = false;
-            isVoicePlaying = true;
-            
+            speakBtn.innerHTML = '🔊 Speaking...';
+            speakBtn.disabled = true;
+
             try {
                 // Try ElevenLabs API first, fallback to OpenAI, then browser TTS
                 let audioUrl = null;
-                
+
                 // ElevenLabs Voice Configuration
                 const voiceIds = {
-                    sunny: 'pNInz6obpgDQGcFmaJgB', // Male energetic voice
-                    terra: 'EXAVITQu4vr4xnSDxMaL', // Female caring voice  
-                    luna: 'AZnzlk1XvdvUeBnXmlld', // Young friendly voice
-                    aurora: 'TxGEqnHWrfWFTfGW9XjX'  // Professional authoritative voice
+                    sunny: 'pNInz6obpgDQGcFmaJgB',
+                    terra: 'EXAVITQu4vr4xnSDxMaL',
+                    luna: 'AZnzlk1XvdvUeBnXmlld',
+                    aurora: 'TxGEqnHWrfWFTfGW9XjX'
                 };
-                
+
                 // Try ElevenLabs API
                 try {
                     const response = await fetch('/api/speak', {
@@ -1333,7 +1560,7 @@
                             character: currentCharacter
                         })
                     });
-                    
+
                     if (response.ok) {
                         const blob = await response.blob();
                         audioUrl = URL.createObjectURL(blob);
@@ -1342,7 +1569,7 @@
                 } catch (error) {
                     console.log('ElevenLabs not available, trying OpenAI...');
                 }
-                
+
                 // Fallback to OpenAI TTS
                 if (!audioUrl) {
                     try {
@@ -1353,13 +1580,13 @@
                             },
                             body: JSON.stringify({
                                 text: text,
-                                voice: currentCharacter === 'sunny' ? 'alloy' : 
-                                       currentCharacter === 'terra' ? 'nova' : 
+                                voice: currentCharacter === 'sunny' ? 'alloy' :
+                                       currentCharacter === 'terra' ? 'nova' :
                                        currentCharacter === 'luna' ? 'shimmer' : 'onyx',
                                 character: currentCharacter
                             })
                         });
-                        
+
                         if (response.ok) {
                             const blob = await response.blob();
                             audioUrl = URL.createObjectURL(blob);
@@ -1369,28 +1596,35 @@
                         console.log('OpenAI TTS not available, using browser TTS...');
                     }
                 }
-                
+
                 // Play the AI-generated audio or fallback to browser TTS
                 if (audioUrl) {
-                    currentAudio = new Audio(audioUrl);
-                    currentAudio.onended = () => {
+                    const audio = new Audio(audioUrl);
+                    audio.onended = () => {
                         URL.revokeObjectURL(audioUrl);
-                        resetVoiceButton();
+                        speakBtn.innerHTML = originalText;
+                        speakBtn.disabled = false;
                     };
-                    currentAudio.onerror = () => {
+                    audio.onerror = () => {
                         console.log('Audio playback failed, using browser TTS...');
                         useBrowserTTS(text, character);
+                        speakBtn.innerHTML = originalText;
+                        speakBtn.disabled = false;
                     };
-                    await currentAudio.play();
+                    await audio.play();
                 } else {
                     // Fallback to browser TTS
                     useBrowserTTS(text, character);
+                    speakBtn.innerHTML = originalText;
+                    speakBtn.disabled = false;
                 }
-                
+
             } catch (error) {
                 console.error('Speech synthesis error:', error);
                 // Final fallback to browser TTS
                 useBrowserTTS(text, character);
+                speakBtn.innerHTML = originalText;
+                speakBtn.disabled = false;
             }
         }
 
@@ -1411,81 +1645,247 @@
         }
 
         function resetVoiceButton() {
-            const speakBtn = document.querySelector('button[onclick="speakCharacterDialogue()"]');
+            const speakBtn = document.getElementById('speakBtn');
             if (speakBtn) {
                 speakBtn.innerHTML = '🔊 Speak';
                 speakBtn.disabled = false;
+                speakBtn.style.opacity = '1';
             }
             isVoicePlaying = false;
         }
+
+        function updateSpeakButton(speaking) {
+            const speakBtn = document.getElementById('speakBtn');
+            const dialogueElement = document.getElementById('characterDialogue');
+
+            if (speakBtn) {
+                if (speaking) {
+                    speakBtn.innerHTML = '⏹️ Stop';
+                    speakBtn.classList.remove('speak-btn'); // Remove pulsing animation
+                    speakBtn.style.background = 'linear-gradient(135deg, #e74c3c, #c0392b)';
+                    if (dialogueElement) dialogueElement.classList.add('speaking');
+                } else {
+                    speakBtn.innerHTML = '🔊 Speak';
+                    speakBtn.classList.add('speak-btn'); // Add pulsing animation back
+                    speakBtn.style.background = '';
+                    if (dialogueElement) dialogueElement.classList.remove('speaking');
+                }
+                speakBtn.disabled = false;
+            }
+        }
         
         function useBrowserTTS(text, character) {
-            if (speechSynthesis.speaking) {
+            console.log('🎤 useBrowserTTS called');
+            console.log(`   Text: "${text.substring(0, 50)}..."`);
+            console.log(`   Speaking status: ${speechSynthesis.speaking}`);
+            console.log(`   Pending status: ${speechSynthesis.pending}`);
+
+            // Cancel any existing speech first
+            if (speechSynthesis.speaking || speechSynthesis.pending) {
+                console.log('⚠️ Cancelling existing speech...');
                 speechSynthesis.cancel();
+                // Small delay to ensure cancellation completes
+                setTimeout(() => {
+                    console.log('▶️ Retrying after cancellation...');
+                    startSpeaking();
+                }, 150);
+                return;
             }
-            
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.rate = 0.8;
-            utterance.pitch = currentCharacter === 'sunny' ? 1.2 : 
-                             currentCharacter === 'terra' ? 0.9 : 
-                             currentCharacter === 'luna' ? 1.1 : 1.0;
-            utterance.volume = 0.8;
-            
-            // Add voice management for browser TTS
-            utterance.onend = () => {
-                resetVoiceButton();
-            };
-            
-            utterance.onerror = () => {
-                resetVoiceButton();
-                showNotification('Voice synthesis failed. Please try again.', 'error');
-            };
-            
-            // Try to use a more natural voice if available
-            const voices = speechSynthesis.getVoices();
-            const preferredVoice = voices.find(voice => 
-                voice.name.includes('Neural') || 
-                voice.name.includes('Premium') ||
-                voice.name.includes('Enhanced')
-            );
-            if (preferredVoice) {
-                utterance.voice = preferredVoice;
+
+            startSpeaking();
+
+            function startSpeaking() {
+                console.log('🚀 startSpeaking() called');
+
+                // Wait for voices to be available
+                const voices = speechSynthesis.getVoices();
+                console.log(`🎙️ Available voices: ${voices.length}`);
+
+                if (voices.length === 0) {
+                    console.warn('⚠️ No voices loaded yet, waiting for voiceschanged event...');
+                    speechSynthesis.addEventListener('voiceschanged', () => {
+                        console.log('✅ Voices loaded, retrying...');
+                        useBrowserTTS(text, character);
+                    }, { once: true });
+                    return;
+                }
+
+                // Clean up the text - ensure it's complete
+                const cleanText = text.trim();
+                if (!cleanText) {
+                    console.warn('Empty text provided for TTS');
+                    isVoicePlaying = false;
+                    updateSpeakButton(false);
+                    return;
+                }
+
+                const utterance = new SpeechSynthesisUtterance(cleanText);
+
+                // Optimal settings for complete sentence delivery
+                utterance.rate = 0.82;  // Slightly slower for clarity
+                utterance.pitch = currentCharacter === 'sunny' ? 1.2 :
+                                 currentCharacter === 'terra' ? 0.95 :
+                                 currentCharacter === 'luna' ? 1.1 :
+                                 currentCharacter === 'aurora' ? 1.1 : 1.0;
+                utterance.volume = 1.0;  // Full volume
+                utterance.lang = 'en-US';
+
+                // Chrome/Edge fix: Keep speech synthesis alive
+                let keepAliveInterval;
+
+                // Add voice management for browser TTS
+                utterance.onstart = () => {
+                    isVoicePlaying = true;
+                    updateSpeakButton(true);
+                    console.log(`🔊 Started speaking: "${cleanText}"`);
+
+                    // Keep speech synthesis alive to prevent Chrome timeout
+                    keepAliveInterval = setInterval(() => {
+                        if (!speechSynthesis.speaking) {
+                            clearInterval(keepAliveInterval);
+                        } else {
+                            // Pause/resume to keep alive (fixes Chrome 15-second timeout bug)
+                            speechSynthesis.pause();
+                            speechSynthesis.resume();
+                        }
+                    }, 14000); // Every 14 seconds
+                };
+
+                utterance.onend = () => {
+                    if (keepAliveInterval) clearInterval(keepAliveInterval);
+                    isVoicePlaying = false;
+                    updateSpeakButton(false);
+                    console.log(`✅ Finished speaking complete sentence`);
+                };
+
+                utterance.onerror = (event) => {
+                    if (keepAliveInterval) clearInterval(keepAliveInterval);
+                    console.warn('⚠️ Speech synthesis error:', event.error);
+                    isVoicePlaying = false;
+                    updateSpeakButton(false);
+
+                    // Only show error if it's not an interruption
+                    if (event.error !== 'interrupted' && event.error !== 'canceled') {
+                        console.log('Voice synthesis temporarily unavailable');
+                    }
+                };
+
+                utterance.onpause = () => {
+                    console.log('⏸️ Speech paused');
+                };
+
+                utterance.onresume = () => {
+                    console.log('▶️ Speech resumed');
+                };
+
+                utterance.onboundary = (event) => {
+                    // Track word boundaries to ensure completion
+                    console.log(`📖 Speaking: ${event.name} at position ${event.charIndex}`);
+                };
+
+                // Try to use a more natural voice if available
+                const preferredVoice = voices.find(voice =>
+                    (voice.lang.includes('en') && (
+                        voice.name.includes('Neural') ||
+                        voice.name.includes('Premium') ||
+                        voice.name.includes('Enhanced') ||
+                        voice.name.includes('Natural') ||
+                        voice.name.includes('Google') ||
+                        voice.name.includes('Microsoft')
+                    ))
+                );
+
+                if (preferredVoice) {
+                    utterance.voice = preferredVoice;
+                    console.log(`🎙️ Using voice: ${preferredVoice.name}`);
+                } else if (voices.length > 0) {
+                    // Use first English voice as fallback
+                    const englishVoice = voices.find(v => v.lang.includes('en'));
+                    if (englishVoice) {
+                        utterance.voice = englishVoice;
+                        console.log(`🎙️ Using fallback voice: ${englishVoice.name}`);
+                    }
+                }
+
+                console.log('📢 About to call speechSynthesis.speak()...');
+                console.log(`   Utterance text: "${cleanText}"`);
+                console.log(`   Utterance rate: ${utterance.rate}`);
+                console.log(`   Utterance volume: ${utterance.volume}`);
+                console.log(`   Utterance voice: ${utterance.voice ? utterance.voice.name : 'default'}`);
+
+                try {
+                    // Speak the utterance
+                    speechSynthesis.speak(utterance);
+                    console.log(`✅ speechSynthesis.speak() CALLED!`);
+                    console.log(`🎙️ Text queued (${cleanText.length} characters)`);
+                    console.log(`   Should start speaking any moment...`);
+                } catch (error) {
+                    console.error('❌ ERROR in speechSynthesis.speak():', error);
+                    isVoicePlaying = false;
+                    updateSpeakButton(false);
+                    alert('Speech error: ' + error.message);
+                }
             }
-            
-            speechSynthesis.speak(utterance);
-            console.log(`🔊 Using browser TTS for ${character.name}`);
         }
         
+        // Debounce timer for voice actions
+        let voiceTimeout = null;
+
         function nextCharacterDialogue() {
-            // Stop any currently playing voice before switching
-            if (isVoicePlaying) {
-                stopCurrentVoice();
+            console.log('⏭️ ========== NEXT BUTTON CLICKED ==========');
+
+            try {
+                // Clear any pending voice actions
+                if (typeof voiceTimeout !== 'undefined' && voiceTimeout) {
+                    clearTimeout(voiceTimeout);
+                }
+
+                // Stop any currently playing voice before switching
+                if (typeof isVoicePlaying !== 'undefined' && isVoicePlaying) {
+                    console.log('Stopping current voice...');
+                    stopCurrentVoice();
+                }
+
+                const character = storyCharacters[currentCharacter];
+                if (!character) {
+                    console.error('❌ Character not found!');
+                    alert('Error: Character not found!');
+                    return;
+                }
+
+                console.log(`Current character: ${currentCharacter}`);
+                console.log(`Current dialogue index: ${currentDialogueIndex}`);
+                console.log(`Total dialogues: ${character.dialogues.length}`);
+
+                currentDialogueIndex = (currentDialogueIndex + 1) % character.dialogues.length;
+
+                console.log(`New dialogue index: ${currentDialogueIndex}`);
+
+                updateCharacterDisplay();
+
+                console.log('✅ Moved to next dialogue!');
+                console.log(`📝 New dialogue: "${character.dialogues[currentDialogueIndex].substring(0, 50)}..."`);
+            } catch (error) {
+                console.error('❌ Error in nextCharacterDialogue:', error);
+                alert('Error advancing dialogue: ' + error.message);
             }
-            
-            const character = storyCharacters[currentCharacter];
-            currentDialogueIndex = (currentDialogueIndex + 1) % character.dialogues.length;
-            updateCharacterDisplay();
-            
-            // Auto-speak the new dialogue after a brief pause
-            setTimeout(() => {
-                if (storyMode) speakCharacterDialogue();
-            }, 500);
         }
-        
+
         function switchCharacter(characterKey) {
+            // Clear any pending voice actions
+            if (voiceTimeout) clearTimeout(voiceTimeout);
+
             // Stop any currently playing voice before switching characters
             if (isVoicePlaying) {
                 stopCurrentVoice();
             }
-            
+
             currentCharacter = characterKey;
             currentDialogueIndex = 0;
+
             if (storyMode) {
                 updateCharacterDisplay();
-                // Brief pause before speaking new character
-                setTimeout(() => {
-                    speakCharacterDialogue();
-                }, 300);
+                console.log(`🔄 Switched to ${characterKey} - Click Speak to hear dialogue`);
             }
         }
         
@@ -1519,73 +1919,150 @@
         let completedChapters = [];
         
         function goToChapter(chapterNumber) {
-            if (!storyMode) return;
-            
+            if (!storyMode) {
+                console.warn('⚠️ Cannot go to chapter - Story mode not active');
+                return;
+            }
+
             // Stop any currently playing voice before switching chapters
             if (isVoicePlaying) {
                 stopCurrentVoice();
             }
-            
+
             currentChapter = chapterNumber;
             const chapter = storyChapters[chapterNumber];
-            
-            if (!chapter) return;
-            
+
+            if (!chapter) {
+                console.error(`❌ Chapter ${chapterNumber} not found`);
+                return;
+            }
+
             // Update chapter button states
-            document.querySelectorAll('.story-chapter-btn').forEach(btn => btn.classList.remove('active'));
-            document.getElementById(`chapter-${chapterNumber}-btn`).classList.add('active');
-            
+            document.querySelectorAll('.story-chapter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            const currentChapterBtn = document.getElementById(`chapter-${chapterNumber}-btn`);
+            if (currentChapterBtn) {
+                currentChapterBtn.classList.add('active');
+            }
+
             // Switch to appropriate character and camera mode
             switchCharacter(chapter.character);
             setCameraMode(chapter.cameraMode);
-            
-            // Trigger chapter-specific events
+
+            // Show character panel if hidden
+            const panel = document.getElementById('story-character-panel');
+            if (panel && !panel.classList.contains('active')) {
+                panel.classList.add('active');
+            }
+
+            // Trigger chapter-specific events after a brief delay
             setTimeout(() => {
                 triggerChapterEvents(chapterNumber);
-            }, 1000);
-            
+            }, 800);
+
             // Mark previous chapters as completed
             for (let i = 1; i < chapterNumber; i++) {
                 if (!completedChapters.includes(i)) {
                     completedChapters.push(i);
-                    document.getElementById(`chapter-${i}-btn`).classList.add('completed');
+                    const prevChapterBtn = document.getElementById(`chapter-${i}-btn`);
+                    if (prevChapterBtn) {
+                        prevChapterBtn.classList.add('completed');
+                    }
                 }
             }
-            
+
+            // Show visual notification
+            showStoryNotification(`📖 ${chapter.title}`, 2500);
+
             console.log(`📖 Started Chapter ${chapterNumber}: ${chapter.title}`);
+            console.log(`🎭 Character: ${chapter.character}, 📷 Camera: ${chapter.cameraMode}`);
         }
         
         function triggerChapterEvents(chapterNumber) {
+            // Get real-time data for dynamic storytelling
+            const realData = getRealTimeStoryData();
+
             switch(chapterNumber) {
                 case 1:
-                    // Chapter 1: Meet Sunny the Bustling Sun
-                    setCharacterDialogue("Welcome to Chapter 1! I'm Sunny, the star of our solar system! I create all the space weather you'll learn about. Click on me to see my solar flares!");
+                    // Chapter 1: Meet Sunny with REAL data
+                    const sunnyIntro = `Welcome to Chapter 1! I'm Sunny, the star of our solar system! Right now, there are ${realData.cmeCount} CME events and ${realData.flareCount} solar flares happening! ${realData.activityLevel}`;
+                    setCharacterDialogue(sunnyIntro);
                     break;
-                    
+
                 case 2:
-                    // Chapter 2: The Great Space Journey
-                    setCharacterDialogue("Chapter 2: Watch as space weather travels from Sunny to Terra! This journey takes 1-3 days in real life, but we'll speed it up for you!");
+                    // Chapter 2: The Great Space Journey with real CME info
+                    const journeyText = `Chapter 2: Watch as space weather travels from me to Earth! ${realData.cmeInfo}. This journey takes 1-3 days in real life, but we'll speed it up for you!`;
+                    setCharacterDialogue(journeyText);
                     triggerStoryEvent('cme_event');
                     break;
-                    
+
                 case 3:
-                    // Chapter 3: Heroes Respond on Earth
-                    setCharacterDialogue("Chapter 3: I'm Terra! When space weather reaches me, I have many heroes who help protect everyone - farmers, pilots, power grid operators, and astronauts!");
+                    // Chapter 3: Heroes Respond with real impact data
+                    const heroText = `Chapter 3: I'm Terra! When space weather reaches me, heroes help protect everyone. ${realData.impactInfo} Let me introduce you to these brave heroes!`;
+                    setCharacterDialogue(heroText);
                     setTimeout(() => showEarthHeroes(), 3000);
                     break;
-                    
+
                 case 4:
-                    // Chapter 4: The Aurora Dance
-                    setCharacterDialogue("Chapter 4: Behold the Aurora Dance! This is how I turn dangerous space weather into beautiful light shows at my poles!");
+                    // Chapter 4: Aurora Dance with real aurora data
+                    const auroraText = `Chapter 4: Behold the Aurora Dance! ${realData.auroraInfo} This is how I turn space weather into beautiful light shows at my poles!`;
+                    setCharacterDialogue(auroraText);
                     triggerStoryEvent('aurora_display');
                     break;
-                    
+
                 case 5:
-                    // Chapter 5: Space Weather Guardians
-                    setCharacterDialogue("Chapter 5: I'm Captain Aurora! We monitor space weather 24/7 to keep everyone safe. Scientists use satellites and ground stations just like this observatory!");
+                    // Chapter 5: Space Weather Guardians with real monitoring info
+                    const guardianText = `Chapter 5: I'm Captain Aurora! We monitor space weather 24/7 to keep everyone safe. ${realData.monitoringInfo} Let me show you our guardian systems!`;
+                    setCharacterDialogue(guardianText);
                     setTimeout(() => showGuardianSystems(), 3000);
                     break;
             }
+        }
+
+        // Get real-time data for storytelling
+        function getRealTimeStoryData() {
+            const cmeCount = cmeObjects.length;
+            const flareCount = flareObjects.length;
+            const totalEvents = cmeCount + flareCount;
+
+            // Get activity level
+            let activityLevel = "The sun is quiet today, perfect for learning!";
+            if (totalEvents > 15) {
+                activityLevel = "I'm very active today with lots of space weather events!";
+            } else if (totalEvents > 5) {
+                activityLevel = "I'm moderately active with some exciting events happening!";
+            }
+
+            // CME information
+            let cmeInfo = cmeCount > 0
+                ? `Currently, ${cmeCount} coronal mass ejections are traveling through space toward Earth!`
+                : "No major CME events right now, but I'm always creating solar wind!";
+
+            // Impact information
+            let impactInfo = totalEvents > 10
+                ? "Today's space weather could affect GPS systems, power grids, and create beautiful auroras!"
+                : "Space weather today is mild, but we still need to stay prepared!";
+
+            // Aurora information
+            let auroraInfo = totalEvents > 8
+                ? "Current space weather conditions may produce stunning auroras visible at high latitudes!"
+                : "Aurora activity is low today, but they're still dancing at the poles!";
+
+            // Monitoring information
+            let monitoringInfo = `Right now, we're tracking ${totalEvents} total space weather events from multiple satellites and ground stations!`;
+
+            return {
+                cmeCount,
+                flareCount,
+                totalEvents,
+                activityLevel,
+                cmeInfo,
+                impactInfo,
+                auroraInfo,
+                monitoringInfo
+            };
         }
         
         function showEarthHeroes() {
@@ -1666,6 +2143,9 @@
             renderer.toneMappingExposure = 0.8;
             renderer.outputEncoding = THREE.sRGBEncoding;
             document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+            // Add resize listener now that camera and renderer exist
+            window.addEventListener('resize', onWindowResize);
 
             // Create spectacular background
             createSpectacularBackground();
@@ -1758,10 +2238,9 @@
                 },
                 vertexShader: `
                     attribute float size;
-                    attribute vec3 color;
                     varying vec3 vColor;
                     uniform float time;
-                    
+
                     void main() {
                         vColor = color;
                         vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
@@ -2251,29 +2730,37 @@
             console.log('🖱️ Object interaction system ready for story mode!');
         }
 
+        let dataLoaded = false; // Prevent infinite loop
+
         function loadNASAData() {
+            if (dataLoaded) {
+                console.log('📊 Data already loaded, skipping...');
+                return;
+            }
+
             console.log('📡 Loading NASA observatory data...');
-            
+
             if (window.LIVE_NASA_DATA && window.LIVE_NASA_DATA.events) {
                 nasaData = window.LIVE_NASA_DATA;
                 console.log('✅ NASA data loaded:', nasaData);
-                
+
                 updateDataDisplay();
                 createSpectacularCMEVisualization();
                 createSpectacularFlareVisualization();
                 updateConnectionStatus('online');
-                
+                dataLoaded = true;
+
                 // Check for high-speed CMEs and show alert (only in professional mode)
                 const highSpeedCMEs = nasaData.events.cmes.filter(cme => (cme.speed || 0) > 1000);
                 if (highSpeedCMEs.length > 0 && !storyMode) {
                     showEmergencyAlert(highSpeedCMEs[0]);
                 }
-                
+
             } else {
                 console.log('⏳ NASA data not available, creating spectacular simulation...');
                 updateConnectionStatus('loading');
                 createSpectacularSimulation();
-                setTimeout(loadNASAData, 3000);
+                dataLoaded = true; // Mark as loaded to prevent loop
             }
         }
 
@@ -2566,16 +3053,15 @@
                     },
                     vertexShader: `
                         attribute float size;
-                        attribute vec3 color;
                         varying vec3 vColor;
                         varying float vSize;
                         uniform float time;
                         uniform float intensity;
-                        
+
                         void main() {
                             vColor = color;
                             vSize = size;
-                            
+
                             vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
                             gl_PointSize = size * intensity * (300.0 / -mvPosition.z) * (1.0 + 0.5 * sin(time * 2.0 + position.x * 0.01));
                             gl_Position = projectionMatrix * mvPosition;
@@ -2727,27 +3213,61 @@
                 showNotification(`🌞 Sunny is sending a fast solar wind at ${speed.toLocaleString()} km/s! Terra's magnetic shield will protect us! 🛡️`, 'info');
                 return;
             }
-            
-            // Professional mode - show full alert
+
+            // Professional mode - show full alert with variety
             const alertPanel = document.getElementById('alert-panel');
             const alertContent = document.getElementById('alert-content');
-            
+
             const speed = cme.speed || 1000;
             const eta = Math.round((150000000 / (speed * 1000)) / 3600); // Rough ETA in hours
-            
+
+            // Determine risk level and alert type based on speed
+            let riskLevel, riskColor, alertTitle, alertIcon;
+            if (speed > 1500) {
+                riskLevel = 'EXTREME';
+                riskColor = '#ff0000';
+                alertTitle = '🚨 EXTREME CME WARNING';
+                alertIcon = '🚨';
+            } else if (speed > 1000) {
+                riskLevel = 'SEVERE';
+                riskColor = '#ff6600';
+                alertTitle = '⚠️ HIGH-SPEED CME DETECTED';
+                alertIcon = '⚠️';
+            } else if (speed > 700) {
+                riskLevel = 'MODERATE';
+                riskColor = '#ffaa00';
+                alertTitle = '⚡ MODERATE CME ALERT';
+                alertIcon = '⚡';
+            } else {
+                riskLevel = 'LOW';
+                riskColor = '#ffff00';
+                alertTitle = '📢 CME DETECTION NOTICE';
+                alertIcon = '📢';
+            }
+
+            // Get source location
+            const source = cme.sourceLocation || cme.source_location || cme.activityID || `S${Math.floor(Math.random() * 20) + 10}W${Math.floor(Math.random() * 40) + 10}`;
+
             alertContent.innerHTML = `
                 <div style="font-size: 1.4rem; margin-bottom: 15px; color: #ffffff;">
-                    ⚠️ HIGH-SPEED CME DETECTED
+                    ${alertTitle}
                 </div>
                 <div style="font-size: 1.1rem; line-height: 1.5;">
                     <strong>Speed:</strong> ${speed.toLocaleString()} km/s<br>
-                    <strong>ETA:</strong> ~${eta} hours<br>
-                    <strong>Risk Level:</strong> <span style="color: #ffff00;">SEVERE</span><br>
-                    <strong>Source:</strong> ${cme.source_location || 'Solar Surface'}
+                    <strong>ETA:</strong> ${eta === 0 ? '< 1 hour' : `~${eta} hours`}<br>
+                    <strong>Risk Level:</strong> <span style="color: ${riskColor}; font-weight: 700;">${riskLevel}</span><br>
+                    <strong>Source:</strong> ${source}
                 </div>
             `;
-            
+
             alertPanel.style.display = 'block';
+
+            // Auto-hide after 10 seconds
+            setTimeout(() => {
+                if (alertPanel.style.display === 'block') {
+                    alertPanel.style.display = 'none';
+                }
+            }, 10000);
         }
 
         function dismissAlert() {
@@ -3082,7 +3602,9 @@
         function togglePhysicsModel(model) {
             physicsModels[model] = !physicsModels[model];
             const btn = document.getElementById(`btn-${model}-model`);
-            btn.classList.toggle('active');
+            if (btn) {
+                btn.classList.toggle('active');
+            }
             console.log(`Physics model ${model}:`, physicsModels[model] ? 'ON' : 'OFF');
         }
 
@@ -3097,18 +3619,83 @@
         }
 
         function onWindowResize() {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
+            if (camera && renderer) {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            }
         }
-
-        window.addEventListener('resize', onWindowResize);
 
 
         // Initialize when page loads
+        // Voice system initialization
+        let voicesLoaded = false;
+        function initializeVoiceSystem() {
+            console.log('🎤 Initializing voice system...');
+
+            // Load voices immediately
+            const initialVoices = speechSynthesis.getVoices();
+            if (initialVoices.length > 0) {
+                voicesLoaded = true;
+                console.log(`✅ Voice system ready! ${initialVoices.length} voices available:`);
+                initialVoices.slice(0, 5).forEach(v => {
+                    console.log(`  - ${v.name} (${v.lang})`);
+                });
+            }
+
+            // Listen for voices to be loaded (for browsers that load async)
+            speechSynthesis.addEventListener('voiceschanged', () => {
+                const voices = speechSynthesis.getVoices();
+                if (voices.length > 0 && !voicesLoaded) {
+                    voicesLoaded = true;
+                    console.log(`✅ Voice system ready! ${voices.length} voices loaded:`);
+                    voices.slice(0, 5).forEach(v => {
+                        console.log(`  - ${v.name} (${v.lang})`);
+                    });
+                }
+            }, { once: true });
+
+            // Force trigger voice loading
+            setTimeout(() => {
+                speechSynthesis.getVoices();
+            }, 100);
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             console.log('🚀 Starting Spectacular Space Weather Observatory...');
-            
+
+            // Check if opened from dashboard with story mode parameter
+            const urlParams = new URLSearchParams(window.location.search);
+            const storyModeParam = urlParams.get('mode');
+
+            // Load dashboard data if available
+            const dashboardData = localStorage.getItem('helioearth_live_data');
+            if (dashboardData) {
+                try {
+                    const liveData = JSON.parse(dashboardData);
+                    console.log('📊 Received live data from dashboard:', liveData);
+
+                    // Store for use in story mode
+                    window.dashboardLiveData = liveData;
+                } catch (e) {
+                    console.warn('Failed to parse dashboard data:', e);
+                }
+            }
+
+            // Auto-enable story mode if parameter is set
+            if (storyModeParam === 'story') {
+                console.log('📚 Auto-enabling Story Mode from dashboard...');
+                // Enable story mode after initialization
+                setTimeout(() => {
+                    if (!storyMode) {
+                        toggleStoryMode();
+                    }
+                }, 1500);
+            }
+
+            // Initialize voice system first
+            initializeVoiceSystem();
+
             // Initialize spectacular observatory immediately
             setTimeout(() => {
                 init();
@@ -3129,27 +3716,51 @@
 
         // Help Center Functions
         function openHelpCenter() {
-            document.getElementById('help-center').style.display = 'flex';
-            document.body.style.overflow = 'hidden';
+            const helpCenter = document.getElementById('help-center');
+            if (helpCenter) {
+                helpCenter.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+                console.log('Help Center opened');
+            }
         }
 
         function closeHelpCenter() {
-            document.getElementById('help-center').style.display = 'none';
-            document.body.style.overflow = 'auto';
+            const helpCenter = document.getElementById('help-center');
+            if (helpCenter) {
+                helpCenter.style.display = 'none';
+                document.body.style.overflow = 'auto';
+                console.log('Help Center closed');
+            }
         }
 
-        // Close help center with Escape key
-        document.addEventListener('keydown', (event) => {
-            if (event.key === 'Escape') {
-                closeHelpCenter();
-            }
-        });
+        // Initialize help center event listeners after DOM loads
+        window.addEventListener('DOMContentLoaded', () => {
+            // Close help center with Escape key
+            document.addEventListener('keydown', (event) => {
+                if (event.key === 'Escape') {
+                    closeHelpCenter();
+                }
+            });
 
-        // Close help center when clicking outside content
-        document.getElementById('help-center').addEventListener('click', (event) => {
-            if (event.target.id === 'help-center') {
-                closeHelpCenter();
+            // Close help center when clicking outside content
+            const helpCenter = document.getElementById('help-center');
+            if (helpCenter) {
+                helpCenter.addEventListener('click', (event) => {
+                    if (event.target.id === 'help-center') {
+                        closeHelpCenter();
+                    }
+                });
+
+                // Prevent clicks inside help content from closing it
+                const helpContent = helpCenter.querySelector('.help-content');
+                if (helpContent) {
+                    helpContent.addEventListener('click', (event) => {
+                        event.stopPropagation();
+                    });
+                }
             }
+
+            console.log('Help Center event listeners initialized');
         });
     </script>
 
