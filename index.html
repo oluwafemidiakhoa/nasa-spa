@@ -1973,14 +1973,26 @@ function onResize() {
 // ═══════════════════════════════════════
 // NASA API
 // ═══════════════════════════════════════
+// Fetch a NASA feed via the /api/nasa serverless proxy (server-side key, works
+// with no user key on the deployed site). Falls back to a direct api.nasa.gov
+// call with the user's key when no proxy is present (e.g. running locally).
+async function nasaGet(type, directUrl) {
+  try {
+    const pr = await fetch('/api/nasa?type=' + type);
+    if (pr.status !== 404) return await pr.json();
+  } catch (e) { /* proxy unreachable → fall through to direct */ }
+  const r = await fetch(directUrl);
+  return await r.json();
+}
+
 async function fetchNASAData() {
   const today = new Date().toISOString().slice(0, 10);
   const weekAgo = new Date(Date.now() - 7 * 86400000).toISOString().slice(0, 10);
+  const donki = (k) => `https://api.nasa.gov/DONKI/${k}?startDate=${weekAgo}&endDate=${today}&api_key=${NASA_KEY}`;
 
   // CME data
   try {
-    const r = await fetch(`https://api.nasa.gov/DONKI/CME?startDate=${weekAgo}&endDate=${today}&api_key=${NASA_KEY}`);
-    const d = await r.json();
+    const d = await nasaGet('cme', donki('CME'));
     const count = Array.isArray(d) ? d.length : 0;
     document.getElementById('cme-val').textContent = count;
     document.getElementById('solar-events').textContent = count;
@@ -1991,8 +2003,7 @@ async function fetchNASAData() {
 
   // Flare data
   try {
-    const r = await fetch(`https://api.nasa.gov/DONKI/FLR?startDate=${weekAgo}&endDate=${today}&api_key=${NASA_KEY}`);
-    const d = await r.json();
+    const d = await nasaGet('flr', donki('FLR'));
     const count = Array.isArray(d) ? d.length : 0;
     document.getElementById('flare-val').textContent = count;
     nasaLiveData.flares = count;
@@ -2002,8 +2013,7 @@ async function fetchNASAData() {
 
   // Geomagnetic storms
   try {
-    const r = await fetch(`https://api.nasa.gov/DONKI/GST?startDate=${weekAgo}&endDate=${today}&api_key=${NASA_KEY}`);
-    const d = await r.json();
+    const d = await nasaGet('gst', donki('GST'));
     const count = Array.isArray(d) ? d.length : 0;
     document.getElementById('storm-val').textContent = count;
     nasaLiveData.storms = count;
@@ -2013,8 +2023,7 @@ async function fetchNASAData() {
 
   // APOD
   try {
-    const r = await fetch(`https://api.nasa.gov/planetary/apod?api_key=${NASA_KEY}`);
-    const d = await r.json();
+    const d = await nasaGet('apod', `https://api.nasa.gov/planetary/apod?api_key=${NASA_KEY}`);
     nasaLiveData.apod = d;
     document.getElementById('apod-val').textContent = d.title || 'Loaded';
     if (d.media_type === 'image') {
@@ -2026,7 +2035,7 @@ async function fetchNASAData() {
     document.getElementById('apod-val').textContent = 'N/A';
   }
 
-  // Mars distance (approximate calculation)
+  // Mars distance (Keplerian model)
   const marsDistKm = computeMarsDistance();
   document.getElementById('mars-dist').textContent = (marsDistKm / 1e6).toFixed(1) + 'M';
   document.getElementById('arrival-dist').textContent = marsDistKm.toLocaleString() + ' km';
