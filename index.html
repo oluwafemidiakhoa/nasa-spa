@@ -30,7 +30,7 @@
 
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
-html { scroll-behavior: smooth; }
+html { scroll-behavior: smooth; scroll-padding-top: 80px; }
 
 body {
   font-family: var(--font-body);
@@ -1101,7 +1101,7 @@ footer {
       <input class="modal-input" id="deepseekKeyInput" placeholder="sk-… (DeepSeek API key)" />
     </div>
     <div id="key-section-gemini" style="display:none;">
-      <p class="api-note" style="margin-bottom:8px;">Google Gemini 1.5 Pro · <a href="https://aistudio.google.com/app/apikey" target="_blank">aistudio.google.com/app/apikey</a></p>
+      <p class="api-note" style="margin-bottom:8px;">Google Gemini 1.5 Flash · <a href="https://aistudio.google.com/app/apikey" target="_blank">aistudio.google.com/app/apikey</a></p>
       <input class="modal-input" id="geminiKeyInput" placeholder="AIza… (Google AI Studio key)" />
     </div>
 
@@ -1148,10 +1148,10 @@ footer {
 <nav>
   <div class="nav-logo">ARTEMIS<span>NAV</span></div>
   <div class="nav-links">
-    <button class="nav-btn nav-btn-ghost active" onclick="scrollTo('trajectory-section')">TRAJECTORY</button>
-    <button class="nav-btn nav-btn-ghost" onclick="scrollTo('ai-section')">AI ADVISOR</button>
-    <button class="nav-btn nav-btn-ghost" onclick="scrollTo('story-section')">STORY MODE</button>
-    <button class="nav-btn nav-btn-ghost" onclick="scrollTo('nasa-section')">LIVE DATA</button>
+    <button class="nav-btn nav-btn-ghost active" onclick="goTo('trajectory-section')">TRAJECTORY</button>
+    <button class="nav-btn nav-btn-ghost" onclick="goTo('ai-section')">AI ADVISOR</button>
+    <button class="nav-btn nav-btn-ghost" onclick="goTo('story-section')">STORY MODE</button>
+    <button class="nav-btn nav-btn-ghost" onclick="goTo('nasa-section')">LIVE DATA</button>
     <div class="live-badge"><div class="live-dot"></div>NASA LIVE</div>
     <button class="nav-btn nav-btn-primary" onclick="document.getElementById('apiModal').classList.add('open')">⚙ CONFIGURE</button>
   </div>
@@ -1167,8 +1167,8 @@ footer {
   </h1>
   <p class="hero-subtitle">Real-time mission trajectory planning, AI-powered crew advisory, and interactive educational storytelling — all powered by live NASA open data.</p>
   <div class="hero-cta">
-    <button class="btn-launch btn-launch-primary" onclick="scrollTo('viewport-section')">🚀 VIEW LIVE TRAJECTORY</button>
-    <button class="btn-launch btn-launch-secondary" onclick="scrollTo('ai-section')">ASK THE AI ADVISOR →</button>
+    <button class="btn-launch btn-launch-primary" onclick="goTo('viewport-section')">🚀 VIEW LIVE TRAJECTORY</button>
+    <button class="btn-launch btn-launch-secondary" onclick="goTo('ai-section')">ASK THE AI ADVISOR →</button>
   </div>
 </section>
 
@@ -1177,7 +1177,7 @@ footer {
   <div class="strip-cell">
     <span class="strip-label">Earth → Moon Distance</span>
     <span class="strip-value" id="moon-dist">384,400</span>
-    <span class="strip-sub">km · current</span>
+    <span class="strip-sub">km · mean orbit</span>
   </div>
   <div class="strip-cell">
     <span class="strip-label">Earth → Mars Distance</span>
@@ -1234,7 +1234,7 @@ footer {
 <div id="trajectory-section" class="section">
   <div class="section-eyebrow">ORBITAL MECHANICS</div>
   <h2 class="section-title">Mission <em>Trajectory</em> Data</h2>
-  <p class="section-lead">Real orbital parameters powered by NASA JPL HORIZONS. Every figure is computed from actual planetary positions — no approximations.</p>
+  <p class="section-lead">The Earth–Mars distance is computed live from Keplerian orbital elements (J2000 epoch) by solving Kepler's equation. Mission Δv, transit, and radiation figures are drawn from published NASA Artemis and Mars-mission planning references.</p>
 
   <div class="traj-grid">
     <div class="traj-card featured">
@@ -1398,7 +1398,7 @@ footer {
 <section id="nasa-section" class="section">
   <div class="section-eyebrow">REAL-TIME • NASA OPEN DATA APIs</div>
   <h2 class="section-title">Live <em>Space Environment</em></h2>
-  <p class="section-lead">These are real readings from NASA's satellite network, updated every 5 minutes. Space weather directly impacts mission safety.</p>
+  <p class="section-lead">Live readings from NASA's open-data APIs (DONKI and APOD), refreshed automatically every 5 minutes. Space weather directly impacts mission safety.</p>
 
   <div class="nasa-grid">
     <div class="nasa-card">
@@ -1448,8 +1448,8 @@ footer {
   <div style="text-align:center;">
     <div style="font-size:0.75rem;color:var(--lunar-grey);font-family:var(--font-data);margin-bottom:6px;">DATA SOURCES</div>
     <div style="font-size:0.7rem;color:var(--lunar-grey);font-family:var(--font-data);line-height:1.8;">
-      NASA DONKI · NASA APOD · JPL HORIZONS<br>
-      NOAA SWPC · NASA Artemis Program Data
+      NASA DONKI · NASA APOD (live APIs)<br>
+      Keplerian ephemeris (J2000) · NASA Artemis program references
     </div>
   </div>
   <div class="footer-badge">NASA SPACE APPS 2026</div>
@@ -1472,6 +1472,8 @@ let currentPhase = 'trans-lunar';
 let currentChapterIndex = 0;
 let currentCharacter = 'commander';
 let nasaLiveData = {};
+let nasaRefreshTimer = null;
+let chatHistory = []; // [{ role: 'user'|'assistant', content }] for multi-turn context
 
 const chapters = [
   {
@@ -1535,7 +1537,7 @@ const PROVIDER_META = {
   claude:   { label: 'Claude Sonnet 4.6', company: 'Anthropic',  color: 'var(--artemis-gold)' },
   openai:   { label: 'GPT-4o',            company: 'OpenAI',     color: '#74aa9c' },
   deepseek: { label: 'DeepSeek-Chat',     company: 'DeepSeek',   color: '#5e8ef7' },
-  gemini:   { label: 'Gemini 1.5 Pro',    company: 'Google',     color: '#ea80fc' }
+  gemini:   { label: 'Gemini 1.5 Flash',  company: 'Google',     color: '#ea80fc' }
 };
 
 function initPlatform(nasaKey, provider) {
@@ -1560,9 +1562,13 @@ function initPlatform(nasaKey, provider) {
   document.querySelector('.ai-status').textContent = `● ${isLive ? 'LIVE' : 'DEMO'} · ${meta.company} · Moon-to-Mars specialist`;
 
   fetchNASAData();
+  // Refresh live NASA feeds every 5 minutes (guard against stacking intervals
+  // if the mission config is reopened).
+  if (nasaRefreshTimer) clearInterval(nasaRefreshTimer);
+  nasaRefreshTimer = setInterval(fetchNASAData, 5 * 60 * 1000);
 }
 
-function scrollTo(id) {
+function goTo(id) {
   document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
@@ -1617,6 +1623,19 @@ let earthMesh, moonMesh, marsMesh, sunMesh, shipMesh;
 let trajectoryLine, orbitEarth, orbitMars;
 
 function init3DScene() {
+  // Guard against the Three.js CDN failing to load (offline/blocked network),
+  // so the rest of the page still works instead of throwing.
+  if (typeof THREE === 'undefined') {
+    console.warn('Three.js failed to load — 3D scene disabled.');
+    const sc = document.getElementById('scene-container');
+    if (sc) {
+      const note = document.createElement('div');
+      note.style.cssText = 'position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;color:var(--lunar-grey);font-family:var(--font-data);font-size:0.8rem;padding:24px;';
+      note.innerHTML = '3D engine (Three.js) could not load from CDN.<br>Check your connection and reload — the rest of the mission console still works.';
+      sc.appendChild(note);
+    }
+    return;
+  }
   const canvas = document.getElementById('main-canvas');
   renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
   renderer.setPixelRatio(window.devicePixelRatio);
@@ -1709,7 +1728,12 @@ function createOrbitRing(radius, color, opacity) {
 }
 
 function buildTrajectoryLine(phase) {
-  if (trajectoryLine) { scene.remove(trajectoryLine); trajectoryLine = null; }
+  if (trajectoryLine) {
+    scene.remove(trajectoryLine);
+    trajectoryLine.geometry.dispose();
+    trajectoryLine.material.dispose();
+    trajectoryLine = null;
+  }
 
   let pts = [];
   if (phase === 'trans-lunar') {
@@ -1794,6 +1818,7 @@ function updateShipPosition(t) {
 
 function setPhase(phase) {
   currentPhase = phase;
+  if (!renderer) return; // 3D scene unavailable (Three.js failed to load)
   buildTrajectoryLine(phase);
   shipT = 0;
 
@@ -1900,14 +1925,33 @@ async function fetchNASAData() {
 }
 
 function computeMarsDistance() {
-  // Simplified orbital calculation — real values vary 56M–401M km
-  const now = Date.now() / (1000 * 86400 * 365.25); // years since epoch
-  const earthAngle = now * 2 * Math.PI;
-  const marsAngle = (now / 1.881) * 2 * Math.PI;
-  const eR = 1.496e8, mR = 2.279e8;
-  const ex = eR * Math.cos(earthAngle), ey = eR * Math.sin(earthAngle);
-  const mx = mR * Math.cos(marsAngle), my = mR * Math.sin(marsAngle);
-  return Math.round(Math.sqrt((mx-ex)**2 + (my-ey)**2));
+  // Heliocentric positions from mean Keplerian orbital elements (J2000 epoch),
+  // solving Kepler's equation each call. Accounts for real eccentricity and
+  // perihelion longitude, so the Earth–Mars range varies correctly between
+  // ~0.37 and ~2.68 AU. Accurate to ~1% — not a circular approximation.
+  const AU = 1.495978707e8; // km
+  const d = Date.now() / 86400000 - 10957.5; // days since J2000.0
+  const deg = Math.PI / 180;
+
+  function helioXY(a, e, periDeg, meanLonDeg, periodDays) {
+    const n = 360 / periodDays;                       // mean motion, deg/day
+    const M = ((meanLonDeg - periDeg + n * d) % 360) * deg; // mean anomaly
+    let E = M;
+    for (let i = 0; i < 8; i++) {
+      E = E - (E - e * Math.sin(E) - M) / (1 - e * Math.cos(E));
+    }
+    const xv = a * (Math.cos(E) - e);
+    const yv = a * Math.sqrt(1 - e * e) * Math.sin(E);
+    const nu = Math.atan2(yv, xv);                    // true anomaly
+    const r = Math.hypot(xv, yv);                     // AU
+    const lon = nu + periDeg * deg;                   // heliocentric ecliptic lon
+    return { x: r * Math.cos(lon), y: r * Math.sin(lon) };
+  }
+
+  const earth = helioXY(1.00000011, 0.01671, 102.937, 100.464, 365.256);
+  const mars  = helioXY(1.52366231, 0.09341, 336.060, 355.453, 686.980);
+  const distAU = Math.hypot(mars.x - earth.x, mars.y - earth.y);
+  return Math.round(distAU * AU);
 }
 
 // ═══════════════════════════════════════
@@ -1917,21 +1961,24 @@ const BUILT_IN_RESPONSES = {
   default: `As your AI Mission Advisor, I can tell you that the Moon-to-Mars campaign represents humanity's most ambitious engineering challenge. The Lunar Gateway will serve as a staging point in the Near Rectilinear Halo Orbit — a gravitational sweet spot that minimizes fuel while maximizing access to both the lunar surface and deep space departure trajectories.\n\nKey mission parameters: The Hohmann transfer window to Mars opens roughly every 26 months. The next optimal window is November 2028, offering a 7-month transit time with a Δv requirement of 3.6 km/s. Radiation will accumulate to approximately 300 mSv — below the 600 mSv career limit but requiring careful monitoring and storm shelter protocols.\n\nAsk me anything specific and I'll give you the detailed data.`,
   window: `**Next Mars Launch Window: November 2028**\n\nMars windows occur every ~26 months because of the relative orbital periods of Earth (1 year) and Mars (1.88 years). In November 2028, Earth and Mars will be in a favorable alignment for a Hohmann transfer orbit.\n\n**Key parameters for this window:**\n• Transfer time: ~7 months\n• Required Δv: 3.6 km/s departure + 0.9 km/s lunar escape\n• Distance at arrival: ~78 million km\n• Communication delay at arrival: ~4 minutes\n\nMissing this window means waiting until January 2031. The Lunar Gateway staging strategy actually provides flexibility — crew can depart from lunar orbit rather than Earth orbit, saving fuel.`,
   gateway: `**The Lunar Gateway as Mars Staging Hub**\n\nThe Gateway is positioned in a Near Rectilinear Halo Orbit (NRHO) around the Moon — an orbit that requires only 0.9 km/s Δv to escape toward Mars, compared to 3.6 km/s from Earth's surface.\n\n**Why it matters for Mars:**\n1. **Fuel efficiency** — Departing from lunar orbit saves significant propellant\n2. **Assembly point** — Large Mars transfer vehicles can be assembled in space, avoiding Earth's gravity well\n3. **Crew health** — Astronauts can adapt to microgravity before the long transit\n4. **Abort options** — Early in the mission, Earth return is still possible\n5. **Test bed** — Life support, propulsion, and communication systems are tested in deep space proximity before the 225M km journey\n\nThe Gateway represents a permanent human presence beyond Earth orbit for the first time since Apollo.`,
-  radiation: `**Radiation Hazards: The #1 Mission Risk**\n\nBeyond Earth's magnetic field, two radiation sources threaten crew health:\n\n**1. Galactic Cosmic Rays (GCR)**\nHigh-energy particles from outside our solar system. Cannot be blocked by conventional shielding — adding mass actually creates secondary radiation. The crew will accumulate ~150 mSv from GCR during transit.\n\n**2. Solar Particle Events (SPE)**\nSudden bursts from solar flares — potentially thousands of mSv in hours without shelter. The current space weather data shows ${nasaLiveData.flares || 'N/A'} solar flares and ${nasaLiveData.cme || 'N/A'} CMEs in the last 7 days.\n\n**Mitigation strategies:**\n• Water wall storm shelters (hydrogen-rich materials absorb radiation)\n• Real-time space weather monitoring (NASA DONKI — what this platform shows)\n• Polyethylene shielding around crew quarters\n• Medical monitoring and countermeasures\n\nTotal estimated mission dose: ~300 mSv (below career limit of 600 mSv).`,
+  radiation: () => `**Radiation Hazards: The #1 Mission Risk**\n\nBeyond Earth's magnetic field, two radiation sources threaten crew health:\n\n**1. Galactic Cosmic Rays (GCR)**\nHigh-energy particles from outside our solar system. Cannot be blocked by conventional shielding — adding mass actually creates secondary radiation. The crew will accumulate ~150 mSv from GCR during transit.\n\n**2. Solar Particle Events (SPE)**\nSudden bursts from solar flares — potentially thousands of mSv in hours without shelter. The current space weather data shows ${nasaLiveData.flares || 'N/A'} solar flares and ${nasaLiveData.cme || 'N/A'} CMEs in the last 7 days.\n\n**Mitigation strategies:**\n• Water wall storm shelters (hydrogen-rich materials absorb radiation)\n• Real-time space weather monitoring (NASA DONKI — what this platform shows)\n• Polyethylene shielding around crew quarters\n• Medical monitoring and countermeasures\n\nTotal estimated mission dose: ~300 mSv (below career limit of 600 mSv).`,
   jezero: `**Jezero Crater: Why Here?**\n\nJezero is a 49-km impact crater in the Isidis Planitia region that was once filled with water approximately 3.5 billion years ago. River channels fed sediment into this ancient lake.\n\n**Why scientists chose it:**\n1. **Ancient delta** — River delta deposits are Earth's best environment for preserving microbial fossils. On Mars, this could mean ancient life evidence.\n2. **Rock diversity** — The crater contains volcanic, sedimentary, and possibly hydrothermal rocks — a geological survey of Mars in one location\n3. **Water evidence** — Carbonate minerals detected from orbit confirm liquid water once existed\n4. **Engineering safety** — Relatively flat terrain suitable for EDL, solar power viable year-round\n\n**Perseverance has already found** organic compounds in Jezero — not definitive life detection, but compelling. Artemis mission crew will drill to 5+ meter depth to access rock untouched by surface radiation for billions of years.`,
   isru: `**ISRU: Making Fuel on Mars**\n\nIn-Situ Resource Utilization (ISRU) is the technology that makes a sustainable Mars presence possible. Without it, every kilogram of return propellant must be launched from Earth — an enormous cost.\n\n**The MOXIE Process (proven by Perseverance):**\n1. Intake Martian atmosphere (95% CO₂)\n2. Electrochemically split CO₂ → CO + O\n3. Compress and store liquid oxygen (LOx)\n4. LOx + hydrogen (brought from Earth) = rocket propellant\n\n**Full mission ISRU scale:**\n• Produce ~25 metric tons of LOx for Mars Ascent Vehicle\n• Requires ~1 MW power source (nuclear fission surface power)\n• Takes ~16 months of pre-deployment production before crew arrives\n\nThis is why Artemis pre-deploys ISRU equipment before the crew lands. When the crew touches down, the fuel tank is already full. Mars becomes a self-sustaining waypoint.`,
-  weather: `**Current Space Weather & Mission Implications**\n\nLive NASA DONKI data for the past 7 days:\n• CME Events: ${nasaLiveData.cme ?? 'Loading…'}\n• Solar Flares: ${nasaLiveData.flares ?? 'Loading…'}\n• Geomagnetic Storms: ${nasaLiveData.storms ?? 'Loading…'}\n\n**Mission impact assessment:**\nCMEs (Coronal Mass Ejections) are clouds of magnetized plasma that can reach Earth/Mars in 1–3 days. A strong CME during trans-Mars insertion could expose crew to 50–200 mSv in a single event.\n\n**Mitigation protocol:**\n• Monitor NOAA SWPC 3-day forecasts before critical maneuvers\n• Enter storm shelter (water-walled crew quarter) at Kp ≥ 7 warning\n• Delay EVAs during active flare periods\n• This platform's live data feed is exactly what mission controllers use for real-time go/no-go decisions`
+  weather: () => `**Current Space Weather & Mission Implications**\n\nLive NASA DONKI data for the past 7 days:\n• CME Events: ${nasaLiveData.cme ?? 'Loading…'}\n• Solar Flares: ${nasaLiveData.flares ?? 'Loading…'}\n• Geomagnetic Storms: ${nasaLiveData.storms ?? 'Loading…'}\n\n**Mission impact assessment:**\nCMEs (Coronal Mass Ejections) are clouds of magnetized plasma that can reach Earth/Mars in 1–3 days. A strong CME during trans-Mars insertion could expose crew to 50–200 mSv in a single event.\n\n**Mitigation protocol:**\n• Monitor NOAA SWPC 3-day forecasts before critical maneuvers\n• Enter storm shelter (water-walled crew quarter) at Kp ≥ 7 warning\n• Delay EVAs during active flare periods\n• This platform's live data feed is exactly what mission controllers use for real-time go/no-go decisions`
 };
 
 function getBuiltInResponse(question) {
   const q = question.toLowerCase();
-  if (q.includes('window') || q.includes('launch') || q.includes('when')) return BUILT_IN_RESPONSES.window;
-  if (q.includes('gateway') || q.includes('moon') || q.includes('lunar')) return BUILT_IN_RESPONSES.gateway;
-  if (q.includes('radiation') || q.includes('hazard') || q.includes('danger') || q.includes('safe')) return BUILT_IN_RESPONSES.radiation;
-  if (q.includes('jezero') || q.includes('landing site') || q.includes('crater')) return BUILT_IN_RESPONSES.jezero;
-  if (q.includes('isru') || q.includes('fuel') || q.includes('oxygen') || q.includes('propellant')) return BUILT_IN_RESPONSES.isru;
-  if (q.includes('weather') || q.includes('cme') || q.includes('flare') || q.includes('solar')) return BUILT_IN_RESPONSES.weather;
-  return BUILT_IN_RESPONSES.default;
+  let r;
+  if (q.includes('window') || q.includes('launch') || q.includes('when')) r = BUILT_IN_RESPONSES.window;
+  else if (q.includes('gateway') || q.includes('moon') || q.includes('lunar')) r = BUILT_IN_RESPONSES.gateway;
+  else if (q.includes('radiation') || q.includes('hazard') || q.includes('danger') || q.includes('safe')) r = BUILT_IN_RESPONSES.radiation;
+  else if (q.includes('jezero') || q.includes('landing site') || q.includes('crater')) r = BUILT_IN_RESPONSES.jezero;
+  else if (q.includes('isru') || q.includes('fuel') || q.includes('oxygen') || q.includes('propellant')) r = BUILT_IN_RESPONSES.isru;
+  else if (q.includes('weather') || q.includes('cme') || q.includes('flare') || q.includes('solar')) r = BUILT_IN_RESPONSES.weather;
+  else r = BUILT_IN_RESPONSES.default;
+  // Some entries are functions so they read live NASA data at call time.
+  return typeof r === 'function' ? r() : r;
 }
 
 function appendMessage(role, text) {
@@ -1969,9 +2016,18 @@ function showAIError(provider, errMsg) {
   return `⚠️ **${provider.toUpperCase()} API Error**\n\n${errMsg}\n\n**Common fixes:**\n• Check your API key is correct and has credits\n• Some APIs block direct browser requests (CORS) — OpenAI and Gemini work fine from browsers; Claude and DeepSeek may need a backend proxy\n• Try switching to **OpenAI** or **Gemini** which have permissive CORS headers\n\n---\n\n**Built-in answer while you fix it:**\n\n${getBuiltInResponse(window._lastQuestion || '')}`;
 }
 
-async function callAIProvider(provider, key, question) {
+async function callAIProvider(provider, key, question, history = []) {
   window._lastQuestion = question;
   const sys = buildSystemPrompt();
+  // Keep the last few turns for context without ballooning token use.
+  const recent = history.slice(-8);
+  // OpenAI/DeepSeek-style chat turns (role: 'user' | 'assistant').
+  const chatTurns = recent.map(m => ({ role: m.role, content: m.content }));
+  // Gemini-style turns (assistant -> 'model').
+  const geminiTurns = recent.map(m => ({
+    role: m.role === 'assistant' ? 'model' : 'user',
+    parts: [{ text: m.content }]
+  }));
 
   // ── CLAUDE ──
   // NOTE: Anthropic blocks browser CORS. Works when served from a domain (Vercel/Netlify).
@@ -1985,13 +2041,13 @@ async function callAIProvider(provider, key, question) {
           'Content-Type': 'application/json',
           'x-api-key': key,
           'anthropic-version': '2023-06-01',
-          'anthropic-dangerous-direct-browser-only-key': 'true'  // opt-in to browser mode
+          'anthropic-dangerous-direct-browser-access': 'true'  // opt-in to browser mode
         },
         body: JSON.stringify({
           model: 'claude-sonnet-4-6',
           max_tokens: 700,
           system: sys,
-          messages: [{ role: 'user', content: question }]
+          messages: [...chatTurns, { role: 'user', content: question }]
         })
       });
     } catch(netErr) {
@@ -2014,6 +2070,7 @@ async function callAIProvider(provider, key, question) {
           max_tokens: 700,
           messages: [
             { role: 'system', content: sys },
+            ...chatTurns,
             { role: 'user',   content: question }
           ]
         })
@@ -2038,6 +2095,7 @@ async function callAIProvider(provider, key, question) {
           max_tokens: 700,
           messages: [
             { role: 'system', content: sys },
+            ...chatTurns,
             { role: 'user',   content: question }
           ]
         })
@@ -2062,7 +2120,7 @@ async function callAIProvider(provider, key, question) {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             system_instruction: { parts: [{ text: sys }] },
-            contents: [{ role: 'user', parts: [{ text: question }] }],
+            contents: [...geminiTurns, { role: 'user', parts: [{ text: question }] }],
             generationConfig: { maxOutputTokens: 700, temperature: 0.7 }
           })
         }
@@ -2099,7 +2157,7 @@ async function sendMessage() {
   let reply;
   if (activeKey) {
     try {
-      reply = await callAIProvider(AI_PROVIDER, activeKey, question);
+      reply = await callAIProvider(AI_PROVIDER, activeKey, question, chatHistory);
     } catch(e) {
       console.error('AI call failed:', e);
       reply = showAIError(AI_PROVIDER, e.message);
@@ -2112,12 +2170,17 @@ async function sendMessage() {
   typing.classList.remove('active');
   sendBtn.disabled = false;
   appendMessage('assistant', reply);
+
+  // Record the exchange so follow-up questions have context (cap to last 16).
+  chatHistory.push({ role: 'user', content: question });
+  chatHistory.push({ role: 'assistant', content: reply });
+  if (chatHistory.length > 16) chatHistory = chatHistory.slice(-16);
 }
 
 function askQuestion(q) {
   document.getElementById('ai-user-input').value = q;
   sendMessage();
-  scrollTo('ai-section');
+  goTo('ai-section');
 }
 
 // ═══════════════════════════════════════
