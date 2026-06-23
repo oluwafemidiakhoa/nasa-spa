@@ -1631,14 +1631,15 @@ let trajectoryLine, orbitEarth, orbitMars;
 let controls, cloudMesh, starField, shipTrail;
 let trailPositions = [];
 const TRAIL_LEN = 60;
-// Public-domain planet/Sun texture maps. Loaded best-effort with CORS; if any
-// fail, that body keeps its solid-color fallback so the scene never breaks.
+// Planet/Sun texture maps, vendored into the repo (assets/textures) so the 3D
+// scene has zero external-CDN dependency. Loaded best-effort; if any fail, that
+// body keeps its solid-color fallback so the scene never breaks.
 const TEX = {
-  earth:  'https://www.solarsystemscope.com/textures/download/2k_earth_daymap.jpg',
-  clouds: 'https://www.solarsystemscope.com/textures/download/2k_earth_clouds.jpg',
-  moon:   'https://www.solarsystemscope.com/textures/download/2k_moon.jpg',
-  mars:   'https://www.solarsystemscope.com/textures/download/2k_mars.jpg',
-  sun:    'https://www.solarsystemscope.com/textures/download/2k_sun.jpg'
+  earth:  'assets/textures/2k_earth_daymap.jpg',
+  clouds: 'assets/textures/2k_earth_clouds.jpg',
+  moon:   'assets/textures/2k_moon.jpg',
+  mars:   'assets/textures/2k_mars.jpg',
+  sun:    'assets/textures/2k_sun.jpg'
 };
 
 function init3DScene() {

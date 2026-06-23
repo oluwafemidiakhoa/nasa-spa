@@ -1,0 +1,6 @@
+Planet and Sun texture maps (2k_*.jpg) by Solar System Scope
+(https://www.solarsystemscope.com/textures/), licensed CC BY 4.0
+(https://creativecommons.org/licenses/by/4.0/).
+
+Vendored into this repository so the Artemis Navigator 3D scene has no external
+CDN dependency.
