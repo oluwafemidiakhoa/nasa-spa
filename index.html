@@ -1777,7 +1777,7 @@ function updateShipPosition(t) {
     shipMesh.position.x = t * 30;
     shipMesh.position.y = Math.sin(t * Math.PI) * 8;
     shipMesh.position.z = 0;
-  } else if (phase === 'lunar-orbit') {
+  } else if (currentPhase === 'lunar-orbit') {
     const a = t * Math.PI * 2;
     shipMesh.position.x = 30 + Math.cos(a) * 6;
     shipMesh.position.y = Math.sin(a) * 6;
