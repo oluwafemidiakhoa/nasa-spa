@@ -1295,7 +1295,7 @@ footer {
 
 <!-- AI ADVISOR SECTION -->
 <section id="ai-section" class="section">
-  <div class="section-eyebrow">POWERED BY ANTHROPIC CLAUDE</div>
+  <div class="section-eyebrow" id="ai-section-eyebrow">POWERED BY MULTI-MODEL AI</div>
   <h2 class="section-title"><em>AI Mission Advisor</em></h2>
   <p class="section-lead">Ask ARTEMIS-1 anything about the mission — trajectory windows, radiation hazards, crew safety, science objectives, or landing site selection. Backed by real NASA data.</p>
 
@@ -1559,6 +1559,7 @@ function initPlatform(nasaKey, provider) {
   document.getElementById('ai-engine-label').textContent  = meta.label;
   document.getElementById('ai-engine-label').style.color  = meta.color;
   document.getElementById('ai-provider-label').textContent = meta.company;
+  document.getElementById('ai-section-eyebrow').textContent = `POWERED BY ${meta.company.toUpperCase()} · ${meta.label.toUpperCase()}`;
 
   // Update chat header to reflect chosen provider
   const provIcons = { claude:'🤖', openai:'⚡', deepseek:'🔬', gemini:'✨' };
