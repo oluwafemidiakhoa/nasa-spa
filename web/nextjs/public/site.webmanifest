@@ -1,0 +1,16 @@
+{
+  "name": "Solar Storyline",
+  "short_name": "Solar Storyline",
+  "description": "Live NASA and NOAA space weather, translated into role-based stories.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "any",
+      "type": "image/x-icon"
+    }
+  ]
+}

@@ -194,6 +194,14 @@ interface CmeAssessment {
   locationLabel: string;
 }
 
+// Render a DONKI analysis lat/long as a heliographic source label (e.g. N12E08),
+// matching the convention DONKI uses in its own sourceLocation strings:
+// latitude N/S, Stonyhurst longitude E (negative) / W (positive).
+function formatHeliographic(latitude: number, longitude: number): string {
+  const pad = (value: number) => String(Math.abs(Math.round(value))).padStart(2, '0');
+  return `${latitude >= 0 ? 'N' : 'S'}${pad(latitude)}${longitude >= 0 ? 'W' : 'E'}${pad(longitude)}`;
+}
+
 // DONKI CME analyses describe the launch geometry. A CME is broadly
 // "Earth-directed" when its source sits near the Sun-Earth line (small
 // heliographic longitude/latitude) and it has a wide enough cone to sweep
@@ -220,13 +228,12 @@ function assessCme(cme: Record<string, unknown>): CmeAssessment {
   const isEarthDirected = (facingEarth && wideCone) || earthInNote;
 
   const sourceLocation = String(cme.sourceLocation || '').trim();
-  const locationLabel = sourceLocation
-    ? sourceLocation
-    : isEarthDirected
-      ? 'Earth-directed'
-      : analysis
-        ? 'off the Sun–Earth line'
-        : 'analysis pending';
+  const coords =
+    latitude !== null && longitude !== null ? formatHeliographic(latitude, longitude) : null;
+  const locationLabel =
+    sourceLocation ||
+    coords ||
+    (isEarthDirected ? 'Earth-directed' : analysis ? 'off the Sun–Earth line' : 'analysis pending');
 
   return { speed, isEarthDirected, locationLabel };
 }
