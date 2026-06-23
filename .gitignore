@@ -51,6 +51,7 @@ nul
 dist/
 build/
 coverage/
+*.tsbuildinfo
 
 # Test outputs
 test-results/

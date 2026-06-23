@@ -219,7 +219,7 @@ const SimplePage: React.FC = () => {
             opacity: 0.8
           }}>
             <p style={{ margin: '0 0 10px 0' }}>
-              This system monitors NASA's Space Weather Database and generates forecasts
+              This system monitors NASA&apos;s Space Weather Database and generates forecasts
             </p>
             <p style={{ margin: 0 }}>
               Data sources: NASA DONKI (CME, Solar Flares) • Updates every few minutes
