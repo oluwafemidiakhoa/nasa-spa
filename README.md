@@ -2,7 +2,7 @@
 
 **A NASA Space Apps Challenge 2026 entry.**
 
-🔗 **Live demo:** [nasa-spa.vercel.app](https://nasa-spa.vercel.app)
+🔗 **Live demo:** [nasa-spa.vercel.app](https://nasa-spa.vercel.app) · **Platform launcher:** [nasa-spa.vercel.app/hub](https://nasa-spa.vercel.app/hub)
 
 Artemis Navigator turns NASA's open data and modern AI into an interactive Moon-to-Mars mission console: a 3D trajectory you can fly, live space-weather context, and an AI mission advisor you can question in plain language. It is built to make the science of deep-space navigation — orbital mechanics, lunar staging, Mars transfer windows, and radiation hazards — understandable to students, communicators, and judges alike.
 

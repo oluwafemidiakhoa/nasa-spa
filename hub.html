@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🚀 Artemis Platform — NASA Space Apps 2026 Mission Control</title>
+<meta name="description" content="A unified launcher for the Artemis Navigator Moon-to-Mars platform, Solar Storyline space-weather app, and a suite of NASA open-data visualizations.">
+<link rel="manifest" href="/site.webmanifest">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Space+Grotesk:wght@300;400;500;700&family=JetBrains+Mono:wght@400;700&display=swap');
+:root{
+  --void:#020408; --deep:#050d1a; --mars:#ff6235; --gold:#ffd166; --silver:#c8d4e3;
+  --grey:#8fa3bf; --green:#06d6a0; --blue:#118ab2; --cyan:#00f5ff; --white:#e8f4f8;
+  --panel:rgba(5,13,26,0.86); --border:rgba(200,212,227,0.12);
+  --fd:'Orbitron',monospace; --fb:'Space Grotesk',sans-serif; --fm:'JetBrains Mono',monospace;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:var(--fb);background:var(--void);color:var(--white);min-height:100vh;overflow-x:hidden}
+#stars{position:fixed;inset:0;z-index:0;pointer-events:none}
+.wrap{position:relative;z-index:1;max-width:1280px;margin:0 auto;padding:64px 28px 80px}
+header{text-align:center;margin-bottom:56px}
+.eyebrow{font-family:var(--fm);font-size:.72rem;letter-spacing:4px;text-transform:uppercase;color:var(--mars);margin-bottom:18px}
+h1{font-family:var(--fd);font-weight:900;font-size:clamp(2.2rem,5vw,4rem);line-height:1.05;letter-spacing:-1px;margin-bottom:16px}
+h1 .a{color:var(--gold)} h1 .b{color:var(--mars);text-shadow:0 0 40px rgba(255,98,53,.5)}
+.lead{font-size:1.05rem;color:var(--grey);max-width:620px;margin:0 auto;line-height:1.65}
+.section-label{font-family:var(--fm);font-size:.65rem;letter-spacing:3px;text-transform:uppercase;color:var(--grey);margin:44px 0 18px;display:flex;align-items:center;gap:12px}
+.section-label::after{content:'';flex:1;height:1px;background:var(--border)}
+.grid{display:grid;gap:20px}
+.grid.flagship{grid-template-columns:repeat(2,1fr)}
+.grid.mods{grid-template-columns:repeat(3,1fr)}
+.card{position:relative;display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:26px;text-decoration:none;color:inherit;transition:transform .2s,border-color .2s,box-shadow .2s;overflow:hidden}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--accent,var(--gold)),transparent);opacity:0;transition:opacity .2s}
+.card:hover{transform:translateY(-4px);border-color:var(--accent,rgba(255,209,102,.4));box-shadow:0 16px 40px rgba(0,0,0,.4)}
+.card:hover::before{opacity:1}
+.card.flag{padding:32px}
+.icon{font-size:2.6rem;margin-bottom:16px;line-height:1}
+.card.flag .icon{font-size:3.2rem}
+.tag{font-family:var(--fm);font-size:.58rem;letter-spacing:2px;text-transform:uppercase;color:var(--accent,var(--gold));margin-bottom:8px}
+.title{font-family:var(--fd);font-weight:700;font-size:1.1rem;margin-bottom:10px}
+.card.flag .title{font-size:1.5rem}
+.desc{font-size:.9rem;line-height:1.6;color:var(--silver);flex:1}
+.go{margin-top:18px;font-family:var(--fd);font-size:.62rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent,var(--gold));display:flex;align-items:center;gap:8px}
+.go .arrow{transition:transform .2s}
+.card:hover .go .arrow{transform:translateX(4px)}
+.ext{position:absolute;top:20px;right:20px;font-family:var(--fm);font-size:.55rem;letter-spacing:1px;color:var(--grey);border:1px solid var(--border);border-radius:20px;padding:3px 9px}
+footer{text-align:center;margin-top:64px;padding-top:28px;border-top:1px solid var(--border);color:var(--grey);font-family:var(--fm);font-size:.72rem;line-height:1.8}
+footer .brand{font-family:var(--fd);color:var(--gold);font-size:.8rem;letter-spacing:2px;margin-bottom:8px}
+@media(max-width:860px){.grid.flagship,.grid.mods{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<canvas id="stars"></canvas>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">NASA Space Apps Challenge 2026 · Mission Control</div>
+    <h1><span class="a">ARTEMIS</span> <span class="b">PLATFORM</span></h1>
+    <p class="lead">One launcher for the entire mission suite — a 3D Moon-to-Mars navigator, a role-based space-weather storyteller, and a set of live NASA open-data visualizations. Pick a module to begin.</p>
+  </header>
+
+  <div class="section-label">Flagship Experiences</div>
+  <div class="grid flagship">
+    <a class="card flag" style="--accent:var(--mars)" href="index.html">
+      <div class="icon">🚀</div>
+      <div class="tag">Moon → Mars · 3D + AI</div>
+      <div class="title">Artemis Navigator</div>
+      <div class="desc">Fly an interactive 3D trajectory from Earth to the Moon to Mars, query a multi-model AI mission advisor (Claude · GPT-4o · DeepSeek · Gemini), and read the journey as an educational story — all on live NASA data.</div>
+      <div class="go">Launch module <span class="arrow">→</span></div>
+    </a>
+    <a class="card flag" style="--accent:var(--gold)" href="https://nextjs-iota-roan-zvucs5v659.vercel.app">
+      <div class="ext">opens app ↗</div>
+      <div class="icon">🌞</div>
+      <div class="tag">Space Weather · Storytelling</div>
+      <div class="title">Solar Storyline</div>
+      <div class="desc">Turns live NASA DONKI &amp; NOAA feeds into role-based human stories — what current Sun–Earth conditions mean for a pilot, satellite operator, grid operator, astronaut, or aurora chaser, with an Earth-impact readiness score.</div>
+      <div class="go">Launch app <span class="arrow">→</span></div>
+    </a>
+  </div>
+
+  <div class="section-label">Visualizations &amp; Dashboards</div>
+  <div class="grid mods">
+    <a class="card" style="--accent:var(--cyan)" href="working_3d_solar_system.html">
+      <div class="icon">🪐</div><div class="tag">3D · Interactive</div>
+      <div class="title">3D Solar System</div>
+      <div class="desc">An interactive orrery of the planets — orbit, rotate, and explore the solar system in 3D.</div>
+      <div class="go">Open <span class="arrow">→</span></div>
+    </a>
+    <a class="card" style="--accent:var(--mars)" href="spectacular_3d_space_weather.html">
+      <div class="icon">☀️</div><div class="tag">3D · Space Weather</div>
+      <div class="title">3D Space Weather</div>
+      <div class="desc">A cinematic 3D view of solar activity and its propagation through the Sun–Earth system.</div>
+      <div class="go">Open <span class="arrow">→</span></div>
+    </a>
+    <a class="card" style="--accent:var(--green)" href="iss_tracker.html">
+      <div class="icon">🛰️</div><div class="tag">Live · Orbit</div>
+      <div class="title">ISS Tracker</div>
+      <div class="desc">Track the International Space Station's live position and ground track in real time.</div>
+      <div class="go">Open <span class="arrow">→</span></div>
+    </a>
+    <a class="card" style="--accent:var(--cyan)" href="aurora_alerts.html">
+      <div class="icon">🌌</div><div class="tag">Forecast · Aurora</div>
+      <div class="title">Aurora Alerts</div>
+      <div class="desc">Aurora visibility outlook driven by current geomagnetic activity and the Kp index.</div>
+      <div class="go">Open <span class="arrow">→</span></div>
+    </a>
+    <a class="card" style="--accent:var(--blue)" href="dashboard_hub.html">
+      <div class="icon">📊</div><div class="tag">Dashboards · Hub</div>
+      <div class="title">Space Weather Hub</div>
+      <div class="desc">A control-room dashboard aggregating CME, flare, solar-wind and geomagnetic data views.</div>
+      <div class="go">Open <span class="arrow">→</span></div>
+    </a>
+    <a class="card" style="--accent:var(--gold)" href="space_explorers_academy.html">
+      <div class="icon">🎓</div><div class="tag">Education · Interactive</div>
+      <div class="title">Space Explorers Academy</div>
+      <div class="desc">An educational platform that teaches space-weather and heliophysics concepts interactively.</div>
+      <div class="go">Open <span class="arrow">→</span></div>
+    </a>
+  </div>
+
+  <footer>
+    <div class="brand">ARTEMIS PLATFORM</div>
+    Built by Oluwafemi Idiakhoa · Lagos, Nigeria · NASA Space Apps Challenge 2026<br>
+    Powered by NASA Open APIs (DONKI · APOD) · NOAA SWPC · Three.js · multi-model AI
+  </footer>
+</div>
+
+<script>
+// Lightweight twinkling starfield
+const c = document.getElementById('stars'), x = c.getContext('2d');
+function size(){ c.width = innerWidth; c.height = innerHeight; }
+size(); addEventListener('resize', size);
+const stars = Array.from({length: 260}, () => ({
+  x: Math.random()*innerWidth, y: Math.random()*innerHeight,
+  r: Math.random()*1.3+0.2, a: Math.random(), da: (Math.random()-0.5)*0.005
+}));
+(function draw(){
+  x.clearRect(0,0,c.width,c.height);
+  for(const s of stars){ s.a += s.da; if(s.a<=0.1||s.a>=1) s.da*=-1;
+    x.beginPath(); x.arc(s.x,s.y,s.r,0,Math.PI*2); x.fillStyle=`rgba(232,244,248,${s.a})`; x.fill(); }
+  requestAnimationFrame(draw);
+})();
+</script>
+</body>
+</html>
