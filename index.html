@@ -1111,7 +1111,7 @@ footer {
     </div>
 
     <div class="modal-btns" style="margin-top:20px">
-      <button class="modal-btn-skip" onclick="initPlatform('DEMO_KEY', AI_PROVIDER)">DEMO MODE (NO AI)</button>
+      <button class="modal-btn-skip" onclick="initPlatform(document.getElementById('apiKeyInput').value.trim() || 'DEMO_KEY', AI_PROVIDER)">DEMO MODE (NO AI)</button>
       <button class="modal-btn-launch" onclick="launchWithKeys()">🚀 LAUNCH MISSION</button>
     </div>
   </div>
