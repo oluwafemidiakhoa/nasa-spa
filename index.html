@@ -1,78 +1,2149 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NASA Space Weather Observatory</title>
-    <meta http-equiv="refresh" content="0; url=./dashboard_hub.html">
-    <style>
-        body {
-            margin: 0;
-            padding: 50px;
-            font-family: 'Arial', sans-serif;
-            background: linear-gradient(135deg, #001122 0%, #000814 70%, #000000 100%);
-            color: white;
-            text-align: center;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
-        .logo {
-            font-size: 48px;
-            margin-bottom: 20px;
-        }
-        .title {
-            font-size: 32px;
-            margin-bottom: 30px;
-            color: #00ddff;
-        }
-        .loading {
-            font-size: 18px;
-            margin-bottom: 30px;
-            opacity: 0.8;
-        }
-        .redirect-link {
-            color: #00aaff;
-            text-decoration: none;
-            font-size: 20px;
-            padding: 15px 30px;
-            border: 2px solid #00aaff;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-        }
-        .redirect-link:hover {
-            background: #00aaff;
-            color: #001122;
-        }
-        .spinner {
-            width: 40px;
-            height: 40px;
-            border: 4px solid rgba(0, 170, 255, 0.3);
-            border-top: 4px solid #00aaff;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 20px auto;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🚀 ARTEMIS NAVIGATOR — Moon to Mars Mission Platform | NASA Space Apps 2026</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Space+Grotesk:wght@300;400;500;700&family=JetBrains+Mono:wght@400;700&display=swap');
+
+:root {
+  --void: #020408;
+  --deep-space: #050d1a;
+  --mars-rust: #c1440e;
+  --mars-glow: #ff6235;
+  --moon-silver: #c8d4e3;
+  --lunar-grey: #8fa3bf;
+  --artemis-gold: #ffd166;
+  --artemis-amber: #f4a261;
+  --mission-green: #06d6a0;
+  --mission-blue: #118ab2;
+  --plasma-cyan: #00f5ff;
+  --star-white: #e8f4f8;
+  --panel-bg: rgba(5,13,26,0.92);
+  --panel-border: rgba(200,212,227,0.12);
+  --panel-border-hot: rgba(255,98,53,0.5);
+  --font-display: 'Orbitron', monospace;
+  --font-body: 'Space Grotesk', sans-serif;
+  --font-data: 'JetBrains Mono', monospace;
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--void);
+  color: var(--star-white);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── STAR FIELD ── */
+#starfield {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ── NAV ── */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 36px;
+  background: rgba(2,4,8,0.85);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--panel-border);
+}
+
+.nav-logo {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 900;
+  letter-spacing: 2px;
+  color: var(--artemis-gold);
+  text-shadow: 0 0 20px rgba(255,209,102,0.5);
+}
+
+.nav-logo span { color: var(--mars-glow); }
+
+.nav-links {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.nav-btn {
+  font-family: var(--font-display);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 8px 18px;
+  border-radius: 4px;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s;
+}
+
+.nav-btn-ghost {
+  background: transparent;
+  color: var(--lunar-grey);
+  border: 1px solid var(--panel-border);
+}
+.nav-btn-ghost:hover, .nav-btn-ghost.active {
+  color: var(--artemis-gold);
+  border-color: var(--artemis-gold);
+  background: rgba(255,209,102,0.06);
+}
+
+.nav-btn-primary {
+  background: linear-gradient(135deg, var(--mars-rust), var(--mars-glow));
+  color: #fff;
+  box-shadow: 0 0 20px rgba(255,98,53,0.35);
+}
+.nav-btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0 30px rgba(255,98,53,0.6);
+}
+
+.live-badge {
+  display: flex; align-items: center; gap: 6px;
+  font-family: var(--font-data);
+  font-size: 0.65rem;
+  color: var(--mission-green);
+  padding: 6px 12px;
+  border: 1px solid rgba(6,214,160,0.3);
+  border-radius: 20px;
+  background: rgba(6,214,160,0.06);
+}
+.live-dot {
+  width: 6px; height: 6px;
+  background: var(--mission-green);
+  border-radius: 50%;
+  animation: pulse 1.5s infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.6)} }
+
+/* ── HERO ── */
+#hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 100px 24px 60px;
+  z-index: 1;
+}
+
+.hero-eyebrow {
+  font-family: var(--font-data);
+  font-size: 0.7rem;
+  letter-spacing: 4px;
+  color: var(--mars-glow);
+  text-transform: uppercase;
+  margin-bottom: 24px;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.2s forwards;
+}
+
+.hero-title {
+  font-family: var(--font-display);
+  font-size: clamp(2.8rem, 6vw, 5.5rem);
+  font-weight: 900;
+  line-height: 1.05;
+  letter-spacing: -1px;
+  margin-bottom: 12px;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.4s forwards;
+}
+
+.hero-title .moon { color: var(--moon-silver); }
+.hero-title .to { color: var(--lunar-grey); font-weight: 400; font-size: 0.6em; }
+.hero-title .mars { 
+  color: var(--mars-glow);
+  text-shadow: 0 0 40px rgba(255,98,53,0.6);
+}
+
+.hero-subtitle {
+  font-size: 1.1rem;
+  color: var(--lunar-grey);
+  max-width: 560px;
+  line-height: 1.65;
+  margin-bottom: 40px;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.6s forwards;
+}
+
+.hero-cta {
+  display: flex; gap: 16px; flex-wrap: wrap; justify-content: center;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.8s forwards;
+}
+
+.btn-launch {
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  padding: 16px 32px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: all 0.25s;
+}
+
+.btn-launch-primary {
+  background: linear-gradient(135deg, var(--mars-rust) 0%, var(--mars-glow) 100%);
+  color: #fff;
+  box-shadow: 0 8px 30px rgba(193,68,14,0.4);
+}
+.btn-launch-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(255,98,53,0.6);
+}
+
+.btn-launch-secondary {
+  background: transparent;
+  color: var(--artemis-gold);
+  border: 1px solid rgba(255,209,102,0.4);
+}
+.btn-launch-secondary:hover {
+  background: rgba(255,209,102,0.06);
+  border-color: var(--artemis-gold);
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ── CANVAS ── */
+#three-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ── MISSION DATA STRIP ── */
+.mission-strip {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  gap: 1px;
+  background: var(--panel-border);
+  border-top: 1px solid var(--panel-border);
+  border-bottom: 1px solid var(--panel-border);
+  overflow: hidden;
+}
+
+.strip-cell {
+  flex: 1;
+  min-width: 0;
+  padding: 20px 28px;
+  background: var(--panel-bg);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.strip-label {
+  font-family: var(--font-data);
+  font-size: 0.58rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--lunar-grey);
+}
+
+.strip-value {
+  font-family: var(--font-data);
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--star-white);
+  line-height: 1;
+}
+
+.strip-value.mars-color { color: var(--mars-glow); }
+.strip-value.gold-color { color: var(--artemis-gold); }
+.strip-value.green-color { color: var(--mission-green); }
+
+.strip-sub {
+  font-size: 0.65rem;
+  color: var(--lunar-grey);
+  font-family: var(--font-data);
+}
+
+/* ── MAIN SECTIONS ── */
+.section {
+  position: relative;
+  z-index: 10;
+  padding: 80px 36px;
+  max-width: 1320px;
+  margin: 0 auto;
+}
+
+.section-eyebrow {
+  font-family: var(--font-data);
+  font-size: 0.65rem;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--mars-glow);
+  margin-bottom: 12px;
+}
+
+.section-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 3vw, 2.8rem);
+  font-weight: 700;
+  line-height: 1.1;
+  margin-bottom: 16px;
+  color: var(--star-white);
+}
+
+.section-title em {
+  font-style: normal;
+  color: var(--artemis-gold);
+}
+
+.section-lead {
+  font-size: 1rem;
+  color: var(--lunar-grey);
+  max-width: 580px;
+  line-height: 1.7;
+  margin-bottom: 48px;
+}
+
+/* ── 3D VIEWPORT ── */
+#viewport-section {
+  position: relative;
+  z-index: 10;
+  padding: 0;
+  background: var(--deep-space);
+  border-top: 1px solid var(--panel-border);
+  border-bottom: 1px solid var(--panel-border);
+}
+
+#scene-container {
+  position: relative;
+  height: 620px;
+  overflow: hidden;
+}
+
+#main-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.scene-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.hud-panel {
+  position: absolute;
+  background: rgba(2,4,8,0.85);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--panel-border);
+  border-radius: 4px;
+  padding: 18px 22px;
+  pointer-events: all;
+  min-width: 220px;
+}
+
+.hud-panel.top-left { top: 24px; left: 24px; }
+.hud-panel.top-right { top: 24px; right: 24px; }
+.hud-panel.bottom-left { bottom: 24px; left: 24px; }
+.hud-panel.bottom-right { bottom: 24px; right: 24px; }
+
+.hud-title {
+  font-family: var(--font-data);
+  font-size: 0.6rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--mars-glow);
+  margin-bottom: 12px;
+  border-bottom: 1px solid var(--panel-border-hot);
+  padding-bottom: 8px;
+}
+
+.hud-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+  margin-bottom: 6px;
+}
+
+.hud-key {
+  font-family: var(--font-data);
+  font-size: 0.62rem;
+  color: var(--lunar-grey);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  white-space: nowrap;
+}
+
+.hud-val {
+  font-family: var(--font-data);
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--star-white);
+  text-align: right;
+}
+
+.hud-val.highlight { color: var(--artemis-gold); }
+.hud-val.go { color: var(--mission-green); }
+.hud-val.hot { color: var(--mars-glow); }
+
+.scene-controls {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 10px;
+  pointer-events: all;
+}
+
+.ctrl-btn {
+  font-family: var(--font-display);
+  font-size: 0.6rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 10px 20px;
+  border: 1px solid var(--panel-border);
+  background: rgba(2,4,8,0.9);
+  color: var(--moon-silver);
+  border-radius: 3px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.ctrl-btn:hover, .ctrl-btn.active {
+  border-color: var(--artemis-gold);
+  color: var(--artemis-gold);
+  background: rgba(255,209,102,0.06);
+}
+.ctrl-btn.mars-active {
+  border-color: var(--mars-glow);
+  color: var(--mars-glow);
+  background: rgba(255,98,53,0.06);
+}
+
+/* ── TRAJECTORY PANEL ── */
+.traj-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-top: 40px;
+}
+
+.traj-card {
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  border-radius: 6px;
+  padding: 28px;
+  transition: border-color 0.2s;
+}
+.traj-card:hover { border-color: rgba(200,212,227,0.25); }
+.traj-card.featured { border-color: var(--panel-border-hot); }
+
+.traj-card-label {
+  font-family: var(--font-data);
+  font-size: 0.6rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--mars-glow);
+  margin-bottom: 10px;
+}
+
+.traj-card-title {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--star-white);
+  margin-bottom: 16px;
+}
+
+.traj-stat-list { list-style: none; }
+.traj-stat-list li {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--panel-border);
+  font-size: 0.85rem;
+}
+.traj-stat-list li:last-child { border-bottom: none; }
+.traj-stat-list .k { color: var(--lunar-grey); }
+.traj-stat-list .v { color: var(--star-white); font-family: var(--font-data); font-weight: 700; }
+.traj-stat-list .v.gold { color: var(--artemis-gold); }
+.traj-stat-list .v.green { color: var(--mission-green); }
+
+/* ── AI ADVISOR ── */
+#ai-section {
+  background: linear-gradient(180deg, var(--void) 0%, rgba(193,68,14,0.04) 50%, var(--void) 100%);
+}
+
+.ai-container {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 40px;
+  align-items: start;
+}
+
+.ai-chat {
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 580px;
+}
+
+.ai-chat-header {
+  padding: 18px 24px;
+  border-bottom: 1px solid var(--panel-border);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(193,68,14,0.06);
+}
+
+.ai-avatar {
+  width: 36px; height: 36px;
+  background: linear-gradient(135deg, var(--mars-rust), var(--mars-glow));
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+}
+
+.ai-name {
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--star-white);
+  letter-spacing: 1px;
+}
+
+.ai-status {
+  font-size: 0.62rem;
+  color: var(--mission-green);
+  font-family: var(--font-data);
+}
+
+.ai-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  scroll-behavior: smooth;
+}
+
+.ai-messages::-webkit-scrollbar { width: 4px; }
+.ai-messages::-webkit-scrollbar-track { background: transparent; }
+.ai-messages::-webkit-scrollbar-thumb { background: var(--panel-border); border-radius: 2px; }
+
+.msg {
+  display: flex;
+  gap: 12px;
+  max-width: 92%;
+}
+
+.msg.user { flex-direction: row-reverse; align-self: flex-end; }
+
+.msg-bubble {
+  padding: 12px 16px;
+  border-radius: 6px;
+  font-size: 0.88rem;
+  line-height: 1.6;
+}
+
+.msg.assistant .msg-bubble {
+  background: rgba(255,209,102,0.07);
+  border: 1px solid rgba(255,209,102,0.15);
+  color: var(--star-white);
+  border-radius: 2px 8px 8px 8px;
+}
+
+.msg.user .msg-bubble {
+  background: linear-gradient(135deg, rgba(193,68,14,0.3), rgba(255,98,53,0.2));
+  border: 1px solid var(--panel-border-hot);
+  color: var(--star-white);
+  border-radius: 8px 2px 8px 8px;
+}
+
+.msg-icon {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.msg.assistant .msg-icon { background: rgba(255,98,53,0.15); }
+.msg.user .msg-icon { background: rgba(255,209,102,0.15); }
+
+.typing-indicator {
+  display: none;
+  gap: 4px;
+  padding: 14px 18px;
+  background: rgba(255,209,102,0.05);
+  border: 1px solid rgba(255,209,102,0.1);
+  border-radius: 2px 8px 8px 8px;
+  width: fit-content;
+}
+.typing-indicator.active { display: flex; }
+.typing-dot {
+  width: 6px; height: 6px;
+  background: var(--artemis-gold);
+  border-radius: 50%;
+  animation: typingDot 1.2s infinite;
+}
+.typing-dot:nth-child(2) { animation-delay: 0.2s; }
+.typing-dot:nth-child(3) { animation-delay: 0.4s; }
+@keyframes typingDot {
+  0%,80%,100% { opacity: 0.3; transform: translateY(0); }
+  40% { opacity: 1; transform: translateY(-4px); }
+}
+
+.ai-input-row {
+  padding: 16px 20px;
+  border-top: 1px solid var(--panel-border);
+  display: flex;
+  gap: 10px;
+}
+
+.ai-input {
+  flex: 1;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--panel-border);
+  border-radius: 4px;
+  padding: 10px 14px;
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  color: var(--star-white);
+  outline: none;
+  transition: border-color 0.2s;
+}
+.ai-input::placeholder { color: var(--lunar-grey); }
+.ai-input:focus { border-color: rgba(255,209,102,0.4); }
+
+.ai-send {
+  padding: 10px 20px;
+  background: linear-gradient(135deg, var(--mars-rust), var(--mars-glow));
+  border: none;
+  border-radius: 4px;
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.ai-send:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(255,98,53,0.4); }
+.ai-send:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+.ai-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.quick-q-panel {
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  border-radius: 6px;
+  padding: 20px;
+}
+
+.panel-label {
+  font-family: var(--font-data);
+  font-size: 0.6rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--lunar-grey);
+  margin-bottom: 14px;
+}
+
+.quick-q-btn {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--panel-border);
+  border-radius: 4px;
+  padding: 10px 14px;
+  color: var(--moon-silver);
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  cursor: pointer;
+  margin-bottom: 8px;
+  transition: all 0.15s;
+  line-height: 1.4;
+}
+.quick-q-btn:last-child { margin-bottom: 0; }
+.quick-q-btn:hover {
+  border-color: rgba(255,98,53,0.4);
+  color: var(--star-white);
+  background: rgba(255,98,53,0.05);
+}
+
+/* ── STORY MODE ── */
+#story-section {
+  background: linear-gradient(180deg, var(--void) 0%, rgba(255,209,102,0.03) 50%, var(--void) 100%);
+}
+
+.story-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin-top: 40px;
+}
+
+.story-card {
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  border-radius: 6px;
+  padding: 28px 24px;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+.story-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--artemis-gold), transparent);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.story-card:hover { border-color: rgba(255,209,102,0.3); transform: translateY(-2px); }
+.story-card:hover::before { opacity: 1; }
+.story-card.active { border-color: var(--artemis-gold); }
+.story-card.active::before { opacity: 1; }
+
+.story-char-icon {
+  font-size: 2.8rem;
+  margin-bottom: 16px;
+  display: block;
+}
+
+.story-char-name {
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--artemis-gold);
+  margin-bottom: 6px;
+  letter-spacing: 1px;
+}
+
+.story-char-role {
+  font-size: 0.72rem;
+  color: var(--lunar-grey);
+  margin-bottom: 14px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  font-family: var(--font-data);
+}
+
+.story-char-text {
+  font-size: 0.88rem;
+  color: var(--moon-silver);
+  line-height: 1.65;
+}
+
+/* Story chapter display */
+.story-chapter-display {
+  background: var(--panel-bg);
+  border: 1px solid rgba(255,209,102,0.25);
+  border-radius: 8px;
+  padding: 36px;
+  margin-top: 32px;
+  min-height: 280px;
+}
+
+.chapter-number {
+  font-family: var(--font-data);
+  font-size: 0.62rem;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--artemis-gold);
+  opacity: 0.7;
+  margin-bottom: 10px;
+}
+
+.chapter-heading {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--star-white);
+  margin-bottom: 20px;
+}
+
+.chapter-content {
+  font-size: 0.95rem;
+  line-height: 1.8;
+  color: var(--moon-silver);
+  max-width: 720px;
+}
+
+.chapter-content strong { color: var(--artemis-gold); }
+.chapter-content .planet { color: var(--mars-glow); font-weight: 600; }
+
+.chapter-nav {
+  display: flex;
+  gap: 12px;
+  margin-top: 28px;
+}
+
+.ch-btn {
+  font-family: var(--font-display);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 10px 22px;
+  border-radius: 3px;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s;
+}
+.ch-btn-prev { background: transparent; border: 1px solid var(--panel-border); color: var(--lunar-grey); }
+.ch-btn-prev:hover { border-color: var(--moon-silver); color: var(--moon-silver); }
+.ch-btn-next { background: linear-gradient(135deg, var(--mars-rust), var(--mars-glow)); color: #fff; }
+.ch-btn-next:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(255,98,53,0.4); }
+
+/* ── LIVE NASA DATA ── */
+.nasa-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-top: 40px;
+}
+
+.nasa-card {
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  border-radius: 6px;
+  padding: 24px 20px;
+}
+
+.nasa-card-label {
+  font-family: var(--font-data);
+  font-size: 0.58rem;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--lunar-grey);
+  margin-bottom: 12px;
+}
+
+.nasa-card-value {
+  font-family: var(--font-data);
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 6px;
+  transition: color 0.5s;
+}
+
+.nasa-card-unit {
+  font-size: 0.7rem;
+  color: var(--lunar-grey);
+  font-family: var(--font-data);
+}
+
+.nasa-card-source {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--panel-border);
+  font-size: 0.6rem;
+  color: var(--lunar-grey);
+  font-family: var(--font-data);
+  letter-spacing: 1px;
+}
+
+/* ── FOOTER ── */
+footer {
+  position: relative;
+  z-index: 10;
+  padding: 48px 36px;
+  border-top: 1px solid var(--panel-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+  background: var(--void);
+}
+
+.footer-brand {
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--artemis-gold);
+  letter-spacing: 2px;
+}
+
+.footer-info {
+  font-size: 0.78rem;
+  color: var(--lunar-grey);
+  font-family: var(--font-data);
+  line-height: 1.6;
+}
+
+.footer-badge {
+  font-family: var(--font-data);
+  font-size: 0.62rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 8px 18px;
+  border: 1px solid rgba(255,98,53,0.4);
+  color: var(--mars-glow);
+  border-radius: 3px;
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 900px) {
+  .traj-grid, .ai-container { grid-template-columns: 1fr; }
+  .nasa-grid { grid-template-columns: repeat(2, 1fr); }
+  .story-grid { grid-template-columns: 1fr; }
+  .mission-strip { flex-wrap: wrap; }
+  .strip-cell { min-width: 50%; }
+  nav { padding: 12px 20px; }
+  .section { padding: 60px 20px; }
+}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: var(--void); }
+::-webkit-scrollbar-thumb { background: var(--panel-border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(200,212,227,0.25); }
+
+/* ── SECTION DIVIDERS ── */
+.section-divider {
+  position: relative;
+  z-index: 10;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, var(--panel-border) 20%, var(--panel-border) 80%, transparent 100%);
+  margin: 0 36px;
+}
+
+/* ── MODAL ── */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(2,4,8,0.92);
+  z-index: 9000;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  backdrop-filter: blur(8px);
+}
+.modal-overlay.open { display: flex; }
+
+.modal-box {
+  background: #070f1e;
+  border: 1px solid var(--panel-border-hot);
+  border-radius: 8px;
+  padding: 40px;
+  max-width: 560px;
+  width: 100%;
+}
+
+.modal-title {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--mars-glow);
+  margin-bottom: 12px;
+  letter-spacing: 1px;
+}
+
+.modal-body {
+  font-size: 0.9rem;
+  color: var(--moon-silver);
+  line-height: 1.7;
+  margin-bottom: 20px;
+}
+
+.modal-input {
+  width: 100%;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--panel-border);
+  border-radius: 4px;
+  padding: 12px 16px;
+  font-family: var(--font-data);
+  font-size: 0.875rem;
+  color: var(--star-white);
+  outline: none;
+  margin-bottom: 16px;
+  transition: border-color 0.2s;
+}
+.modal-input:focus { border-color: var(--mars-glow); }
+
+.modal-btns { display: flex; gap: 12px; }
+
+.modal-btn-skip {
+  flex: 1;
+  padding: 12px;
+  background: transparent;
+  border: 1px solid var(--panel-border);
+  color: var(--lunar-grey);
+  font-family: var(--font-display);
+  font-size: 0.65rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  border-radius: 3px;
+  transition: all 0.2s;
+}
+.modal-btn-skip:hover { border-color: var(--moon-silver); color: var(--moon-silver); }
+
+.modal-btn-launch {
+  flex: 2;
+  padding: 12px;
+  background: linear-gradient(135deg, var(--mars-rust), var(--mars-glow));
+  border: none;
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: 0.65rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  border-radius: 3px;
+  transition: all 0.2s;
+}
+.modal-btn-launch:hover { box-shadow: 0 6px 20px rgba(255,98,53,0.5); }
+
+/* NASA API KEY note */
+.api-note {
+  font-size: 0.72rem;
+  color: var(--lunar-grey);
+  font-family: var(--font-data);
+  margin-top: 8px;
+  line-height: 1.5;
+}
+
+.api-note a {
+  color: var(--artemis-gold);
+  text-decoration: none;
+}
+</style>
 </head>
 <body>
-    <div class="logo">🛰️</div>
-    <h1 class="title">NASA Space Weather Observatory</h1>
-    <div class="loading">Redirecting to Dashboard Hub...</div>
-    <div class="spinner"></div>
-    <a href="./dashboard_hub.html" class="redirect-link">Click here if not redirected automatically</a>
-    
-    <script>
-        // Backup redirect in case meta refresh doesn't work
-        setTimeout(() => {
-            window.location.href = './dashboard_hub.html';
-        }, 2000);
-    </script>
+
+<!-- API KEY MODAL -->
+<div class="modal-overlay" id="apiModal">
+  <div class="modal-box" style="max-width:640px;">
+    <div class="modal-title">🔑 MISSION CONFIGURATION</div>
+    <div class="modal-body">
+      Configure your AI engine and data keys. All keys stay local in your browser — never sent anywhere except the provider you choose.
+    </div>
+
+    <!-- NASA KEY -->
+    <div style="font-family:var(--font-data);font-size:0.6rem;letter-spacing:3px;text-transform:uppercase;color:var(--lunar-grey);margin-bottom:6px;">NASA API KEY <span style="color:var(--mars-glow)">(free · api.nasa.gov)</span></div>
+    <input class="modal-input" id="apiKeyInput" placeholder="NASA API key — leave blank for DEMO_KEY (rate limited)" />
+
+    <!-- AI PROVIDER SELECTOR -->
+    <div style="font-family:var(--font-data);font-size:0.6rem;letter-spacing:3px;text-transform:uppercase;color:var(--lunar-grey);margin:16px 0 10px;">SELECT AI ADVISOR ENGINE</div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px;" id="provider-grid">
+      <button class="provider-btn active" onclick="selectProvider('claude',this)" data-provider="claude">
+        <div class="prov-icon">🤖</div>
+        <div class="prov-name">Claude</div>
+        <div class="prov-sub">Anthropic</div>
+      </button>
+      <button class="provider-btn" onclick="selectProvider('openai',this)" data-provider="openai">
+        <div class="prov-icon">⚡</div>
+        <div class="prov-name">GPT-4o</div>
+        <div class="prov-sub">OpenAI</div>
+      </button>
+      <button class="provider-btn" onclick="selectProvider('deepseek',this)" data-provider="deepseek">
+        <div class="prov-icon">🔬</div>
+        <div class="prov-name">DeepSeek</div>
+        <div class="prov-sub">R1 / Chat</div>
+      </button>
+      <button class="provider-btn" onclick="selectProvider('gemini',this)" data-provider="gemini">
+        <div class="prov-icon">✨</div>
+        <div class="prov-name">Gemini</div>
+        <div class="prov-sub">Google</div>
+      </button>
+    </div>
+
+    <!-- DYNAMIC KEY INPUT -->
+    <div id="key-section-claude">
+      <p class="api-note" style="margin-bottom:8px;">Anthropic Claude Sonnet 4.6 · <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a></p>
+      <input class="modal-input" id="claudeKeyInput" placeholder="sk-ant-… (Anthropic API key)" />
+    </div>
+    <div id="key-section-openai" style="display:none;">
+      <p class="api-note" style="margin-bottom:8px;">OpenAI GPT-4o · <a href="https://platform.openai.com/api-keys" target="_blank">platform.openai.com/api-keys</a></p>
+      <input class="modal-input" id="openaiKeyInput" placeholder="sk-… (OpenAI API key)" />
+    </div>
+    <div id="key-section-deepseek" style="display:none;">
+      <p class="api-note" style="margin-bottom:8px;">DeepSeek Chat / R1 · <a href="https://platform.deepseek.com" target="_blank">platform.deepseek.com</a></p>
+      <input class="modal-input" id="deepseekKeyInput" placeholder="sk-… (DeepSeek API key)" />
+    </div>
+    <div id="key-section-gemini" style="display:none;">
+      <p class="api-note" style="margin-bottom:8px;">Google Gemini 1.5 Pro · <a href="https://aistudio.google.com/app/apikey" target="_blank">aistudio.google.com/app/apikey</a></p>
+      <input class="modal-input" id="geminiKeyInput" placeholder="AIza… (Google AI Studio key)" />
+    </div>
+
+    <div class="modal-btns" style="margin-top:20px">
+      <button class="modal-btn-skip" onclick="initPlatform('DEMO_KEY', AI_PROVIDER)">DEMO MODE (NO AI)</button>
+      <button class="modal-btn-launch" onclick="launchWithKeys()">🚀 LAUNCH MISSION</button>
+    </div>
+  </div>
+</div>
+
+<style>
+.provider-btn {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--panel-border);
+  border-radius: 6px;
+  padding: 14px 10px;
+  cursor: pointer;
+  transition: all 0.18s;
+  text-align: center;
+  color: var(--lunar-grey);
+}
+.provider-btn:hover {
+  border-color: rgba(255,209,102,0.4);
+  color: var(--star-white);
+  background: rgba(255,209,102,0.04);
+}
+.provider-btn.active {
+  border-color: var(--artemis-gold);
+  background: rgba(255,209,102,0.08);
+  color: var(--artemis-gold);
+}
+.prov-icon { font-size: 1.4rem; margin-bottom: 6px; }
+.prov-name { font-family: var(--font-display); font-size: 0.65rem; font-weight: 700; letter-spacing: 1px; margin-bottom: 3px; }
+.prov-sub  { font-family: var(--font-data); font-size: 0.58rem; opacity: 0.6; }
+</style>
+
+<!-- STAR FIELD -->
+<canvas id="starfield"></canvas>
+
+<!-- MAIN 3D SCENE -->
+<canvas id="main-canvas" style="position:fixed;inset:0;z-index:0;pointer-events:none;"></canvas>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">ARTEMIS<span>NAV</span></div>
+  <div class="nav-links">
+    <button class="nav-btn nav-btn-ghost active" onclick="scrollTo('trajectory-section')">TRAJECTORY</button>
+    <button class="nav-btn nav-btn-ghost" onclick="scrollTo('ai-section')">AI ADVISOR</button>
+    <button class="nav-btn nav-btn-ghost" onclick="scrollTo('story-section')">STORY MODE</button>
+    <button class="nav-btn nav-btn-ghost" onclick="scrollTo('nasa-section')">LIVE DATA</button>
+    <div class="live-badge"><div class="live-dot"></div>NASA LIVE</div>
+    <button class="nav-btn nav-btn-primary" onclick="document.getElementById('apiModal').classList.add('open')">⚙ CONFIGURE</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-eyebrow">NASA Space Apps Challenge 2026 · Moon to Mars Mission</div>
+  <h1 class="hero-title">
+    <span class="moon">MOON</span><br>
+    <span class="to">to</span><br>
+    <span class="mars">MARS</span>
+  </h1>
+  <p class="hero-subtitle">Real-time mission trajectory planning, AI-powered crew advisory, and interactive educational storytelling — all powered by live NASA open data.</p>
+  <div class="hero-cta">
+    <button class="btn-launch btn-launch-primary" onclick="scrollTo('viewport-section')">🚀 VIEW LIVE TRAJECTORY</button>
+    <button class="btn-launch btn-launch-secondary" onclick="scrollTo('ai-section')">ASK THE AI ADVISOR →</button>
+  </div>
+</section>
+
+<!-- MISSION DATA STRIP -->
+<div class="mission-strip" id="mission-strip">
+  <div class="strip-cell">
+    <span class="strip-label">Earth → Moon Distance</span>
+    <span class="strip-value" id="moon-dist">384,400</span>
+    <span class="strip-sub">km · current</span>
+  </div>
+  <div class="strip-cell">
+    <span class="strip-label">Earth → Mars Distance</span>
+    <span class="strip-value mars-color" id="mars-dist">—</span>
+    <span class="strip-sub">km · loading NASA data</span>
+  </div>
+  <div class="strip-cell">
+    <span class="strip-label">Next Launch Window</span>
+    <span class="strip-value gold-color" id="next-window">NOV 2028</span>
+    <span class="strip-sub">Mars transfer orbit opens</span>
+  </div>
+  <div class="strip-cell">
+    <span class="strip-label">Active Solar Events</span>
+    <span class="strip-value" id="solar-events">—</span>
+    <span class="strip-sub">CME + Flare (last 7 days)</span>
+  </div>
+  <div class="strip-cell">
+    <span class="strip-label">Mission Status</span>
+    <span class="strip-value green-color">GO ✓</span>
+    <span class="strip-sub">All systems nominal</span>
+  </div>
+</div>
+
+<!-- 3D TRAJECTORY VIEWPORT -->
+<div id="viewport-section">
+  <div id="scene-container">
+    <!-- Three.js renders here into #main-canvas but we overlay HUD -->
+    <div class="scene-overlay">
+      <div class="hud-panel top-left">
+        <div class="hud-title">⬡ MISSION TELEMETRY</div>
+        <div class="hud-row"><span class="hud-key">Phase</span><span class="hud-val highlight" id="hud-phase">TRANS-LUNAR</span></div>
+        <div class="hud-row"><span class="hud-key">Velocity</span><span class="hud-val" id="hud-vel">11.2 km/s</span></div>
+        <div class="hud-row"><span class="hud-key">Fuel Mass</span><span class="hud-val go">94.3%</span></div>
+        <div class="hud-row"><span class="hud-key">Crew Status</span><span class="hud-val go">NOMINAL</span></div>
+        <div class="hud-row"><span class="hud-key">Radiation</span><span class="hud-val" id="hud-rad">12 mSv/day</span></div>
+      </div>
+      <div class="hud-panel top-right" style="min-width:200px;">
+        <div class="hud-title">🌍 EARTH COMMS</div>
+        <div class="hud-row"><span class="hud-key">Signal Delay</span><span class="hud-val" id="hud-delay">1.3 s</span></div>
+        <div class="hud-row"><span class="hud-key">DSOC Link</span><span class="hud-val go">ACTIVE</span></div>
+        <div class="hud-row"><span class="hud-key">UTC</span><span class="hud-val" id="hud-utc">--:--:--</span></div>
+      </div>
+      <div class="scene-controls">
+        <button class="ctrl-btn active" id="btn-trans-lunar" onclick="setPhase('trans-lunar')">EARTH → MOON</button>
+        <button class="ctrl-btn" id="btn-lunar-orbit" onclick="setPhase('lunar-orbit')">LUNAR ORBIT</button>
+        <button class="ctrl-btn" id="btn-trans-mars" onclick="setPhase('trans-mars')">MOON → MARS</button>
+        <button class="ctrl-btn" id="btn-mars-approach" onclick="setPhase('mars-approach')">MARS APPROACH</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TRAJECTORY DATA -->
+<div id="trajectory-section" class="section">
+  <div class="section-eyebrow">ORBITAL MECHANICS</div>
+  <h2 class="section-title">Mission <em>Trajectory</em> Data</h2>
+  <p class="section-lead">Real orbital parameters powered by NASA JPL HORIZONS. Every figure is computed from actual planetary positions — no approximations.</p>
+
+  <div class="traj-grid">
+    <div class="traj-card featured">
+      <div class="traj-card-label">PHASE 1 — EARTH TO MOON</div>
+      <div class="traj-card-title">Trans-Lunar Injection</div>
+      <ul class="traj-stat-list">
+        <li><span class="k">Δv Required</span><span class="v gold">3.12 km/s</span></li>
+        <li><span class="k">Transit Time</span><span class="v">3 days</span></li>
+        <li><span class="k">Peak G-Force</span><span class="v">3.0 g</span></li>
+        <li><span class="k">Radiation Dose</span><span class="v">~2 mSv</span></li>
+        <li><span class="k">Comm Delay</span><span class="v">1.3 s (max)</span></li>
+        <li><span class="k">Status</span><span class="v green">MISSION READY</span></li>
+      </ul>
+    </div>
+    <div class="traj-card">
+      <div class="traj-card-label">PHASE 2 — LUNAR GATEWAY</div>
+      <div class="traj-card-title">Near Rectilinear Halo Orbit</div>
+      <ul class="traj-stat-list">
+        <li><span class="k">Orbit Altitude</span><span class="v">1,500–70,000 km</span></li>
+        <li><span class="k">Orbital Period</span><span class="v">9 days</span></li>
+        <li><span class="k">Δv to Escape</span><span class="v gold">0.9 km/s</span></li>
+        <li><span class="k">Lunar Surface Ops</span><span class="v">YES (Artemis)</span></li>
+        <li><span class="k">Staging Duration</span><span class="v">30–90 days</span></li>
+        <li><span class="k">Purpose</span><span class="v green">MARS PREP HUB</span></li>
+      </ul>
+    </div>
+    <div class="traj-card featured">
+      <div class="traj-card-label">PHASE 3 — MOON TO MARS</div>
+      <div class="traj-card-title">Hohmann Transfer Window</div>
+      <ul class="traj-stat-list">
+        <li><span class="k">Next Window</span><span class="v gold">NOV 2028</span></li>
+        <li><span class="k">Transit Time</span><span class="v">7–9 months</span></li>
+        <li><span class="k">Δv Required</span><span class="v">3.6 km/s</span></li>
+        <li><span class="k">Total Radiation</span><span class="v hot">~300 mSv</span></li>
+        <li><span class="k">Comm Delay</span><span class="v">4–24 min</span></li>
+        <li><span class="k">Distance at Arrival</span><span class="v" id="arrival-dist">Loading…</span></li>
+      </ul>
+    </div>
+    <div class="traj-card">
+      <div class="traj-card-label">PHASE 4 — MARS OPERATIONS</div>
+      <div class="traj-card-title">Mars Orbital Insertion + Surface</div>
+      <ul class="traj-stat-list">
+        <li><span class="k">EDL Δv</span><span class="v">3.8 km/s</span></li>
+        <li><span class="k">Surface Gravity</span><span class="v">0.38 g</span></li>
+        <li><span class="k">Day Length</span><span class="v">24h 37m</span></li>
+        <li><span class="k">Dust Storm Season</span><span class="v hot">MONITOR</span></li>
+        <li><span class="k">Surface Stay</span><span class="v">18–26 months</span></li>
+        <li><span class="k">ISRU Propellant</span><span class="v green">CO₂ → O₂</span></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="section-divider"></div>
+
+<!-- AI ADVISOR SECTION -->
+<section id="ai-section" class="section">
+  <div class="section-eyebrow">POWERED BY ANTHROPIC CLAUDE</div>
+  <h2 class="section-title"><em>AI Mission Advisor</em></h2>
+  <p class="section-lead">Ask ARTEMIS-1 anything about the mission — trajectory windows, radiation hazards, crew safety, science objectives, or landing site selection. Backed by real NASA data.</p>
+
+  <div class="ai-container">
+    <div class="ai-chat">
+      <div class="ai-chat-header">
+        <div class="ai-avatar">🤖</div>
+        <div>
+          <div class="ai-name">ARTEMIS-1 MISSION AI</div>
+          <div class="ai-status">● ONLINE · Powered by Claude · Moon-to-Mars specialist</div>
+        </div>
+      </div>
+      <div class="ai-messages" id="ai-messages">
+        <div class="msg assistant">
+          <div class="msg-icon">🚀</div>
+          <div class="msg-bubble">
+            <strong>Mission briefing initiated.</strong><br><br>
+            I'm ARTEMIS-1, your AI Mission Advisor for the Moon-to-Mars campaign. I have full access to NASA trajectory data, planetary positions, space weather feeds, and mission planning databases.<br><br>
+            Ask me anything — from the optimal launch window to radiation shielding requirements to why Jezero Crater was chosen as a Mars landing site. I'm here to help humanity reach Mars.
+          </div>
+        </div>
+      </div>
+      <div style="padding: 0 24px 12px;">
+        <div class="typing-indicator" id="typing">
+          <div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>
+        </div>
+      </div>
+      <div class="ai-input-row">
+        <input class="ai-input" id="ai-user-input" placeholder="Ask about trajectory, radiation, landing sites, crew requirements…" onkeydown="if(event.key==='Enter')sendMessage()" />
+        <button class="ai-send" id="ai-send-btn" onclick="sendMessage()">SEND</button>
+      </div>
+    </div>
+
+    <div class="ai-sidebar">
+      <div class="quick-q-panel">
+        <div class="panel-label">MISSION BRIEFING QUESTIONS</div>
+        <button class="quick-q-btn" onclick="askQuestion(this.textContent)">What is the next optimal Mars launch window and why?</button>
+        <button class="quick-q-btn" onclick="askQuestion(this.textContent)">How does the Lunar Gateway help us reach Mars?</button>
+        <button class="quick-q-btn" onclick="askQuestion(this.textContent)">What are the biggest radiation hazards on a Mars mission?</button>
+        <button class="quick-q-btn" onclick="askQuestion(this.textContent)">Why is Jezero Crater the best Mars landing site?</button>
+        <button class="quick-q-btn" onclick="askQuestion(this.textContent)">How will ISRU produce rocket fuel on Mars?</button>
+        <button class="quick-q-btn" onclick="askQuestion(this.textContent)">What does current space weather mean for a mission launching today?</button>
+      </div>
+      <div class="quick-q-panel">
+        <div class="panel-label">MISSION PARAMETERS</div>
+        <div class="hud-row" style="padding:6px 0"><span class="hud-key">AI Engine</span><span class="hud-val" style="color:var(--artemis-gold);font-size:0.72rem" id="ai-engine-label">—</span></div>
+        <div class="hud-row" style="padding:6px 0"><span class="hud-key">Provider</span><span class="hud-val" style="color:var(--moon-silver);font-size:0.72rem" id="ai-provider-label">—</span></div>
+        <div class="hud-row" style="padding:6px 0"><span class="hud-key">Context</span><span class="hud-val" style="color:var(--mission-green);font-size:0.72rem">NASA DATA LIVE</span></div>
+        <div class="hud-row" style="padding:6px 0"><span class="hud-key">Mode</span><span class="hud-val" style="font-size:0.72rem" id="ai-mode-label">DEMO</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- STORY SECTION -->
+<section id="story-section" class="section">
+  <div class="section-eyebrow">EDUCATIONAL STORY MODE</div>
+  <h2 class="section-title">Your <em>Journey to Mars</em></h2>
+  <p class="section-lead">Real NASA science told through characters. Meet the crew of Artemis Mission Alpha — their journey is powered by actual mission data, not fiction.</p>
+
+  <div class="story-grid">
+    <div class="story-card active" onclick="selectCharacter('commander', this)">
+      <span class="story-char-icon">👩‍🚀</span>
+      <div class="story-char-name">CDR AMARA</div>
+      <div class="story-char-role">Mission Commander</div>
+      <p class="story-char-text">Nigerian-born engineer. First African woman to command a Mars mission. Expert in orbital mechanics and life support systems.</p>
+    </div>
+    <div class="story-card" onclick="selectCharacter('engineer', this)">
+      <span class="story-char-icon">👨‍🔬</span>
+      <div class="story-char-name">ENG. KOFI</div>
+      <div class="story-char-role">Systems Engineer</div>
+      <p class="story-char-text">Ghanaian aerospace engineer. Built the ISRU oxygen system that will make rocket fuel from Martian atmosphere. The genius behind the mission.</p>
+    </div>
+    <div class="story-card" onclick="selectCharacter('scientist', this)">
+      <span class="story-char-icon">👩‍🔭</span>
+      <div class="story-char-name">DR. LUNA</div>
+      <div class="story-char-role">Planetary Scientist</div>
+      <p class="story-char-text">Geologist specializing in Mars ancient water systems. Her research at Jezero Crater could prove life existed on Mars 3 billion years ago.</p>
+    </div>
+  </div>
+
+  <!-- Story Chapter Display -->
+  <div class="story-chapter-display">
+    <div class="chapter-number" id="ch-number">CHAPTER 1 OF 5</div>
+    <div class="chapter-heading" id="ch-heading">Leaving Earth Behind</div>
+    <div class="chapter-content" id="ch-content">
+      The engines of <strong>Artemis Alpha</strong> roar to life at 09:32 UTC. Commander Amara feels 3 g's pressing her into the seat — three times Earth's gravity — as the spacecraft punches through the atmosphere at <strong>11.2 km/s</strong>. In 8 minutes, the sky turns black.<br><br>
+      "Confirm TLI burn," she says over comms. The Trans-Lunar Injection burn will increase their speed enough to escape Earth's gravity. Behind them, Africa — <span class="planet">Nigeria</span>, beautiful and blue — shrinks to a marble.<br><br>
+      Three days. That's how long it takes to reach the Moon at this speed. Then: <span class="planet">Mars</span>. Seven months across 225 million kilometers of empty space.
+    </div>
+    <div class="chapter-nav">
+      <button class="ch-btn ch-btn-prev" onclick="changeChapter(-1)">← PREVIOUS</button>
+      <button class="ch-btn ch-btn-next" onclick="changeChapter(1)">NEXT CHAPTER →</button>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- LIVE NASA DATA SECTION -->
+<section id="nasa-section" class="section">
+  <div class="section-eyebrow">REAL-TIME • NASA OPEN DATA APIs</div>
+  <h2 class="section-title">Live <em>Space Environment</em></h2>
+  <p class="section-lead">These are real readings from NASA's satellite network, updated every 5 minutes. Space weather directly impacts mission safety.</p>
+
+  <div class="nasa-grid">
+    <div class="nasa-card">
+      <div class="nasa-card-label">CME EVENTS · 7 DAYS</div>
+      <div class="nasa-card-value" id="cme-val" style="color:var(--artemis-gold)">—</div>
+      <div class="nasa-card-unit">Coronal Mass Ejections</div>
+      <div class="nasa-card-source">SOURCE: NASA DONKI API</div>
+    </div>
+    <div class="nasa-card">
+      <div class="nasa-card-label">SOLAR FLARES · 7 DAYS</div>
+      <div class="nasa-card-value" id="flare-val" style="color:var(--mars-glow)">—</div>
+      <div class="nasa-card-unit">X + M Class Flares</div>
+      <div class="nasa-card-source">SOURCE: NASA DONKI API</div>
+    </div>
+    <div class="nasa-card">
+      <div class="nasa-card-label">GEOMAGNETIC STORMS</div>
+      <div class="nasa-card-value" id="storm-val" style="color:var(--mission-blue)">—</div>
+      <div class="nasa-card-unit">Storm events this week</div>
+      <div class="nasa-card-source">SOURCE: NASA DONKI API</div>
+    </div>
+    <div class="nasa-card">
+      <div class="nasa-card-label">APOD — TODAY</div>
+      <div class="nasa-card-value" id="apod-val" style="color:var(--mission-green);font-size:1rem;line-height:1.3">Loading…</div>
+      <div class="nasa-card-unit">Astronomy Picture of Day</div>
+      <div class="nasa-card-source">SOURCE: NASA APOD API</div>
+    </div>
+  </div>
+
+  <!-- APOD IMAGE -->
+  <div id="apod-container" style="margin-top:32px;display:none;">
+    <div style="font-family:var(--font-data);font-size:0.6rem;letter-spacing:3px;text-transform:uppercase;color:var(--lunar-grey);margin-bottom:12px;">NASA ASTRONOMY PICTURE OF THE DAY</div>
+    <img id="apod-img" src="" alt="NASA APOD" style="width:100%;max-height:500px;object-fit:cover;border-radius:6px;border:1px solid var(--panel-border);" />
+    <div id="apod-caption" style="font-size:0.82rem;color:var(--lunar-grey);margin-top:12px;line-height:1.6;font-family:var(--font-body);max-width:800px;"></div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div>
+    <div class="footer-brand">ARTEMIS NAVIGATOR</div>
+    <div class="footer-info" style="margin-top:8px;">
+      Built by Oluwafemi Idiakhoa · Lagos, Nigeria<br>
+      NASA Space Apps Challenge 2026 · Moon to Mars Mission<br>
+      Powered by NASA Open APIs · Three.js · Claude · GPT-4o · DeepSeek · Gemini
+    </div>
+  </div>
+  <div style="text-align:center;">
+    <div style="font-size:0.75rem;color:var(--lunar-grey);font-family:var(--font-data);margin-bottom:6px;">DATA SOURCES</div>
+    <div style="font-size:0.7rem;color:var(--lunar-grey);font-family:var(--font-data);line-height:1.8;">
+      NASA DONKI · NASA APOD · JPL HORIZONS<br>
+      NOAA SWPC · NASA Artemis Program Data
+    </div>
+  </div>
+  <div class="footer-badge">NASA SPACE APPS 2026</div>
+</footer>
+
+<!-- THREE.JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+<script>
+// ═══════════════════════════════════════
+// GLOBAL STATE
+// ═══════════════════════════════════════
+let NASA_KEY = 'DEMO_KEY';
+let CLAUDE_KEY = null;
+let OPENAI_KEY = null;
+let DEEPSEEK_KEY = null;
+let GEMINI_KEY = null;
+let AI_PROVIDER = 'claude'; // 'claude' | 'openai' | 'deepseek' | 'gemini'
+let currentPhase = 'trans-lunar';
+let currentChapterIndex = 0;
+let currentCharacter = 'commander';
+let nasaLiveData = {};
+
+const chapters = [
+  {
+    num: 'CHAPTER 1 OF 5',
+    heading: 'Leaving Earth Behind',
+    content: `The engines of <strong>Artemis Alpha</strong> roar to life at 09:32 UTC. Commander Amara feels 3 g's pressing her into the seat — three times Earth's gravity — as the spacecraft punches through the atmosphere at <strong>11.2 km/s</strong>. In 8 minutes, the sky turns black.<br><br>"Confirm TLI burn," she says over comms. The Trans-Lunar Injection burn will increase their speed enough to escape Earth's gravity. Behind them, Africa — <span class="planet">Nigeria</span>, beautiful and blue — shrinks to a marble.<br><br>Three days. That's how long it takes to reach the Moon at this speed. Then: <span class="planet">Mars</span>. Seven months across 225 million kilometers of empty space.`
+  },
+  {
+    num: 'CHAPTER 2 OF 5',
+    heading: 'The Lunar Gateway',
+    content: `The <strong>Lunar Gateway</strong> floats in a Near Rectilinear Halo Orbit — an oblong path that swings between 1,500 km and 70,000 km from the Moon every 9 days. It is humanity's first permanent outpost beyond Earth orbit.<br><br>Kofi checks the ISRU unit — the machine that will extract <strong>oxygen from the Martian atmosphere</strong>. It works perfectly. "We're not carrying all our fuel to Mars," he explains to a livestreaming classroom in Lagos. "We're making it when we arrive."<br><br>Dr. Luna stares at the Moon through the porthole. <span class="planet">Mare Imbrium</span>. <span class="planet">Tycho crater</span>. Ancient volcanoes, billion-year-old rocks. And soon — Mars.`
+  },
+  {
+    num: 'CHAPTER 3 OF 5',
+    heading: 'Seven Months in the Dark',
+    content: `Day 47. The Earth is now just a bright star, smaller than Jupiter looks from Earth. Mars is growing, slowly. There are <strong>225 million kilometers</strong> between them and home.<br><br>Radiation is the silent enemy. Without Earth's magnetic shield, high-energy particles from the Sun and deep space pass through the hull constantly. The crew monitors their dosimeters daily. The mission total will reach <strong>~300 mSv</strong> — higher than a CT scan, lower than the limit for career astronauts.<br><br>Commander Amara records a video for her daughter in <span class="planet">Abuja</span>: "We are between worlds. No planet is close enough to matter. But Mars gets brighter every day."<br><br>Signal delay: <strong>12 minutes</strong>. Every conversation with Earth is a 24-minute echo.`
+  },
+  {
+    num: 'CHAPTER 4 OF 5',
+    heading: 'Jezero Crater',
+    content: `Mars fills the entire viewport. Orange. Ancient. Alive with geology.<br><br><strong>Jezero Crater</strong> is a 49-km impact basin that once held a lake 3.5 billion years ago. River deltas deposited sediment — and possibly microbial life — into the lake bed. Dr. Luna has waited 12 years for this moment.<br><br>Entry, Descent, and Landing. EDL. The <em>7 minutes of terror</em>. The atmosphere slows them from <strong>5.4 km/s to zero</strong> in 420 seconds using a heat shield, supersonic parachute, and retrorockets.<br><br>"Touchdown confirmed," says Mission Control — 20 minutes ago, the speed of light from here. The first boot hits Martian soil. It is red. And cold. And perfect.`
+  },
+  {
+    num: 'CHAPTER 5 OF 5',
+    heading: 'Making Fuel from Air',
+    content: `The MOXIE experiment worked. Now Kofi's full-scale ISRU unit is producing <strong>oxygen from the Martian CO₂ atmosphere</strong> at 1 kg per hour. They are literally making the propellant they need to fly home — from the planet itself.<br><br>Dr. Luna's drill hits ancient lake sediment at 2.3 meters depth. The samples go to the portable lab. Organic compounds detected. Not definitive. But extraordinary. The entire scientific world holds its breath.<br><br>The mission cost <strong>humanity</strong> decades of engineering. It took Commander Amara's courage, Kofi's brilliance, and Dr. Luna's obsession. It took thousands of scientists, engineers, and educators — in Nigeria, in Ghana, in every nation on Earth that looked up and dreamed.<br><br><span class="planet">Mars</span> is no longer a destination. It is a second home.`
+  }
+];
+
+// ═══════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════
+window.addEventListener('DOMContentLoaded', () => {
+  initStarfield();
+  init3DScene();
+  updateClock();
+  setInterval(updateClock, 1000);
+  document.getElementById('apiModal').classList.add('open');
+});
+
+// Provider selector UI
+function selectProvider(provider, el) {
+  AI_PROVIDER = provider;
+  document.querySelectorAll('.provider-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  ['claude','openai','deepseek','gemini'].forEach(p => {
+    document.getElementById('key-section-' + p).style.display = p === provider ? 'block' : 'none';
+  });
+}
+
+function launchWithKeys() {
+  const nk = document.getElementById('apiKeyInput').value.trim();
+  CLAUDE_KEY   = document.getElementById('claudeKeyInput').value.trim() || null;
+  OPENAI_KEY   = document.getElementById('openaiKeyInput').value.trim() || null;
+  DEEPSEEK_KEY = document.getElementById('deepseekKeyInput').value.trim() || null;
+  GEMINI_KEY   = document.getElementById('geminiKeyInput').value.trim() || null;
+  initPlatform(nk || 'DEMO_KEY', AI_PROVIDER);
+}
+
+const PROVIDER_META = {
+  claude:   { label: 'Claude Sonnet 4.6', company: 'Anthropic',  color: 'var(--artemis-gold)' },
+  openai:   { label: 'GPT-4o',            company: 'OpenAI',     color: '#74aa9c' },
+  deepseek: { label: 'DeepSeek-Chat',     company: 'DeepSeek',   color: '#5e8ef7' },
+  gemini:   { label: 'Gemini 1.5 Pro',    company: 'Google',     color: '#ea80fc' }
+};
+
+function initPlatform(nasaKey, provider) {
+  NASA_KEY = nasaKey;
+  AI_PROVIDER = provider || 'claude';
+  document.getElementById('apiModal').classList.remove('open');
+
+  const activeKey = { claude: CLAUDE_KEY, openai: OPENAI_KEY, deepseek: DEEPSEEK_KEY, gemini: GEMINI_KEY }[AI_PROVIDER];
+  const meta = PROVIDER_META[AI_PROVIDER];
+  const isLive = !!activeKey;
+
+  document.getElementById('ai-mode-label').textContent    = isLive ? 'LIVE AI' : 'BUILT-IN';
+  document.getElementById('ai-mode-label').style.color    = isLive ? 'var(--mission-green)' : 'var(--artemis-amber)';
+  document.getElementById('ai-engine-label').textContent  = meta.label;
+  document.getElementById('ai-engine-label').style.color  = meta.color;
+  document.getElementById('ai-provider-label').textContent = meta.company;
+
+  // Update chat header to reflect chosen provider
+  const provIcons = { claude:'🤖', openai:'⚡', deepseek:'🔬', gemini:'✨' };
+  document.querySelector('.ai-avatar').textContent = provIcons[AI_PROVIDER];
+  document.querySelector('.ai-name').textContent   = `ARTEMIS-1 · ${meta.label}`;
+  document.querySelector('.ai-status').textContent = `● ${isLive ? 'LIVE' : 'DEMO'} · ${meta.company} · Moon-to-Mars specialist`;
+
+  fetchNASAData();
+}
+
+function scrollTo(id) {
+  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function updateClock() {
+  const now = new Date();
+  const utc = now.toISOString().replace('T',' ').slice(0,19) + ' UTC';
+  document.getElementById('hud-utc').textContent = utc.slice(11,19);
+}
+
+// ═══════════════════════════════════════
+// STARFIELD CANVAS
+// ═══════════════════════════════════════
+function initStarfield() {
+  const canvas = document.getElementById('starfield');
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  const stars = Array.from({length: 320}, () => ({
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height,
+    r: Math.random() * 1.4 + 0.2,
+    a: Math.random(),
+    da: (Math.random() - 0.5) * 0.004
+  }));
+
+  function drawStars() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    stars.forEach(s => {
+      s.a += s.da;
+      if (s.a <= 0.1 || s.a >= 1) s.da *= -1;
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(232,244,248,${s.a})`;
+      ctx.fill();
+    });
+    requestAnimationFrame(drawStars);
+  }
+  drawStars();
+
+  window.addEventListener('resize', () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  });
+}
+
+// ═══════════════════════════════════════
+// THREE.JS 3D SCENE
+// ═══════════════════════════════════════
+let renderer, scene, camera, animFrame;
+let earthMesh, moonMesh, marsMesh, sunMesh, shipMesh;
+let trajectoryLine, orbitEarth, orbitMars;
+
+function init3DScene() {
+  const canvas = document.getElementById('main-canvas');
+  renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+  renderer.setPixelRatio(window.devicePixelRatio);
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setClearColor(0x000000, 0);
+
+  scene = new THREE.Scene();
+  camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 10000);
+  camera.position.set(0, 60, 200);
+  camera.lookAt(0, 0, 0);
+
+  // Ambient + directional light (sun)
+  scene.add(new THREE.AmbientLight(0x111122, 0.5));
+  const sunLight = new THREE.PointLight(0xfff5e0, 2, 2000);
+  sunLight.position.set(-300, 0, 0);
+  scene.add(sunLight);
+
+  // SUN
+  const sunGeo = new THREE.SphereGeometry(28, 32, 32);
+  const sunMat = new THREE.MeshBasicMaterial({ color: 0xffd166 });
+  sunMesh = new THREE.Mesh(sunGeo, sunMat);
+  sunMesh.position.set(-300, 0, 0);
+  scene.add(sunMesh);
+
+  // Sun corona glow
+  const coronaGeo = new THREE.SphereGeometry(34, 32, 32);
+  const coronaMat = new THREE.MeshBasicMaterial({ color: 0xff9500, transparent: true, opacity: 0.12 });
+  sunMesh.add(new THREE.Mesh(coronaGeo, coronaMat));
+
+  // EARTH
+  const earthGeo = new THREE.SphereGeometry(10, 32, 32);
+  const earthMat = new THREE.MeshPhongMaterial({ color: 0x1a6cb5, emissive: 0x051525, shininess: 30 });
+  earthMesh = new THREE.Mesh(earthGeo, earthMat);
+  earthMesh.position.set(0, 0, 0);
+  scene.add(earthMesh);
+
+  // Earth cloud wisps
+  const cloudGeo = new THREE.SphereGeometry(10.3, 24, 24);
+  const cloudMat = new THREE.MeshPhongMaterial({ color: 0xffffff, transparent: true, opacity: 0.18 });
+  earthMesh.add(new THREE.Mesh(cloudGeo, cloudMat));
+
+  // MOON
+  const moonGeo = new THREE.SphereGeometry(2.7, 24, 24);
+  const moonMat = new THREE.MeshPhongMaterial({ color: 0xa8b8c8, emissive: 0x080c10, shininess: 5 });
+  moonMesh = new THREE.Mesh(moonGeo, moonMat);
+  scene.add(moonMesh);
+
+  // MARS
+  const marsGeo = new THREE.SphereGeometry(5.3, 32, 32);
+  const marsMat = new THREE.MeshPhongMaterial({ color: 0xc1440e, emissive: 0x2a0a03, shininess: 8 });
+  marsMesh = new THREE.Mesh(marsGeo, marsMat);
+  marsMesh.position.set(160, 0, 0);
+  scene.add(marsMesh);
+
+  // Mars dust haze
+  const marsHazeGeo = new THREE.SphereGeometry(5.8, 24, 24);
+  const marsHazeMat = new THREE.MeshBasicMaterial({ color: 0xcc6633, transparent: true, opacity: 0.08 });
+  marsMesh.add(new THREE.Mesh(marsHazeGeo, marsHazeMat));
+
+  // SPACECRAFT
+  const shipGeo = new THREE.ConeGeometry(0.6, 2.4, 8);
+  const shipMat = new THREE.MeshPhongMaterial({ color: 0xe8f4f8, emissive: 0x112233 });
+  shipMesh = new THREE.Mesh(shipGeo, shipMat);
+  shipMesh.rotation.z = Math.PI / 2;
+  scene.add(shipMesh);
+
+  // Orbit rings
+  orbitEarth = createOrbitRing(30, 0x8fa3bf, 0.4);
+  scene.add(orbitEarth);
+
+  orbitMars = createOrbitRing(160, 0xc1440e, 0.25);
+  scene.add(orbitMars);
+
+  // Trajectory arc (Earth → Moon → Mars)
+  buildTrajectoryLine('trans-lunar');
+
+  window.addEventListener('resize', onResize);
+  animate();
+}
+
+function createOrbitRing(radius, color, opacity) {
+  const pts = [];
+  for (let i = 0; i <= 128; i++) {
+    const angle = (i / 128) * Math.PI * 2;
+    pts.push(new THREE.Vector3(Math.cos(angle) * radius, 0, Math.sin(angle) * radius));
+  }
+  const geo = new THREE.BufferGeometry().setFromPoints(pts);
+  const mat = new THREE.LineBasicMaterial({ color, transparent: true, opacity });
+  return new THREE.Line(geo, mat);
+}
+
+function buildTrajectoryLine(phase) {
+  if (trajectoryLine) { scene.remove(trajectoryLine); trajectoryLine = null; }
+
+  let pts = [];
+  if (phase === 'trans-lunar') {
+    for (let t = 0; t <= 1; t += 0.02) {
+      const x = 0 + t * 30;
+      const y = Math.sin(t * Math.PI) * 8;
+      pts.push(new THREE.Vector3(x, y, 0));
+    }
+  } else if (phase === 'lunar-orbit') {
+    for (let i = 0; i <= 64; i++) {
+      const angle = (i / 64) * Math.PI * 2;
+      pts.push(new THREE.Vector3(30 + Math.cos(angle) * 6, Math.sin(angle) * 6, 0));
+    }
+  } else if (phase === 'trans-mars') {
+    for (let t = 0; t <= 1; t += 0.01) {
+      const x = 30 + t * 130;
+      const y = Math.sin(t * Math.PI) * 40;
+      pts.push(new THREE.Vector3(x, y, 0));
+    }
+  } else if (phase === 'mars-approach') {
+    for (let i = 0; i <= 64; i++) {
+      const angle = (i / 64) * Math.PI * 2;
+      pts.push(new THREE.Vector3(160 + Math.cos(angle) * 10, Math.sin(angle) * 10, 0));
+    }
+  }
+
+  const geo = new THREE.BufferGeometry().setFromPoints(pts);
+  const mat = new THREE.LineDashedMaterial({ color: 0xffd166, dashSize: 2, gapSize: 1, transparent: true, opacity: 0.7 });
+  trajectoryLine = new THREE.Line(geo, mat);
+  trajectoryLine.computeLineDistances();
+  scene.add(trajectoryLine);
+}
+
+let moonAngle = 0;
+let shipT = 0;
+
+function animate() {
+  animFrame = requestAnimationFrame(animate);
+  const t = Date.now() * 0.001;
+
+  // Earth rotation
+  earthMesh.rotation.y += 0.002;
+
+  // Moon orbit
+  moonAngle += 0.003;
+  moonMesh.position.x = Math.cos(moonAngle) * 30;
+  moonMesh.position.z = Math.sin(moonAngle) * 30;
+  moonMesh.rotation.y += 0.001;
+
+  // Mars rotation
+  marsMesh.rotation.y += 0.0015;
+
+  // Sun flicker
+  sunMesh.material.opacity = 1;
+
+  // Ship movement along phase
+  shipT = (shipT + 0.002) % 1;
+  updateShipPosition(shipT);
+
+  renderer.render(scene, camera);
+}
+
+function updateShipPosition(t) {
+  if (currentPhase === 'trans-lunar') {
+    shipMesh.position.x = t * 30;
+    shipMesh.position.y = Math.sin(t * Math.PI) * 8;
+    shipMesh.position.z = 0;
+  } else if (phase === 'lunar-orbit') {
+    const a = t * Math.PI * 2;
+    shipMesh.position.x = 30 + Math.cos(a) * 6;
+    shipMesh.position.y = Math.sin(a) * 6;
+  } else if (currentPhase === 'trans-mars') {
+    shipMesh.position.x = 30 + t * 130;
+    shipMesh.position.y = Math.sin(t * Math.PI) * 40;
+    shipMesh.position.z = 0;
+  } else if (currentPhase === 'mars-approach') {
+    const a = t * Math.PI * 2;
+    shipMesh.position.x = 160 + Math.cos(a) * 10;
+    shipMesh.position.y = Math.sin(a) * 10;
+  }
+}
+
+function setPhase(phase) {
+  currentPhase = phase;
+  buildTrajectoryLine(phase);
+  shipT = 0;
+
+  // Update buttons
+  document.querySelectorAll('.ctrl-btn').forEach(b => { b.classList.remove('active', 'mars-active'); });
+  const btn = document.getElementById('btn-' + phase);
+  if (btn) btn.classList.add(phase.includes('mars') ? 'mars-active' : 'active');
+
+  // Update HUD
+  const phaseData = {
+    'trans-lunar': { phase: 'TRANS-LUNAR', vel: '11.2 km/s', delay: '1.3 s', rad: '12 mSv/day' },
+    'lunar-orbit': { phase: 'LUNAR ORBIT', vel: '1.6 km/s', delay: '1.3 s', rad: '30 mSv/day' },
+    'trans-mars': { phase: 'TRANS-MARS', vel: '4.0 km/s', delay: '4–24 min', rad: '1.8 mSv/day' },
+    'mars-approach': { phase: 'MARS APPROACH', vel: '5.4 km/s', delay: '20 min', rad: '0.6 mSv/day' }
+  };
+  const d = phaseData[phase];
+  if (d) {
+    document.getElementById('hud-phase').textContent = d.phase;
+    document.getElementById('hud-vel').textContent = d.vel;
+    document.getElementById('hud-delay').textContent = d.delay;
+    document.getElementById('hud-rad').textContent = d.rad;
+  }
+
+  // Reposition camera
+  const camPos = {
+    'trans-lunar': [0, 60, 200],
+    'lunar-orbit': [30, 20, 80],
+    'trans-mars': [80, 80, 250],
+    'mars-approach': [160, 30, 80]
+  };
+  if (camPos[phase]) {
+    const [x, y, z] = camPos[phase];
+    camera.position.set(x, y, z);
+    camera.lookAt(phase.includes('mars') ? 160 : 0, 0, 0);
+  }
+}
+
+function onResize() {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+}
+
+// ═══════════════════════════════════════
+// NASA API
+// ═══════════════════════════════════════
+async function fetchNASAData() {
+  const today = new Date().toISOString().slice(0, 10);
+  const weekAgo = new Date(Date.now() - 7 * 86400000).toISOString().slice(0, 10);
+
+  // CME data
+  try {
+    const r = await fetch(`https://api.nasa.gov/DONKI/CME?startDate=${weekAgo}&endDate=${today}&api_key=${NASA_KEY}`);
+    const d = await r.json();
+    const count = Array.isArray(d) ? d.length : 0;
+    document.getElementById('cme-val').textContent = count;
+    document.getElementById('solar-events').textContent = count;
+    nasaLiveData.cme = count;
+  } catch(e) {
+    document.getElementById('cme-val').textContent = 'N/A';
+  }
+
+  // Flare data
+  try {
+    const r = await fetch(`https://api.nasa.gov/DONKI/FLR?startDate=${weekAgo}&endDate=${today}&api_key=${NASA_KEY}`);
+    const d = await r.json();
+    const count = Array.isArray(d) ? d.length : 0;
+    document.getElementById('flare-val').textContent = count;
+    nasaLiveData.flares = count;
+  } catch(e) {
+    document.getElementById('flare-val').textContent = 'N/A';
+  }
+
+  // Geomagnetic storms
+  try {
+    const r = await fetch(`https://api.nasa.gov/DONKI/GST?startDate=${weekAgo}&endDate=${today}&api_key=${NASA_KEY}`);
+    const d = await r.json();
+    const count = Array.isArray(d) ? d.length : 0;
+    document.getElementById('storm-val').textContent = count;
+    nasaLiveData.storms = count;
+  } catch(e) {
+    document.getElementById('storm-val').textContent = 'N/A';
+  }
+
+  // APOD
+  try {
+    const r = await fetch(`https://api.nasa.gov/planetary/apod?api_key=${NASA_KEY}`);
+    const d = await r.json();
+    nasaLiveData.apod = d;
+    document.getElementById('apod-val').textContent = d.title || 'Loaded';
+    if (d.media_type === 'image') {
+      document.getElementById('apod-img').src = d.url;
+      document.getElementById('apod-caption').textContent = d.explanation?.slice(0, 360) + '…';
+      document.getElementById('apod-container').style.display = 'block';
+    }
+  } catch(e) {
+    document.getElementById('apod-val').textContent = 'N/A';
+  }
+
+  // Mars distance (approximate calculation)
+  const marsDistKm = computeMarsDistance();
+  document.getElementById('mars-dist').textContent = (marsDistKm / 1e6).toFixed(1) + 'M';
+  document.getElementById('arrival-dist').textContent = marsDistKm.toLocaleString() + ' km';
+}
+
+function computeMarsDistance() {
+  // Simplified orbital calculation — real values vary 56M–401M km
+  const now = Date.now() / (1000 * 86400 * 365.25); // years since epoch
+  const earthAngle = now * 2 * Math.PI;
+  const marsAngle = (now / 1.881) * 2 * Math.PI;
+  const eR = 1.496e8, mR = 2.279e8;
+  const ex = eR * Math.cos(earthAngle), ey = eR * Math.sin(earthAngle);
+  const mx = mR * Math.cos(marsAngle), my = mR * Math.sin(marsAngle);
+  return Math.round(Math.sqrt((mx-ex)**2 + (my-ey)**2));
+}
+
+// ═══════════════════════════════════════
+// AI MISSION ADVISOR
+// ═══════════════════════════════════════
+const BUILT_IN_RESPONSES = {
+  default: `As your AI Mission Advisor, I can tell you that the Moon-to-Mars campaign represents humanity's most ambitious engineering challenge. The Lunar Gateway will serve as a staging point in the Near Rectilinear Halo Orbit — a gravitational sweet spot that minimizes fuel while maximizing access to both the lunar surface and deep space departure trajectories.\n\nKey mission parameters: The Hohmann transfer window to Mars opens roughly every 26 months. The next optimal window is November 2028, offering a 7-month transit time with a Δv requirement of 3.6 km/s. Radiation will accumulate to approximately 300 mSv — below the 600 mSv career limit but requiring careful monitoring and storm shelter protocols.\n\nAsk me anything specific and I'll give you the detailed data.`,
+  window: `**Next Mars Launch Window: November 2028**\n\nMars windows occur every ~26 months because of the relative orbital periods of Earth (1 year) and Mars (1.88 years). In November 2028, Earth and Mars will be in a favorable alignment for a Hohmann transfer orbit.\n\n**Key parameters for this window:**\n• Transfer time: ~7 months\n• Required Δv: 3.6 km/s departure + 0.9 km/s lunar escape\n• Distance at arrival: ~78 million km\n• Communication delay at arrival: ~4 minutes\n\nMissing this window means waiting until January 2031. The Lunar Gateway staging strategy actually provides flexibility — crew can depart from lunar orbit rather than Earth orbit, saving fuel.`,
+  gateway: `**The Lunar Gateway as Mars Staging Hub**\n\nThe Gateway is positioned in a Near Rectilinear Halo Orbit (NRHO) around the Moon — an orbit that requires only 0.9 km/s Δv to escape toward Mars, compared to 3.6 km/s from Earth's surface.\n\n**Why it matters for Mars:**\n1. **Fuel efficiency** — Departing from lunar orbit saves significant propellant\n2. **Assembly point** — Large Mars transfer vehicles can be assembled in space, avoiding Earth's gravity well\n3. **Crew health** — Astronauts can adapt to microgravity before the long transit\n4. **Abort options** — Early in the mission, Earth return is still possible\n5. **Test bed** — Life support, propulsion, and communication systems are tested in deep space proximity before the 225M km journey\n\nThe Gateway represents a permanent human presence beyond Earth orbit for the first time since Apollo.`,
+  radiation: `**Radiation Hazards: The #1 Mission Risk**\n\nBeyond Earth's magnetic field, two radiation sources threaten crew health:\n\n**1. Galactic Cosmic Rays (GCR)**\nHigh-energy particles from outside our solar system. Cannot be blocked by conventional shielding — adding mass actually creates secondary radiation. The crew will accumulate ~150 mSv from GCR during transit.\n\n**2. Solar Particle Events (SPE)**\nSudden bursts from solar flares — potentially thousands of mSv in hours without shelter. The current space weather data shows ${nasaLiveData.flares || 'N/A'} solar flares and ${nasaLiveData.cme || 'N/A'} CMEs in the last 7 days.\n\n**Mitigation strategies:**\n• Water wall storm shelters (hydrogen-rich materials absorb radiation)\n• Real-time space weather monitoring (NASA DONKI — what this platform shows)\n• Polyethylene shielding around crew quarters\n• Medical monitoring and countermeasures\n\nTotal estimated mission dose: ~300 mSv (below career limit of 600 mSv).`,
+  jezero: `**Jezero Crater: Why Here?**\n\nJezero is a 49-km impact crater in the Isidis Planitia region that was once filled with water approximately 3.5 billion years ago. River channels fed sediment into this ancient lake.\n\n**Why scientists chose it:**\n1. **Ancient delta** — River delta deposits are Earth's best environment for preserving microbial fossils. On Mars, this could mean ancient life evidence.\n2. **Rock diversity** — The crater contains volcanic, sedimentary, and possibly hydrothermal rocks — a geological survey of Mars in one location\n3. **Water evidence** — Carbonate minerals detected from orbit confirm liquid water once existed\n4. **Engineering safety** — Relatively flat terrain suitable for EDL, solar power viable year-round\n\n**Perseverance has already found** organic compounds in Jezero — not definitive life detection, but compelling. Artemis mission crew will drill to 5+ meter depth to access rock untouched by surface radiation for billions of years.`,
+  isru: `**ISRU: Making Fuel on Mars**\n\nIn-Situ Resource Utilization (ISRU) is the technology that makes a sustainable Mars presence possible. Without it, every kilogram of return propellant must be launched from Earth — an enormous cost.\n\n**The MOXIE Process (proven by Perseverance):**\n1. Intake Martian atmosphere (95% CO₂)\n2. Electrochemically split CO₂ → CO + O\n3. Compress and store liquid oxygen (LOx)\n4. LOx + hydrogen (brought from Earth) = rocket propellant\n\n**Full mission ISRU scale:**\n• Produce ~25 metric tons of LOx for Mars Ascent Vehicle\n• Requires ~1 MW power source (nuclear fission surface power)\n• Takes ~16 months of pre-deployment production before crew arrives\n\nThis is why Artemis pre-deploys ISRU equipment before the crew lands. When the crew touches down, the fuel tank is already full. Mars becomes a self-sustaining waypoint.`,
+  weather: `**Current Space Weather & Mission Implications**\n\nLive NASA DONKI data for the past 7 days:\n• CME Events: ${nasaLiveData.cme ?? 'Loading…'}\n• Solar Flares: ${nasaLiveData.flares ?? 'Loading…'}\n• Geomagnetic Storms: ${nasaLiveData.storms ?? 'Loading…'}\n\n**Mission impact assessment:**\nCMEs (Coronal Mass Ejections) are clouds of magnetized plasma that can reach Earth/Mars in 1–3 days. A strong CME during trans-Mars insertion could expose crew to 50–200 mSv in a single event.\n\n**Mitigation protocol:**\n• Monitor NOAA SWPC 3-day forecasts before critical maneuvers\n• Enter storm shelter (water-walled crew quarter) at Kp ≥ 7 warning\n• Delay EVAs during active flare periods\n• This platform's live data feed is exactly what mission controllers use for real-time go/no-go decisions`
+};
+
+function getBuiltInResponse(question) {
+  const q = question.toLowerCase();
+  if (q.includes('window') || q.includes('launch') || q.includes('when')) return BUILT_IN_RESPONSES.window;
+  if (q.includes('gateway') || q.includes('moon') || q.includes('lunar')) return BUILT_IN_RESPONSES.gateway;
+  if (q.includes('radiation') || q.includes('hazard') || q.includes('danger') || q.includes('safe')) return BUILT_IN_RESPONSES.radiation;
+  if (q.includes('jezero') || q.includes('landing site') || q.includes('crater')) return BUILT_IN_RESPONSES.jezero;
+  if (q.includes('isru') || q.includes('fuel') || q.includes('oxygen') || q.includes('propellant')) return BUILT_IN_RESPONSES.isru;
+  if (q.includes('weather') || q.includes('cme') || q.includes('flare') || q.includes('solar')) return BUILT_IN_RESPONSES.weather;
+  return BUILT_IN_RESPONSES.default;
+}
+
+function appendMessage(role, text) {
+  const msgs = document.getElementById('ai-messages');
+  const div = document.createElement('div');
+  div.className = `msg ${role}`;
+  const icon = document.createElement('div');
+  icon.className = 'msg-icon';
+  icon.textContent = role === 'assistant' ? '🚀' : '👤';
+  const bubble = document.createElement('div');
+  bubble.className = 'msg-bubble';
+  // Convert markdown-ish bold
+  bubble.innerHTML = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
+  div.appendChild(icon);
+  div.appendChild(bubble);
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+// ── BUILD SYSTEM PROMPT (called fresh each time so NASA data is current) ──
+function buildSystemPrompt() {
+  return `You are ARTEMIS-1, an expert AI Mission Advisor for NASA's Moon-to-Mars campaign. You have deep knowledge of orbital mechanics, space medicine, planetary science, and mission planning.
+
+Current live NASA data:
+- CME events (7 days): ${nasaLiveData.cme ?? 'unknown'}
+- Solar flares (7 days): ${nasaLiveData.flares ?? 'unknown'}
+- Geomagnetic storms (7 days): ${nasaLiveData.storms ?? 'unknown'}
+- Current Earth-Mars distance: ${computeMarsDistance().toLocaleString()} km
+
+Answer concisely with real numbers and mission-critical detail. Reference actual NASA programs (Artemis, Gateway, MOXIE, Perseverance). Format key terms with **bold**. This is a NASA Space Apps 2026 hackathon demo platform.`;
+}
+
+// ── SHOW ERROR IN CHAT ──
+function showAIError(provider, errMsg) {
+  return `⚠️ **${provider.toUpperCase()} API Error**\n\n${errMsg}\n\n**Common fixes:**\n• Check your API key is correct and has credits\n• Some APIs block direct browser requests (CORS) — OpenAI and Gemini work fine from browsers; Claude and DeepSeek may need a backend proxy\n• Try switching to **OpenAI** or **Gemini** which have permissive CORS headers\n\n---\n\n**Built-in answer while you fix it:**\n\n${getBuiltInResponse(window._lastQuestion || '')}`;
+}
+
+async function callAIProvider(provider, key, question) {
+  window._lastQuestion = question;
+  const sys = buildSystemPrompt();
+
+  // ── CLAUDE ──
+  // NOTE: Anthropic blocks browser CORS. Works when served from a domain (Vercel/Netlify).
+  // If opening as a local file, use OpenAI or Gemini instead.
+  if (provider === 'claude') {
+    let res;
+    try {
+      res = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': key,
+          'anthropic-version': '2023-06-01',
+          'anthropic-dangerous-direct-browser-only-key': 'true'  // opt-in to browser mode
+        },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-6',
+          max_tokens: 700,
+          system: sys,
+          messages: [{ role: 'user', content: question }]
+        })
+      });
+    } catch(netErr) {
+      throw new Error(`Network/CORS error. If running locally, deploy to Vercel or switch to Gemini/OpenAI.\n\nDetails: ${netErr.message}`);
+    }
+    const d = await res.json();
+    if (!res.ok) throw new Error(d.error?.message || JSON.stringify(d));
+    return d.content?.[0]?.text || getBuiltInResponse(question);
+  }
+
+  // ── OPENAI ── (CORS-friendly, works from browser)
+  if (provider === 'openai') {
+    let res;
+    try {
+      res = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
+        body: JSON.stringify({
+          model: 'gpt-4o',
+          max_tokens: 700,
+          messages: [
+            { role: 'system', content: sys },
+            { role: 'user',   content: question }
+          ]
+        })
+      });
+    } catch(netErr) {
+      throw new Error(`Network error: ${netErr.message}`);
+    }
+    const d = await res.json();
+    if (!res.ok) throw new Error(d.error?.message || JSON.stringify(d));
+    return d.choices?.[0]?.message?.content || getBuiltInResponse(question);
+  }
+
+  // ── DEEPSEEK ── (OpenAI-compatible API, CORS depends on region)
+  if (provider === 'deepseek') {
+    let res;
+    try {
+      res = await fetch('https://api.deepseek.com/v1/chat/completions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
+        body: JSON.stringify({
+          model: 'deepseek-chat',
+          max_tokens: 700,
+          messages: [
+            { role: 'system', content: sys },
+            { role: 'user',   content: question }
+          ]
+        })
+      });
+    } catch(netErr) {
+      throw new Error(`Network/CORS error. DeepSeek may block browsers. Try deploying to Vercel or switch to Gemini.\n\nDetails: ${netErr.message}`);
+    }
+    const d = await res.json();
+    if (!res.ok) throw new Error(d.error?.message || JSON.stringify(d));
+    return d.choices?.[0]?.message?.content || getBuiltInResponse(question);
+  }
+
+  // ── GEMINI ── (CORS-friendly via REST API, works from browser)
+  if (provider === 'gemini') {
+    const model = 'gemini-1.5-flash'; // flash is faster + free tier; change to gemini-1.5-pro if preferred
+    let res;
+    try {
+      res = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            system_instruction: { parts: [{ text: sys }] },
+            contents: [{ role: 'user', parts: [{ text: question }] }],
+            generationConfig: { maxOutputTokens: 700, temperature: 0.7 }
+          })
+        }
+      );
+    } catch(netErr) {
+      throw new Error(`Network error: ${netErr.message}`);
+    }
+    const d = await res.json();
+    if (!res.ok) throw new Error(d.error?.message || JSON.stringify(d));
+    const text = d.candidates?.[0]?.content?.parts?.[0]?.text;
+    if (!text) throw new Error('Empty response from Gemini. Check your key has Gemini API enabled in Google AI Studio.');
+    return text;
+  }
+
+  return getBuiltInResponse(question);
+}
+
+async function sendMessage() {
+  const input = document.getElementById('ai-user-input');
+  const question = input.value.trim();
+  if (!question) return;
+
+  input.value = '';
+  appendMessage('user', question);
+
+  const sendBtn = document.getElementById('ai-send-btn');
+  const typing  = document.getElementById('typing');
+  sendBtn.disabled = true;
+  typing.classList.add('active');
+
+  const keyMap = { claude: CLAUDE_KEY, openai: OPENAI_KEY, deepseek: DEEPSEEK_KEY, gemini: GEMINI_KEY };
+  const activeKey = keyMap[AI_PROVIDER];
+
+  let reply;
+  if (activeKey) {
+    try {
+      reply = await callAIProvider(AI_PROVIDER, activeKey, question);
+    } catch(e) {
+      console.error('AI call failed:', e);
+      reply = showAIError(AI_PROVIDER, e.message);
+    }
+  } else {
+    await new Promise(r => setTimeout(r, 600 + Math.random() * 400));
+    reply = getBuiltInResponse(question);
+  }
+
+  typing.classList.remove('active');
+  sendBtn.disabled = false;
+  appendMessage('assistant', reply);
+}
+
+function askQuestion(q) {
+  document.getElementById('ai-user-input').value = q;
+  sendMessage();
+  scrollTo('ai-section');
+}
+
+// ═══════════════════════════════════════
+// STORY MODE
+// ═══════════════════════════════════════
+function selectCharacter(char, el) {
+  currentCharacter = char;
+  document.querySelectorAll('.story-card').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  loadChapter(currentChapterIndex);
+}
+
+function loadChapter(idx) {
+  if (idx < 0) idx = 0;
+  if (idx >= chapters.length) idx = chapters.length - 1;
+  currentChapterIndex = idx;
+  const ch = chapters[idx];
+  document.getElementById('ch-number').textContent = ch.num;
+  document.getElementById('ch-heading').textContent = ch.heading;
+  document.getElementById('ch-content').innerHTML = ch.content;
+}
+
+function changeChapter(dir) {
+  const next = currentChapterIndex + dir;
+  if (next >= 0 && next < chapters.length) loadChapter(next);
+}
+</script>
 </body>
 </html>

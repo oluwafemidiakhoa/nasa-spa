@@ -1,86 +1,73 @@
-# Solar Storyline
+# 🚀 Artemis Navigator — Moon to Mars Mission Platform
 
-Solar Storyline is a NASA Space Apps MVP that turns open space weather data into role-based human stories. Instead of asking judges or students to interpret raw CME, flare, Kp, and solar wind feeds, the app explains what the current Sun-Earth conditions could mean for a pilot, satellite operator, grid operator, astronaut, aurora chaser, or student.
+**A NASA Space Apps Challenge 2026 entry.**
 
-This repository contains many earlier prototypes. The competition MVP is the Next.js app in `web/nextjs`.
+Artemis Navigator turns NASA's open data and modern AI into an interactive Moon-to-Mars mission console: a 3D trajectory you can fly, live space-weather context, and an AI mission advisor you can question in plain language. It is built to make the science of deep-space navigation — orbital mechanics, lunar staging, Mars transfer windows, and radiation hazards — understandable to students, communicators, and judges alike.
 
-## NASA Space Apps Submission
+The flagship experience is a single, dependency-light HTML page ([`index.html`](index.html)) that runs entirely in the browser. The repository also includes a polished Next.js companion app (**Solar Storyline**) and a collection of supporting space-weather dashboards.
 
-**Concept:** Space weather through human eyes.
+---
 
-**Core problem:** NASA and NOAA publish rich open data about solar activity, but most people cannot connect a CME, flare, geomagnetic storm, or Kp reading to real-world impacts.
+## ✨ Flagship: Artemis Navigator (`index.html`)
 
-**Solution:** Solar Storyline fetches public space weather feeds, summarizes current conditions, shows the evidence, and translates the same data into different role-specific stories.
+Open [`index.html`](index.html) in any modern browser — no build step required.
 
-**Audience:**
-- Students and educators
-- Science communicators
-- Aurora observers
-- Space Apps judges
-- Public users who need an accessible explanation of space weather
+### What it does
 
-## Open Data Used
+- **3D trajectory visualization** — a [Three.js](https://threejs.org/) (r128) scene renders the Earth–Moon–Mars corridor and animates the spacecraft along its transfer path.
+- **Orbital mechanics, live** — computes orbit altitude and orbital period from adjustable mission parameters so users can see how geometry drives the trajectory.
+- **Moon-to-Mars mission phases** — walks through Lunar Orbit, the Lunar Gateway, Lunar Surface Ops, Mars Approach, Mars Orbital Insertion, and the Mars Prep Hub.
+- **Story Mode** — a guided, narrative walkthrough of the mission for outreach and demos.
+- **Live NASA data** — pulls real space-weather and imagery context from NASA's open APIs (see below) so the mission environment reflects current solar conditions.
 
-The MVP uses public data sources directly from the browser:
+### 🤖 AI Mission Advisor — four providers, bring-your-own-key
 
-- NASA DONKI CME endpoint
-- NASA DONKI FLR endpoint
-- NASA DONKI SEP endpoint
-- NASA DONKI GST endpoint
-- NASA EPIC recent Earth imagery
-- NOAA SWPC planetary K index
-- NOAA SWPC solar wind plasma
-- NOAA SWPC solar wind magnetic field
+Ask mission-briefing questions in natural language and get answers from the AI engine of your choice. Keys are entered in the UI and used **client-side only** — they are never committed or sent anywhere except directly to the chosen provider's API.
 
-The interface labels feed health and warns when it is using partial data or a fallback sample. The app is an educational prototype, not an official operational forecast.
+| Provider | Model | Endpoint |
+|----------|-------|----------|
+| **Anthropic** | Claude | `api.anthropic.com/v1/messages` |
+| **OpenAI** | GPT-4o | `api.openai.com/v1/chat/completions` |
+| **DeepSeek** | DeepSeek | `api.deepseek.com/v1/chat/completions` |
+| **Google** | Gemini | `generativelanguage.googleapis.com` |
 
-## Demo Flow
+Get a key from the provider you prefer:
+[Anthropic](https://console.anthropic.com) ·
+[OpenAI](https://platform.openai.com/api-keys) ·
+[DeepSeek](https://platform.deepseek.com) ·
+Google AI Studio.
 
-1. Open the homepage.
-2. Show the live/partial/fallback data badge.
-3. Explain the activity score, confidence, and data caveats.
-4. Select a role such as Pilot or Aurora Chaser.
-5. Show how the same NASA/NOAA data becomes a human-centered story.
-6. Open the evidence panel to show DONKI IDs, timestamps, and source links.
-7. End with the scientific caveat: official decisions should use NOAA SWPC and mission procedures.
+> ⚠️ **Security:** API keys are billable secrets. Paste them only into the running app; do not commit them. Rotate any key that has been shared.
 
-## Why It Can Win
+---
 
-**Impact:** Connects space weather to aviation, satellites, power grids, astronauts, education, and aurora viewing.
+## 🌌 Companion app: Solar Storyline (`web/nextjs`)
 
-**Creativity:** Uses storytelling as the interface for scientific data.
+A focused Next.js MVP that turns live space-weather data into **role-based human stories**. Instead of asking people to interpret raw CME, flare, Kp, and solar-wind feeds, it explains what current Sun–Earth conditions could mean for a pilot, satellite operator, grid operator, astronaut, aurora chaser, or student.
 
-**Use of NASA/open data:** Makes DONKI and EPIC visible in the product and keeps source evidence accessible.
+Highlights:
+- Earth-impact-weighted readiness score (measured Kp/Bz/solar wind/storms drive the level; CMEs count only when geometrically Earth-directed).
+- Evidence panel with DONKI event IDs, timestamps, and source links.
+- Live / partial / fallback data states with explicit feed-health reporting.
 
-**Scientific credibility:** Shows uncertainty, confidence, source health, timestamps, and an official-forecast disclaimer.
-
-**Technical execution:** A focused, deployable Next.js MVP instead of a collection of disconnected demos.
-
-**Storytelling quality:** The demo has a clear beginning, middle, and end: Sun event, Earth conditions, human impact.
-
-## Local Development
+### Run it locally
 
 ```bash
 cd web/nextjs
 npm install
 npm run dev
+# open http://localhost:3000
 ```
 
-Then open:
-
-```text
-http://localhost:3000
-```
-
-Optional environment variable:
+Optional — for higher NASA API rate limits, create `web/nextjs/.env.local`:
 
 ```bash
 NEXT_PUBLIC_NASA_API_KEY=your_nasa_api_key
 ```
 
-If no key is provided, the app uses NASA's `DEMO_KEY`, which is rate-limited.
+Without a key the app falls back to NASA's rate-limited `DEMO_KEY`. Get a free key at [api.nasa.gov](https://api.nasa.gov/).
 
-## Build Checks
+### Build checks
 
 ```bash
 cd web/nextjs
@@ -88,25 +75,53 @@ npm run type-check
 npm run build
 ```
 
-## Current Scope
+---
 
-Implemented:
+## 🛰️ Supporting dashboards
 
-- Single polished MVP homepage
-- NASA/NOAA open data adapter
-- Role-based impact stories
-- Loading, error, partial-data, and fallback states
-- Evidence panel with source links
-- NASA Space Apps submission README
+A set of standalone HTML visualizations live at the repository root (open any directly in a browser):
 
-Not yet implemented:
+- `dashboard_hub.html` — space-weather dashboard hub
+- `3d_solar_system.html`, `working_3d_solar_system.html`, `spectacular_3d_space_weather.html` — 3D solar-system and space-weather scenes
+- `iss_tracker.html` — ISS tracking
+- `aurora_alerts.html` — aurora visibility alerts
+- `space_weather_chatbot.html`, `space_weather_research_center.html`, `space_explorers_academy.html` — educational and research views
 
-- Full MapLibre/GIBS map layer
-- Backend data cache
-- Historical validation dashboard
-- Alert subscriptions
-- Production deployment hardening
+These are earlier prototypes and exploratory demos; the **Artemis Navigator** (`index.html`) and **Solar Storyline** (`web/nextjs`) are the maintained submission pieces.
 
-## Scientific Caveat
+---
 
-Solar Storyline is an educational and storytelling prototype built for NASA Space Apps. It should not be used as an operational forecast. Official space weather alerts, warnings, and operational products should come from NOAA's Space Weather Prediction Center and relevant mission procedures.
+## 📡 NASA & open data used
+
+- **NASA DONKI** — CME, FLR (solar flare), and GST (geomagnetic storm) notifications
+- **NASA APOD** — Astronomy Picture of the Day
+- **NASA EPIC** — recent natural-color Earth imagery (Solar Storyline)
+- **NOAA SWPC** — planetary K index, solar-wind plasma, and magnetic-field feeds (Solar Storyline)
+
+---
+
+## 🧰 Tech stack
+
+- **Artemis Navigator:** vanilla HTML/CSS/JS + Three.js (r128), fetched from CDN; multi-provider AI integration via `fetch`.
+- **Solar Storyline:** Next.js 14, React 18, TypeScript, Tailwind CSS.
+- **Data:** direct browser calls to NASA and NOAA public APIs.
+
+---
+
+## 🏆 Why it fits NASA Space Apps
+
+- **Impact:** makes deep-space mission planning and space-weather risk legible to a general audience.
+- **Creativity:** combines a flyable 3D trajectory with a conversational, multi-model AI advisor.
+- **Use of NASA/open data:** NASA DONKI and APOD drive the live mission environment; sources stay visible.
+- **Scientific credibility:** real orbital-mechanics calculations, real agency data, and an explicit educational disclaimer.
+- **Storytelling:** Story Mode gives the mission a clear beginning, middle, and end.
+
+---
+
+## ⚠️ Scientific caveat
+
+This project is an educational NASA Space Apps prototype. It uses NASA and NOAA open data to explain space mission and space-weather context, but it is **not** an official operational forecast or flight-planning tool. Operational decisions should rely on NOAA Space Weather Prediction Center products, NASA mission systems, and established mission procedures.
+
+---
+
+*Built for the NASA Space Apps Challenge 2026.*
