@@ -2137,6 +2137,30 @@ async function callAIProvider(provider, key, question, history = []) {
     parts: [{ text: m.content }]
   }));
 
+  // ── SERVERLESS PROXY (preferred when deployed) ──
+  // On Vercel the /api/ai function forwards the request server-side, so ALL
+  // providers work — including Claude and DeepSeek, which browsers block via
+  // CORS. When running as a local/static file the function returns 404 (or the
+  // fetch fails), and we fall through to the direct browser calls below.
+  try {
+    const proxyMessages = [...chatTurns, { role: 'user', content: question }];
+    const pr = await fetch('/api/ai', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ provider, key, system: sys, messages: proxyMessages })
+    });
+    if (pr.status !== 404) {
+      const pd = await pr.json().catch(() => ({}));
+      if (pr.ok && pd.text) return pd.text;
+      throw new Error(pd.error || `Proxy error ${pr.status}`);
+    }
+    // 404 → no serverless function here → use direct calls below
+  } catch (proxyErr) {
+    // A TypeError means the fetch itself failed (no proxy / file://) → fall
+    // through to direct calls. Any other error is a real provider/proxy failure.
+    if (!(proxyErr instanceof TypeError)) throw proxyErr;
+  }
+
   // ── CLAUDE ──
   // NOTE: Anthropic blocks browser CORS. Works when served from a domain (Vercel/Netlify).
   // If opening as a local file, use OpenAI or Gemini instead.
