@@ -186,12 +186,14 @@ export default function SolarStorylinePage() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [epicImageFailed, setEpicImageFailed] = useState(false);
 
   const loadSnapshot = async (isRefresh = false) => {
     if (isRefresh) setRefreshing(true);
     else setLoading(true);
 
     setError(null);
+    setEpicImageFailed(false);
 
     try {
       const data = await fetchSpaceWeatherSnapshot();
@@ -274,12 +276,13 @@ export default function SolarStorylinePage() {
             </div>
 
             <div className="min-h-[420px] overflow-hidden rounded-lg border border-white/10 bg-black/30">
-              {snapshot.epicImageUrl ? (
+              {snapshot.epicImageUrl && !epicImageFailed ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={snapshot.epicImageUrl}
                   alt="NASA EPIC recent Earth imagery"
                   className="h-72 w-full object-cover"
+                  onError={() => setEpicImageFailed(true)}
                 />
               ) : (
                 <div className="flex h-72 items-center justify-center bg-[radial-gradient(circle_at_center,rgba(34,197,94,0.28),transparent_34%),linear-gradient(135deg,#0f172a,#111827)]">
@@ -326,7 +329,7 @@ export default function SolarStorylinePage() {
               icon={Sun}
               label="Recent DONKI events"
               value={`${snapshot.metrics.cmeCount + snapshot.metrics.flareCount + snapshot.metrics.sepCount + snapshot.metrics.stormCount}`}
-              detail={`${snapshot.metrics.cmeCount} CMEs, ${snapshot.metrics.flareCount} flares, ${snapshot.metrics.sepCount} SEP, ${snapshot.metrics.stormCount} GST`}
+              detail={`${snapshot.metrics.cmeCount} CMEs (${snapshot.metrics.earthDirectedCmeCount} Earth-directed), ${snapshot.metrics.flareCount} flares, ${snapshot.metrics.sepCount} SEP, ${snapshot.metrics.stormCount} GST`}
             />
             <MetricCard
               icon={Radio}

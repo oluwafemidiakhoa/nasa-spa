@@ -56,6 +56,7 @@ export interface SpaceWeatherSnapshot {
     sepCount: number;
     stormCount: number;
     strongestFlare: string;
+    earthDirectedCmeCount: number;
     kpIndex: number | null;
     solarWindSpeed: number | null;
     bzGsm: number | null;
@@ -187,6 +188,49 @@ function eventSourceUrl(type: OpenDataEvent['type'], id: string): string {
   )}&api_key=${NASA_KEY}#${encodeURIComponent(id)}`;
 }
 
+interface CmeAssessment {
+  speed: number | null;
+  isEarthDirected: boolean;
+  locationLabel: string;
+}
+
+// DONKI CME analyses describe the launch geometry. A CME is broadly
+// "Earth-directed" when its source sits near the Sun-Earth line (small
+// heliographic longitude/latitude) and it has a wide enough cone to sweep
+// Earth, or when a linked note explicitly mentions Earth. A high raw CME
+// count alone says nothing about Earth impact, so we score geometry, not tally.
+function assessCme(cme: Record<string, unknown>): CmeAssessment {
+  const analyses = asArray<Record<string, unknown>>(cme.cmeAnalyses);
+  const analysis =
+    analyses.find((entry) => entry.isMostAccurate === true) ||
+    analyses[analyses.length - 1] ||
+    null;
+
+  const speed = analysis ? parseNumber(analysis.speed) : null;
+  const longitude = analysis ? parseNumber(analysis.longitude) : null;
+  const latitude = analysis ? parseNumber(analysis.latitude) : null;
+  const halfAngle = analysis ? parseNumber(analysis.halfAngle) : null;
+
+  const facingEarth =
+    longitude !== null && latitude !== null
+      ? Math.abs(longitude) <= 45 && Math.abs(latitude) <= 45
+      : false;
+  const wideCone = halfAngle !== null && halfAngle >= 30;
+  const earthInNote = String(cme.note || '').toLowerCase().includes('earth');
+  const isEarthDirected = (facingEarth && wideCone) || earthInNote;
+
+  const sourceLocation = String(cme.sourceLocation || '').trim();
+  const locationLabel = sourceLocation
+    ? sourceLocation
+    : isEarthDirected
+      ? 'Earth-directed'
+      : analysis
+        ? 'off the Sun–Earth line'
+        : 'analysis pending';
+
+  return { speed, isEarthDirected, locationLabel };
+}
+
 function normalizeEvents(
   cmes: Array<Record<string, unknown>>,
   flares: Array<Record<string, unknown>>,
@@ -195,18 +239,15 @@ function normalizeEvents(
 ): OpenDataEvent[] {
   const cmeEvents = cmes.map((cme, index) => {
     const id = eventId(cme, `CME-${index + 1}`);
-    const analysis = asArray<Record<string, unknown>>(cme.cmeAnalyses)[0];
-    const speed = analysis ? parseNumber(analysis.speed) : null;
-    const location = String(cme.sourceLocation || 'unknown source');
+    const { speed, isEarthDirected, locationLabel } = assessCme(cme);
+    const speedText = speed ? `, estimated speed ${Math.round(speed)} km/s` : ', analysis pending';
 
     return {
       id,
       type: 'CME' as const,
       time: eventTime(cme),
-      title: 'Coronal mass ejection detected',
-      detail: speed
-        ? `${location}, estimated speed ${Math.round(speed)} km/s`
-        : `${location}, analysis pending`,
+      title: isEarthDirected ? 'Earth-directed CME detected' : 'Coronal mass ejection detected',
+      detail: `${locationLabel}${speedText}`,
       sourceUrl: eventSourceUrl('CME', id),
     };
   });
@@ -256,38 +297,58 @@ function normalizeEvents(
     .slice(0, 8);
 }
 
+// Activity is weighted toward *measured* near-Earth conditions (Kp, Bz, solar
+// wind, geomagnetic storm records) because those describe what Earth is
+// experiencing now. Solar drivers (CMEs, flares, SEPs) only add weight when
+// they are plausibly geoeffective — a high count of off-disk CMEs should not
+// inflate the score while Earth itself is quiet.
 function calculateActivityScore(params: {
-  cmes: Array<Record<string, unknown>>;
-  flares: Array<Record<string, unknown>>;
-  seps: Array<Record<string, unknown>>;
-  storms: Array<Record<string, unknown>>;
+  earthDirectedCmeCount: number;
+  maxEarthDirectedSpeed: number | null;
+  sepCount: number;
+  stormCount: number;
   kpIndex: number | null;
   solarWindSpeed: number | null;
   bzGsm: number | null;
   strongestFlare: string;
 }): number {
+  // Measured near-Earth state (dominant).
+  const kpScore = params.kpIndex !== null ? Math.min(Math.max(params.kpIndex - 1, 0) * 9, 45) : 0;
+  const bzScore =
+    params.bzGsm !== null && params.bzGsm < 0 ? Math.min(Math.abs(params.bzGsm) * 1.6, 18) : 0;
+  const windScore =
+    params.solarWindSpeed !== null ? Math.min(Math.max(params.solarWindSpeed - 400, 0) / 25, 12) : 0;
+  const stormScore = Math.min(params.stormCount * 14, 22);
+
+  // Solar drivers (only when geoeffective).
+  const fastCmeBonus =
+    params.maxEarthDirectedSpeed !== null && params.maxEarthDirectedSpeed > 800 ? 8 : 0;
+  const cmeScore =
+    params.earthDirectedCmeCount > 0
+      ? Math.min(8 + params.earthDirectedCmeCount * 4 + fastCmeBonus, 22)
+      : 0;
   const flareScore = params.strongestFlare.startsWith('X')
-    ? 35
+    ? 16
     : params.strongestFlare.startsWith('M')
-      ? 24
-      : params.strongestFlare.startsWith('C')
-        ? 10
-        : 0;
+      ? 9
+      : 0;
+  const sepScore = Math.min(params.sepCount * 10, 16);
 
-  const cmeScore = Math.min(params.cmes.length * 14, 34);
-  const sepScore = Math.min(params.seps.length * 18, 26);
-  const stormScore = Math.min(params.storms.length * 22, 32);
-  const kpScore = params.kpIndex ? Math.min(params.kpIndex * 8, 36) : 0;
-  const windScore = params.solarWindSpeed && params.solarWindSpeed > 550 ? 12 : 0;
-  const bzScore = params.bzGsm && params.bzGsm < -8 ? 14 : 0;
-
-  return Math.min(100, Math.round(flareScore + cmeScore + sepScore + stormScore + kpScore + windScore + bzScore));
+  return Math.min(
+    100,
+    Math.round(kpScore + bzScore + windScore + stormScore + cmeScore + flareScore + sepScore)
+  );
 }
 
-function activityLevel(score: number, kpIndex: number | null): ActivityLevel {
-  if ((kpIndex && kpIndex >= 6) || score >= 76) return 'storm';
-  if ((kpIndex && kpIndex >= 5) || score >= 52) return 'active';
-  if (score >= 25) return 'watch';
+function activityLevel(
+  score: number,
+  kpIndex: number | null,
+  stormCount: number,
+  earthDirectedInbound: boolean
+): ActivityLevel {
+  if ((kpIndex !== null && kpIndex >= 6) || stormCount >= 2) return 'storm';
+  if ((kpIndex !== null && kpIndex >= 5) || stormCount >= 1 || score >= 55) return 'active';
+  if (score >= 22 || earthDirectedInbound) return 'watch';
   return 'quiet';
 }
 
@@ -307,14 +368,21 @@ function buildHeadline(level: ActivityLevel): string {
 function buildSummary(params: {
   level: ActivityLevel;
   cmeCount: number;
+  earthDirectedCmeCount: number;
   flareCount: number;
   sepCount: number;
   stormCount: number;
   kpIndex: number | null;
   strongestFlare: string;
 }): string {
-  const kpText = params.kpIndex === null ? 'latest Kp unavailable' : `latest Kp near ${params.kpIndex.toFixed(1)}`;
-  return `${params.cmeCount} CMEs, ${params.flareCount} flares, ${params.sepCount} particle events, and ${params.stormCount} geomagnetic storm records were found in the recent DONKI window; strongest flare: ${params.strongestFlare}; ${kpText}.`;
+  const kpText =
+    params.kpIndex === null
+      ? 'latest Kp unavailable'
+      : `latest Kp near ${params.kpIndex.toFixed(1)} (${
+          params.kpIndex >= 5 ? 'disturbed' : 'quiet'
+        } near-Earth conditions)`;
+  const cmeText = `${params.cmeCount} CMEs (${params.earthDirectedCmeCount} Earth-directed)`;
+  return `${cmeText}, ${params.flareCount} flares, ${params.sepCount} particle events, and ${params.stormCount} geomagnetic storm records were found in the recent DONKI window; strongest flare: ${params.strongestFlare}; ${kpText}.`;
 }
 
 function buildRoles(params: {
@@ -324,7 +392,7 @@ function buildRoles(params: {
   kpIndex: number | null;
   solarWindSpeed: number | null;
   bzGsm: number | null;
-  cmeCount: number;
+  earthDirectedCmeCount: number;
   sepCount: number;
 }): RoleStory[] {
   const kp = params.kpIndex;
@@ -361,9 +429,12 @@ function buildRoles(params: {
       id: 'satellite',
       title: 'Satellite operator',
       audience: 'LEO operators and mission teams',
-      signal: active || params.cmeCount > 0 ? 'Track drag and anomaly risk.' : 'Normal monitoring posture.',
+      signal:
+        active || params.earthDirectedCmeCount > 0
+          ? 'Track drag and anomaly risk.'
+          : 'Normal monitoring posture.',
       summary:
-        active || params.cmeCount > 0
+        active || params.earthDirectedCmeCount > 0
           ? 'CMEs and geomagnetic activity can heat the upper atmosphere and increase drag on low-Earth-orbit satellites.'
           : 'No strong drag-risk signal is visible in the current open-data snapshot.',
       whyItMatters:
@@ -492,7 +563,7 @@ function fallbackSnapshot(): SpaceWeatherSnapshot {
     kpIndex: 4,
     solarWindSpeed: 480,
     bzGsm: -4,
-    cmeCount: 1,
+    earthDirectedCmeCount: 1,
     sepCount: 0,
   });
 
@@ -511,6 +582,7 @@ function fallbackSnapshot(): SpaceWeatherSnapshot {
       sepCount: 0,
       stormCount: 0,
       strongestFlare: 'M1.0 sample',
+      earthDirectedCmeCount: 1,
       kpIndex: 4,
       solarWindSpeed: 480,
       bzGsm: -4,
@@ -572,17 +644,24 @@ export async function fetchSpaceWeatherSnapshot(): Promise<SpaceWeatherSnapshot>
   const solarWindSpeed = latestProductRow(plasmaResult.data, 'speed');
   const bzGsm = latestProductRow(magResult.data, 'bz_gsm') ?? latestProductRow(magResult.data, 'bz');
   const strongest = strongestFlare(flares);
+  const cmeAssessments = cmes.map(assessCme);
+  const earthDirectedCmes = cmeAssessments.filter((cme) => cme.isEarthDirected);
+  const earthDirectedCmeCount = earthDirectedCmes.length;
+  const maxEarthDirectedSpeed = earthDirectedCmes.reduce<number | null>(
+    (max, cme) => (cme.speed !== null && (max === null || cme.speed > max) ? cme.speed : max),
+    null
+  );
   const activityScore = calculateActivityScore({
-    cmes,
-    flares,
-    seps,
-    storms,
+    earthDirectedCmeCount,
+    maxEarthDirectedSpeed,
+    sepCount: seps.length,
+    stormCount: storms.length,
     kpIndex,
     solarWindSpeed,
     bzGsm,
     strongestFlare: strongest,
   });
-  const level = activityLevel(activityScore, kpIndex);
+  const level = activityLevel(activityScore, kpIndex, storms.length, earthDirectedCmeCount > 0);
   const events = normalizeEvents(cmes, flares, seps, storms);
   const primaryEvent = events[0] || null;
   const dataMode: DataMode = successful.length === results.length ? 'live' : 'partial';
@@ -593,7 +672,7 @@ export async function fetchSpaceWeatherSnapshot(): Promise<SpaceWeatherSnapshot>
     kpIndex,
     solarWindSpeed,
     bzGsm,
-    cmeCount: cmes.length,
+    earthDirectedCmeCount,
     sepCount: seps.length,
   });
 
@@ -615,6 +694,7 @@ export async function fetchSpaceWeatherSnapshot(): Promise<SpaceWeatherSnapshot>
     summary: buildSummary({
       level,
       cmeCount: cmes.length,
+      earthDirectedCmeCount,
       flareCount: flares.length,
       sepCount: seps.length,
       stormCount: storms.length,
@@ -627,6 +707,7 @@ export async function fetchSpaceWeatherSnapshot(): Promise<SpaceWeatherSnapshot>
       sepCount: seps.length,
       stormCount: storms.length,
       strongestFlare: strongest,
+      earthDirectedCmeCount,
       kpIndex,
       solarWindSpeed,
       bzGsm,
