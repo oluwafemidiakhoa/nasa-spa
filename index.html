@@ -1979,10 +1979,15 @@ function onResize() {
 // with no user key on the deployed site). Falls back to a direct api.nasa.gov
 // call with the user's key when no proxy is present (e.g. running locally).
 async function nasaGet(type, directUrl) {
-  try {
-    const pr = await fetch('/api/nasa?type=' + type);
-    if (pr.status !== 404) return await pr.json();
-  } catch (e) { /* proxy unreachable → fall through to direct */ }
+  // Try the proxy with one retry, so a transient cold-start/timeout on any
+  // single feed doesn't leave a permanent N/A.
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      const pr = await fetch('/api/nasa?type=' + type);
+      if (pr.status === 404) break;      // no serverless function here → direct
+      if (pr.ok) return await pr.json(); // success
+    } catch (e) { /* transient → retry, then fall through to direct */ }
+  }
   const r = await fetch(directUrl);
   return await r.json();
 }
