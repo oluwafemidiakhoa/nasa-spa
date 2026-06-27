@@ -59,33 +59,35 @@ class GeomagneticModel:
         # Q(t) is injection function, τ is decay time
         
         # Injection function Q (empirical relationship)
-        if bz_south < 0:  # Southward IMF
-            # Enhanced injection for southward Bz
-            electric_field = v_sw * abs(bz_south) * 1e-3  # mV/m
-            
-            # Empirical injection rate
+        if bz_south < 0:  # Southward IMF drives the ring current
+            electric_field = v_sw * abs(bz_south) * 1e-3  # VBs coupling, mV/m
+            # Linear injection (Burton 1975 / O'Brien & McPherron 2000):
+            # Q = -4.4 * (VBs - 0.5) nT/hr for VBs > 0.5 mV/m. The previous
+            # **1.5 exponent was unphysical and blew up for strong driving.
             if electric_field > 0.5:
-                injection_rate = -4 * (electric_field - 0.5)**1.5  # nT/hr
+                injection_rate = -4.4 * (electric_field - 0.5)  # nT/hr
             else:
                 injection_rate = 0
         else:
+            electric_field = 0
             injection_rate = 0
-        
-        # Decay time constant (typically 6-10 hours)
-        decay_time = 8  # hours
-        
-        # Pressure correction for Dst
-        # Dst_corrected = Dst_measured + b*sqrt(Pdyn)
+
+        # Ring-current decay time constant (O'Brien & McPherron 2000)
+        decay_time = 7.7  # hours
+
+        # Pressure correction for Dst: Dst = Dst* + b*sqrt(Pdyn) - baseline
         pressure_correction = 7.26 * math.sqrt(dynamic_pressure_npa)  # nT
-        
-        # Calculate steady-state Dst
-        if injection_rate != 0:
-            dst_steady_state = injection_rate * decay_time
-        else:
-            dst_steady_state = 0
-        
-        # Simple Dst prediction (quasi-steady state)
-        dst_predicted = dst_steady_state - pressure_correction
+
+        # Steady-state ring-current Dst* = Q * tau
+        dst_steady_state = injection_rate * decay_time if injection_rate != 0 else 0
+
+        # Physical saturation: solar-wind/ring-current coupling saturates for
+        # extreme driving, so bound Dst* near the strongest storms in the modern
+        # record (March 1989 ~ -589 nT) instead of running away unphysically.
+        dst_steady_state = max(dst_steady_state, -600.0)
+
+        # Burton correction (pressure raises Dst; constant baseline offset)
+        dst_predicted = dst_steady_state + pressure_correction - 11
         
         # Classify geomagnetic activity
         if dst_predicted > -30:
