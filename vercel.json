@@ -2,6 +2,6 @@
   "cleanUrls": true,
   "functions": {
     "api/ai.js": { "maxDuration": 30 },
-    "api/nasa.js": { "maxDuration": 15 }
+    "api/nasa.js": { "maxDuration": 25 }
   }
 }

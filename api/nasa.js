@@ -19,13 +19,27 @@ module.exports = async (req, res) => {
   const url = endpoints[type];
   if (!url) return res.status(400).json({ error: 'Unknown type: ' + type });
 
+  // APOD only changes once a day, so cache it hard — one success serves everyone
+  // for hours and shields us from NASA's intermittently slow APOD endpoint.
+  // DONKI feeds get a short edge cache to ease rate limits without going stale.
+  const cacheControl = type === 'apod'
+    ? 's-maxage=43200, stale-while-revalidate=86400'   // 12h fresh, 24h SWR
+    : 's-maxage=300, stale-while-revalidate=600';      // 5m fresh, 10m SWR
+
+  // Fail fast and cleanly (JSON, not Vercel's HTML 504) if NASA is slow.
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 20000);
   try {
-    const upstream = await fetch(url);
+    const upstream = await fetch(url, { signal: controller.signal });
+    clearTimeout(timer);
     const data = await upstream.json();
-    // Short edge cache to ease rate limits without going stale (5 min).
-    res.setHeader('Cache-Control', 's-maxage=300, stale-while-revalidate=600');
+    res.setHeader('Cache-Control', cacheControl);
     return res.status(upstream.status).json(data);
   } catch (e) {
-    return res.status(500).json({ error: e.message || 'NASA proxy error' });
+    clearTimeout(timer);
+    const aborted = e && e.name === 'AbortError';
+    return res.status(aborted ? 504 : 502).json({
+      error: aborted ? 'NASA upstream timed out' : (e.message || 'NASA proxy error')
+    });
   }
 };
