@@ -843,6 +843,32 @@ nav {
   margin-top: 40px;
 }
 
+/* ── SPACE WEATHER FORECAST BANNER ── */
+.forecast-banner {
+  margin-top: 40px;
+  border-radius: 12px;
+  border: 1px solid var(--panel-border);
+  background: var(--panel-bg);
+  padding: 26px 30px;
+  overflow: hidden;
+  position: relative;
+}
+.forecast-banner.alert { border-color: rgba(255,98,53,0.55); background: linear-gradient(135deg, rgba(193,68,14,0.14), rgba(5,13,26,0.92)); }
+.forecast-banner.watch { border-color: rgba(255,209,102,0.45); }
+.forecast-banner.quiet { border-color: rgba(6,214,160,0.35); }
+.fc-loading { font-family: var(--font-data); font-size: 0.85rem; color: var(--lunar-grey); }
+.fc-head { display: flex; align-items: center; gap: 10px; font-family: var(--font-data); font-size: 0.62rem; letter-spacing: 3px; text-transform: uppercase; color: var(--mars-glow); margin-bottom: 16px; }
+.forecast-banner.quiet .fc-head { color: var(--mission-green); }
+.fc-title { font-family: var(--font-display); font-weight: 700; font-size: 1.3rem; color: var(--star-white); margin-bottom: 6px; }
+.fc-sub { font-size: 0.9rem; color: var(--lunar-grey); margin-bottom: 20px; }
+.fc-metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px; }
+.fc-metric .k { font-family: var(--font-data); font-size: 0.56rem; letter-spacing: 1.5px; text-transform: uppercase; color: var(--lunar-grey); margin-bottom: 6px; }
+.fc-metric .v { font-family: var(--font-data); font-size: 1.35rem; font-weight: 700; color: var(--star-white); line-height: 1.1; }
+.fc-metric .v.hot { color: var(--mars-glow); } .fc-metric .v.gold { color: var(--artemis-gold); } .fc-metric .v.go { color: var(--mission-green); }
+.fc-source { margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--panel-border); font-family: var(--font-data); font-size: 0.62rem; letter-spacing: 1px; color: var(--lunar-grey); }
+.fc-source .badge { color: var(--plasma-cyan); }
+@media (max-width: 720px){ .fc-metrics { grid-template-columns: repeat(2, 1fr); } }
+
 .nasa-card {
   background: var(--panel-bg);
   border: 1px solid var(--panel-border);
@@ -1403,6 +1429,11 @@ footer {
   <div class="section-eyebrow">REAL-TIME • NASA OPEN DATA APIs</div>
   <h2 class="section-title">Live <em>Space Environment</em></h2>
   <p class="section-lead">Live readings from NASA's open-data APIs (DONKI and APOD), refreshed automatically every 5 minutes. Space weather directly impacts mission safety.</p>
+
+  <!-- Forecast money-shot: turns raw CME data into an arrival + impact prediction -->
+  <div id="forecast-card" class="forecast-banner">
+    <div class="fc-loading">Computing space-weather forecast…</div>
+  </div>
 
   <div class="nasa-grid">
     <div class="nasa-card">
@@ -2000,12 +2031,15 @@ async function fetchNASAData() {
   // CME data
   try {
     const d = await nasaGet('cme', donki('CME'));
-    const count = Array.isArray(d) ? d.length : 0;
-    document.getElementById('cme-val').textContent = count;
-    document.getElementById('solar-events').textContent = count;
-    nasaLiveData.cme = count;
+    const cmes = Array.isArray(d) ? d : [];
+    document.getElementById('cme-val').textContent = cmes.length;
+    document.getElementById('solar-events').textContent = cmes.length;
+    nasaLiveData.cme = cmes.length;
+    nasaLiveData.cmeList = cmes;
+    updateForecast(cmes);
   } catch(e) {
     document.getElementById('cme-val').textContent = 'N/A';
+    renderForecastError();
   }
 
   // Flare data
@@ -2046,6 +2080,118 @@ async function fetchNASAData() {
   const marsDistKm = computeMarsDistance();
   document.getElementById('mars-dist').textContent = (marsDistKm / 1e6).toFixed(1) + 'M';
   document.getElementById('arrival-dist').textContent = marsDistKm.toLocaleString() + ' km';
+}
+
+// ═══════════════════════════════════════
+// SPACE-WEATHER FORECAST
+// Turns raw DONKI CMEs into an arrival + geomagnetic-impact prediction. Prefers
+// NASA's WSA-ENLIL model when DONKI carries it; otherwise applies a drag-based
+// transit model + speed→Kp coupling consistent with the project's physics engine.
+// ═══════════════════════════════════════
+const AU_KM = 1.495978707e8;
+const AMBIENT_SW = 400; // km/s ambient solar wind (engine default)
+
+function assessCmeForecast(cme) {
+  const analyses = cme.cmeAnalyses || [];
+  const a = analyses.find(x => x.isMostAccurate === true) || analyses[analyses.length - 1] || {};
+  const speed = parseFloat(a.speed) || null;
+  const lon = a.longitude != null ? parseFloat(a.longitude) : null;
+  const lat = a.latitude != null ? parseFloat(a.latitude) : null;
+  const half = a.halfAngle != null ? parseFloat(a.halfAngle) : null;
+  const facing = lon != null && lat != null && Math.abs(lon) <= 45 && Math.abs(lat) <= 45;
+  const wide = half != null && half >= 30;
+  const earthInNote = String(cme.note || '').toLowerCase().includes('earth');
+  const earthDirected = (facing && wide) || earthInNote;
+  // NASA WSA-ENLIL shock arrival + Kp, if DONKI provides it (most authoritative)
+  let enlil = null;
+  for (const an of analyses) {
+    for (const e of (an.enlilList || [])) {
+      if (e && e.estimatedShockArrivalTime && !enlil) enlil = e;
+    }
+  }
+  return { speed, earthDirected, enlil, startTime: cme.startTime || null };
+}
+
+function kpToG(kp) {
+  if (kp == null) return null;
+  return kp >= 9 ? 'G5' : kp >= 8 ? 'G4' : kp >= 7 ? 'G3' : kp >= 6 ? 'G2' : kp >= 5 ? 'G1' : null;
+}
+
+function updateForecast(cmes) {
+  const inbound = [];
+  const now = Date.now();
+  for (const cme of cmes) {
+    const c = assessCmeForecast(cme);
+    if (!c.earthDirected || !c.speed || !c.startTime) continue;
+    let arrival, source, kp;
+    if (c.enlil && c.enlil.estimatedShockArrivalTime) {
+      arrival = new Date(c.enlil.estimatedShockArrivalTime).getTime();
+      source = 'NASA WSA-ENLIL';
+      const kps = [c.enlil.kp_18, c.enlil.kp_90, c.enlil.kp_135, c.enlil.kp_180]
+        .map(parseFloat).filter(v => !isNaN(v));
+      kp = kps.length ? Math.max(...kps) : speedToKp(c.speed);
+    } else {
+      // Drag-based transit: fast CMEs decelerate toward the ambient solar wind
+      const vEff = Math.max(AMBIENT_SW + (c.speed - AMBIENT_SW) * 0.6, 250);
+      const transitH = AU_KM / vEff / 3600;
+      arrival = new Date(c.startTime).getTime() + transitH * 3600 * 1000;
+      source = 'Drag + coupling model';
+      kp = speedToKp(vEff);
+    }
+    inbound.push({ speed: c.speed, arrival, source, kp });
+  }
+  // Prefer CMEs still inbound (arrival in the future or within the last 12h)
+  const future = inbound.filter(c => c.arrival > now - 12 * 3600000).sort((a, b) => a.arrival - b.arrival);
+  if (future.length) renderForecast(future[0]);
+  else renderQuietForecast();
+}
+
+// Empirical arrival-speed → Kp (used when ENLIL Kp is absent)
+function speedToKp(v) {
+  return Math.max(0, Math.min(9, (v - 350) / 80));
+}
+
+function renderForecast(f) {
+  const el = document.getElementById('forecast-card');
+  if (!el) return;
+  const g = kpToG(f.kp);
+  const now = Date.now();
+  const dh = (f.arrival - now) / 3600000;
+  let eta;
+  if (dh <= 0) eta = 'Impact underway';
+  else { const d = Math.floor(dh / 24), h = Math.round(dh % 24); eta = (d ? d + 'd ' : '') + h + 'h'; }
+  const arrivalStr = new Date(f.arrival).toISOString().replace('T', ' ').slice(0, 16) + ' UTC';
+  const level = g ? `${g} · Kp ${f.kp.toFixed(1)}` : `Below storm · Kp ${f.kp.toFixed(1)}`;
+  const cls = g && f.kp >= 6 ? 'alert' : 'watch';
+  const headline = g ? `Geomagnetic ${g} storm expected` : 'Earth-directed CME inbound — minor impact';
+  el.className = 'forecast-banner ' + cls;
+  el.innerHTML = `
+    <div class="fc-head">◉ Space Weather Forecast · Earth-directed CME</div>
+    <div class="fc-title">${headline}</div>
+    <div class="fc-sub">A coronal mass ejection is on a Sun–Earth trajectory. Predicted shock arrival and geomagnetic response below.</div>
+    <div class="fc-metrics">
+      <div class="fc-metric"><div class="k">Launch Speed</div><div class="v gold">${Math.round(f.speed)} km/s</div></div>
+      <div class="fc-metric"><div class="k">Predicted Arrival</div><div class="v hot">${eta}</div></div>
+      <div class="fc-metric"><div class="k">Geomagnetic Level</div><div class="v ${f.kp >= 6 ? 'hot' : 'gold'}">${level}</div></div>
+      <div class="fc-metric"><div class="k">Shock ETA (UTC)</div><div class="v">${arrivalStr}</div></div>
+    </div>
+    <div class="fc-source">MODEL: <span class="badge">${f.source}</span> · educational forecast, not an official SWPC product</div>`;
+}
+
+function renderQuietForecast() {
+  const el = document.getElementById('forecast-card');
+  if (!el) return;
+  el.className = 'forecast-banner quiet';
+  el.innerHTML = `
+    <div class="fc-head">◉ Space Weather Forecast</div>
+    <div class="fc-title">No Earth-directed CME inbound</div>
+    <div class="fc-sub">No coronal mass ejection on a Sun–Earth trajectory in the current DONKI window. Geomagnetic conditions are expected to remain quiet (below storm level).</div>
+    <div class="fc-source">MODEL: <span class="badge">Drag + coupling / NASA WSA-ENLIL</span> · educational forecast, not an official SWPC product</div>`;
+}
+
+function renderForecastError() {
+  const el = document.getElementById('forecast-card');
+  if (el) el.innerHTML = '<div class="fc-loading">Forecast unavailable — CME feed did not load.</div>';
 }
 
 function computeMarsDistance() {
