@@ -1,0 +1,81 @@
+name: Sync NASA Moon-to-Mars Data
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 12 * * 1'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync-nasa-moon-to-mars-data
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+
+      - name: Install parser dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install requests beautifulsoup4 openpyxl
+
+      - name: Run offline parser tests
+        env:
+          PYTHONPATH: scripts
+        run: python scripts/test_sync_nasa_moon_to_mars.py
+
+      - name: Download and normalize official NASA spreadsheets
+        run: |
+          python scripts/sync_nasa_moon_to_mars.py \
+            --output data/moon_to_mars_revision_c.json \
+            --manifest data/moon_to_mars_source_manifest.json
+
+      - name: Validate generated JSON
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          dataset = json.loads(Path('data/moon_to_mars_revision_c.json').read_text())
+          manifest = json.loads(Path('data/moon_to_mars_source_manifest.json').read_text())
+
+          assert dataset['dataset']['generated_from_official_xlsx'] is True
+          assert dataset['dataset']['document_id'] == '20250010956'
+          assert len(dataset['technology_gaps']) >= 16
+          assert len(dataset['data_gaps']) >= 1
+          assert len(dataset['objective_mappings']['lunar']) >= 5
+          assert len(dataset['objective_mappings']['mars']) >= 5
+          assert set(manifest['sources']) == {
+              'lunar_objectives', 'mars_objectives', 'technology_gaps', 'data_gaps'
+          }
+          for source in manifest['sources'].values():
+              assert len(source['sha256']) == 64
+              assert source['url'].startswith('https://www.nasa.gov/')
+          print('Generated dataset validation: PASS')
+          PY
+
+      - name: Commit changed NASA dataset
+        run: |
+          if git diff --quiet -- data/moon_to_mars_revision_c.json data/moon_to_mars_source_manifest.json; then
+            echo 'NASA source data unchanged.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add data/moon_to_mars_revision_c.json data/moon_to_mars_source_manifest.json
+          git commit -m 'data: sync NASA Moon-to-Mars architecture spreadsheets'
+          git push
