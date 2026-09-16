@@ -1,13 +1,6 @@
 #!/usr/bin/env python3
 from pathlib import Path
 
-
-PATCH_MARKERS = (
-    "OPEN SELECTED GAP IN 3D",
-    "requestedGap=new URLSearchParams",
-    "navigator.html?gap=${encodeURIComponent(g.id)}",
-)
-
 REPLACEMENTS = (
     (
         '</div><button class="judgeBtn" id="judgeBtn">▶ 30-SECOND JUDGE MODE</button></div>',
@@ -29,7 +22,7 @@ REPLACEMENTS = (
 
 
 def apply_patch(text):
-    if all(marker in text for marker in PATCH_MARKERS):
+    if all(new in text for _, new in REPLACEMENTS):
         return text, False
 
     updated = text
