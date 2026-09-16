@@ -2,6 +2,12 @@ name: Sync NASA Moon-to-Mars Data
 
 on:
   workflow_dispatch:
+  pull_request:
+    paths:
+      - 'scripts/sync_nasa_moon_to_mars.py'
+      - 'scripts/test_sync_nasa_moon_to_mars.py'
+      - '.github/workflows/sync-moon-to-mars-data.yml'
+      - 'data/moon_to_mars_revision_c.json'
   schedule:
     - cron: '17 12 * * 1'
 
@@ -9,7 +15,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: sync-nasa-moon-to-mars-data
+  group: sync-nasa-moon-to-mars-data-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
@@ -65,10 +71,22 @@ jobs:
           for source in manifest['sources'].values():
               assert len(source['sha256']) == 64
               assert source['url'].startswith('https://www.nasa.gov/')
+
+          verified = [
+              gap for gap in dataset['technology_gaps']
+              if gap.get('detail_status') == 'verified'
+              and (gap.get('segments') or gap.get('subarchitectures'))
+          ]
           print('Generated dataset validation: PASS')
+          print(f"Detailed technology-gap traceability: {len(verified)}/{len(dataset['technology_gaps'])}")
+          print('Normalized counts:', json.dumps(manifest['normalized_counts'], sort_keys=True))
           PY
 
+      - name: Show authoritative source manifest
+        run: cat data/moon_to_mars_source_manifest.json
+
       - name: Commit changed NASA dataset
+        if: github.event_name != 'pull_request'
         run: |
           if git diff --quiet -- data/moon_to_mars_revision_c.json data/moon_to_mars_source_manifest.json; then
             echo 'NASA source data unchanged.'
@@ -79,3 +97,7 @@ jobs:
           git add data/moon_to_mars_revision_c.json data/moon_to_mars_source_manifest.json
           git commit -m 'data: sync NASA Moon-to-Mars architecture spreadsheets'
           git push
+
+      - name: Pull-request mode is read-only
+        if: github.event_name == 'pull_request'
+        run: echo 'Live NASA sync validated in read-only PR mode; no generated data was committed.'
