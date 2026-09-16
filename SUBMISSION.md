@@ -1,136 +1,161 @@
-# Solar Storyline — Space Weather, Forecast and Understood
+# Moon→Mars Decision Atlas
 
-**NASA Space Apps Challenge 2026 — submission narrative & demo script.**
+**NASA Space Apps Challenge 2026 — current submission narrative and demo script.**
 
-> ⚠️ Action for you: map this to the **exact official 2026 challenge** you enter
-> (a Space Weather / "Do You Know Your Sun?" / heliophysics challenge is the best
-> fit). Paste the relevant sections into the Space Apps project page and tighten
-> the wording to that challenge's prompt.
+> **Challenge alignment is intentionally pending.** The final submission must be mapped to the exact official 2026 challenge statement once NASA publishes it. Do not force this project into an unrelated challenge.
 
 ---
 
 ## One line
 
-**We turn live NASA and NOAA data into a real physics-based space-weather
-forecast — and then into a decision a pilot, grid operator, or astronaut can act
-on in seconds.**
+**Moon→Mars Decision Atlas transforms NASA's Moon-to-Mars architecture data into an auditable dependency map: select a technology gap, see what systems and campaign segments it touches, test what remains after that gap is addressed, open the gap in 3D mission context, and trace every relationship back to NASA evidence.**
 
 ## The problem
 
-Space weather is a multi-billion-dollar operational risk: a single severe
-geomagnetic storm can damage power grids, disrupt aviation and GPS, threaten
-satellites, and endanger astronauts. NASA and NOAA publish excellent open data —
-CMEs, flares, solar wind, Kp — but it arrives as **fragmented raw feeds**. Two
-gaps remain:
+NASA publishes detailed Moon-to-Mars architecture material, including prioritized technology gaps, campaign segments, sub-architectures, objectives, data gaps, and technical source documents. The information is authoritative, but much of it is distributed across long technical documents and spreadsheet products.
 
-1. **Forecasting:** raw event lists don't tell you *when* a CME hits Earth or
-   *how strong* the storm will be.
-2. **Translation:** even a good forecast is useless to a non-scientist unless it
-   says what to *do*.
+A ranked gap list answers **what is important**. It does not immediately answer:
+
+- What architecture does this gap touch?
+- Which systems are exposed to several independent gaps?
+- If one gap is addressed, what documented dependencies still remain?
+- Where in the Moon-to-Mars journey does that capability matter?
+- Can every displayed relationship be traced to its NASA source?
+
+The Atlas turns those questions into an interactive, source-backed exploration workflow.
 
 ## What we built
 
-An **end-to-end space-weather pipeline** that closes both gaps:
-
+```text
+NASA Revision C architecture data
+        ↓
+normalized + validated dataset
+        ↓
+Gap → Architecture graph
+        ↓
+Architecture → Gaps reverse lookup
+        ↓
+Gap comparison
+        ↓
+Residual dependency analysis
+        ↓
+3D mission context
+        ↓
+NASA provenance
 ```
- NASA DONKI / NOAA SWPC  ──►  Physics forecast engine  ──►  Ensemble + uncertainty  ──►  Role-based decisions
- (CME, flare, solar wind)     (CME drag, Parker wind,        (model blend, confidence)     (pilot, grid, satellite,
-                               Burton Dst)                                                  astronaut, aurora, student)
-```
 
-- **A real physics forecast engine** (Python): drag-based CME propagation,
-  Parker solar-wind model, and a Burton-equation Dst / geomagnetic model.
-- **Live ingestion** of NASA DONKI (CME/FLR/GST) and NOAA SWPC feeds, with
-  historical storage, a scheduler, websocket streaming, and email alerts.
-- **Role-based translation** (Solar Storyline) that converts the forecast into
-  plain-language guidance for six audiences, with an Earth-impact readiness
-  score that only escalates on *measured* near-Earth disturbance.
-- **An interactive 3D mission layer** (Artemis Navigator) that puts the same
-  open data into a Moon-to-Mars context with a multi-model AI advisor.
-- **A unified platform hub** tying every module together at one URL.
+### 1. Gap → Architecture
+Select a NASA-prioritized technology gap and see only the campaign segments and sub-architectures that are explicitly present in the loaded dataset.
 
-## The science (this is our credibility — and it actually runs)
+### 2. Architecture → Gaps
+Reverse the question. Select a system such as Mobility, Power, Habitation, Communications/PNT, or Transportation and see which loaded NASA technology gaps explicitly touch it.
 
-Every number below is produced by our models live, not hard-coded:
+### 3. Compare Gaps
+Compare two gaps using shared and unique architecture reach. The Atlas reports descriptive graph overlap only; it does **not** convert architecture breadth into an invented importance score.
 
-| Model | Input | Output (verified) |
-|-------|-------|-------------------|
-| **CME propagation** (drag-based) | 1500 km/s Earth-directed CME | **Earth arrival in ~28 h**, with velocity trajectory + confidence |
-| **Geomagnetic response** (Burton Dst) | 700 km/s, 18 nT, 12 cm⁻³ solar wind | **Dst −470 nT → severe storm, NOAA G4+**, magnetopause at 7.2 Rₑ |
-| **Solar wind** (Parker) | coronal temperature, distance | speed/density profile vs. heliocentric distance |
+### 4. Residual Dependency Engine
+Switch a gap from **UNRESOLVED** to **GAP ADDRESSED**. The Atlas removes only that selected gap from the loaded graph, then shows which other loaded NASA technology gaps still touch the affected architecture nodes.
 
-These are established heliophysics methods — the drag-based CME model, the Parker
-solar-wind solution, and the Burton equation for ring-current injection/decay —
-not invented relationships. We **label uncertainty and never present an
-educational prototype as an official forecast.**
+Green means no other loaded gap mapping remains on that node. Amber means other loaded gaps remain. This is deterministic graph subtraction, not a readiness score or mission-success probability.
 
-## How we use NASA & open data
+### 5. 3D Mission Context
+Open the selected gap in the existing interactive 3D navigator. The selected ESDMD gap ID is preserved in the URL and mapped to a relevant mission locus such as Earth→Moon, lunar/cislunar operations, Moon→Mars transit, or Mars approach. Gaps that share the same physical locus still change the subsystem focus rather than fabricating different orbital geometry.
 
-- **NASA DONKI** — CME, solar flare (FLR), and geomagnetic storm (GST) feeds
-- **NASA APOD / EPIC** — imagery context
-- **NOAA SWPC** — planetary K index, solar-wind plasma & magnetic field
-- Forecasts are driven *from* this live data; sources stay visible in the UI.
+### 6. Evidence and provenance
+Every displayed relationship is designed to trace back to NASA source material. The ingestion pipeline records workbook, sheet, row, source URL, and SHA-256 provenance when available. Missing relationships remain missing rather than being inferred.
 
-## Architecture
+## NASA data/resources
 
-- **Backend:** Python physics models + FastAPI ensemble API, SQLite history,
-  scheduler, websocket streaming, Dockerized (backend/frontend/nginx).
-- **Frontend:** a static, dependency-light hub + the Artemis Navigator (Three.js
-  3D, multi-model AI via a serverless proxy) + the Solar Storyline Next.js app.
-- **Deploy:** live on Vercel with serverless proxies for AI and NASA data
-  (server-side keys, nothing exposed in the browser).
+Primary source:
 
-## Why it wins (mapped to judging criteria)
+- **NASA Moon to Mars Architecture Definition Document — Revision C**
+- NASA Technical Reports Server document ID **20250010956**
+- 2025 Architecture Concept Review products
+- NASA-published Lunar Objectives, Mars Objectives, Technology Gaps, and Data Gaps spreadsheets
 
-- **Impact:** a real operational decision-support tool for aviation, power,
-  satellites, human spaceflight, and education.
-- **Creativity:** forecasting *and* human translation in one pipeline — not
-  another dashboard.
-- **Validity:** working physics models with verifiable outputs and explicit
-  uncertainty; no overclaiming.
-- **Use of data:** NASA DONKI + NOAA SWPC are the engine's fuel, end to end.
-- **Storytelling:** the same storm becomes six different human stories.
+The repository contains a deterministic sync pipeline that discovers NASA's official XLSX products, downloads them, records hashes, normalizes their rows, validates the result, and updates the Atlas dataset only when validation passes.
 
-## Impact / who it helps
+NASA data is therefore the product's core data model, not decorative background content.
 
-Aviation & dispatch · power-grid operators · satellite mission teams · astronaut
-safety · aurora chasers & the public · classrooms and science communicators.
+## Scientific and engineering guardrails
+
+The Atlas deliberately avoids claims the source data cannot support:
+
+- no invented mission-readiness percentage;
+- no fabricated probability of mission success;
+- no inferred graph edge when a NASA relationship is absent from the loaded dataset;
+- no claim that broad architecture reach equals higher strategic importance;
+- no claim that closing one technology gap makes a mission or segment ready;
+- 3D geometry is illustrative and is labeled separately from NASA architecture traceability.
+
+## Current traceability status
+
+The project distinguishes **priority verification** from **detailed architecture traceability**. Some ranked technology-gap rows currently contain rich verified mappings while other gaps remain rank-only until the official spreadsheet sync provides the corresponding relationships.
+
+This is treated as a visible competition blocker, not hidden with guessed links. The permanent competition-readiness validator reports exact coverage on every pull request and main-branch push.
+
+## Why this can matter
+
+NASA's Moon-to-Mars architecture is a system of interacting decisions, capabilities, technologies, and mission objectives. The Atlas makes that architecture easier to interrogate for:
+
+- students and educators;
+- researchers;
+- universities;
+- technology developers and startups;
+- industry and international partners;
+- members of the public trying to understand what sustained Moon-to-Mars exploration actually requires.
+
+The product does not replace NASA systems engineering. It provides an accessible, auditable interface over public NASA architecture information.
 
 ---
 
-## 🎬 30-second video script (shot-by-shot)
-
-> Goal: a non-scientist understands the value in 30 seconds. No jargon. Live data
-> on screen. End on impact.
+## 30-second judge demo
 
 | Time | Visual | Voiceover / caption |
-|------|--------|---------------------|
-| 0–4s | Sun → CME erupting (3D scene) | "Every day, the Sun fires storms at Earth." |
-| 4–9s | Live NASA cards ticking: 51 CMEs, 4 flares | "NASA and NOAA publish the data — but it's raw and fragmented." |
-| 9–16s | Forecast engine animates: CME → **arrival 28 h** → **Dst −470, G4+** | "Our engine runs real physics on it: when the storm hits, and how strong." |
-| 16–23s | Role selector flips: Pilot → Grid → Astronaut, each guidance changing | "Then it tells *you* what to do — pilot, grid operator, astronaut." |
-| 23–28s | Hub view, all modules, live badge | "Live data. Real forecasts. Real decisions." |
-| 28–30s | Logo + URL: **nasa-spa.vercel.app** | "Solar Storyline. NASA Space Apps 2026." |
+|---|---|---|
+| 0–5s | Select **#1 Lunar Dust-Tolerant Systems and Dust Mitigation** | "NASA has already ranked technologies that Moon-to-Mars exploration still needs. But a ranked list does not show what each gap touches." |
+| 5–10s | Gap → Architecture lights Mobility, Habitation, Logistics, Power and campaign segments | "The Atlas turns NASA architecture data into a dependency map." |
+| 10–16s | Click **GAP ADDRESSED** | "Now solve only this one deficiency. Green nodes are clear of other loaded gaps; amber nodes still carry other NASA technology gaps." |
+| 16–21s | Reverse lookup on **Mobility** | "Reverse the question: what other gaps still touch Mobility?" |
+| 21–26s | Open selected gap in 3D | "Then place the selected technology in its Moon-to-Mars mission context." |
+| 26–30s | Open NASA source/provenance | "And every relationship remains auditable back to NASA evidence." |
 
-## 🧭 2-minute demo flow (for live judging)
+### Closing line
 
-1. Open the **hub** — "one platform, live NASA data."
-2. Show the **live cards** (real CME/flare counts) — prove it's live.
-3. Trigger a **forecast**: CME arrival time + Dst storm level + confidence.
-4. Flip **roles** — same storm, different human decisions.
-5. Open the **evidence/source panel** — DONKI IDs, timestamps, links.
-6. Close on the **scientific caveat** — honesty as credibility.
+**Moon→Mars Decision Atlas: not another dashboard — an auditable way to interrogate what still has to mature, what it touches, and what remains after one problem is solved.**
 
-## Roadmap
+---
 
-Validation dashboard vs. historical storms · alert subscriptions · GIBS/map
-layer · ensemble uncertainty bands · model skill scoring against NOAA archives.
+## 2-minute live demo flow
 
-## Team & attribution
+1. Start on **Gap → Architecture** with Lunar Dust.
+2. Point out the exact loaded sub-architectures and campaign segments.
+3. Toggle **GAP ADDRESSED** and explain residual dependencies.
+4. Click an amber node such as Mobility and switch to **Architecture → Gaps**.
+5. Show the connected gaps returned by reverse lookup.
+6. Use **Compare Gaps** to contrast Lunar Dust and Mars Transportation Propulsion without ranking them.
+7. Click **OPEN THIS GAP IN 3D** and show preserved gap context.
+8. Return to the Atlas with the same gap selected.
+9. Open the NASA provenance link and close on the no-invented-links guardrail.
 
-Built by Oluwafemi Idiakhoa · Texas, USA · NASA Space Apps Challenge 2026.
-Powered by NASA Open APIs (DONKI · APOD · EPIC) · NOAA SWPC · Python physics
-models · Three.js · multi-model AI.
+## Competition readiness gates
 
-*Educational prototype — not an official operational forecast. Operational
-decisions should use NOAA SWPC products and mission-specific procedures.*
+Before final submission:
+
+- [ ] Exact official 2026 challenge statement selected.
+- [ ] `CHALLENGE_ALIGNMENT.md` completed against every challenge requirement.
+- [ ] Official NASA XLSX sync completes successfully on GitHub Actions.
+- [ ] Detailed technology-gap traceability coverage reviewed and disclosed.
+- [ ] Every selected gap survives Atlas → 3D → Atlas round-trip testing.
+- [ ] 30-second and 2-minute demos recorded from the final deployed build.
+- [ ] Submission wording contains no retired Solar Storyline/hub narrative.
+- [ ] All simulations/illustrations are explicitly labeled.
+- [ ] Public deployment and NASA source links tested in a clean browser session.
+
+## Team and attribution
+
+Built by **Oluwafemi Idiakhoa** for the NASA Space Apps Challenge 2026 preparation cycle.
+
+Core technologies: NASA public Moon-to-Mars architecture data · HTML/CSS/JavaScript · Three.js · Python data normalization/validation · GitHub Actions · Vercel.
+
+**This is an independent educational/research prototype and not an official NASA product or flight-planning system.**
