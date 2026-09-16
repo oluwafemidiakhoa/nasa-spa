@@ -27,7 +27,7 @@ concurrency:
 jobs:
   sync:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -50,10 +50,27 @@ jobs:
         run: python scripts/test_sync_nasa_moon_to_mars.py
 
       - name: Download and normalize official NASA spreadsheets
+        shell: bash
         run: |
-          python scripts/sync_nasa_moon_to_mars.py \
-            --output data/moon_to_mars_revision_c.json \
-            --manifest data/moon_to_mars_source_manifest.json
+          set -euo pipefail
+          for attempt in 1 2 3 4; do
+            echo "NASA sync attempt ${attempt}/4"
+            if python scripts/sync_nasa_moon_to_mars.py \
+              --output data/moon_to_mars_revision_c.json \
+              --manifest data/moon_to_mars_source_manifest.json; then
+              echo "NASA sync succeeded on attempt ${attempt}."
+              exit 0
+            fi
+
+            if [ "$attempt" -eq 4 ]; then
+              echo "NASA sync failed after 4 attempts."
+              exit 1
+            fi
+
+            delay=$((attempt * 30))
+            echo "Transient NASA download failure; waiting ${delay}s before retry."
+            sleep "$delay"
+          done
 
       - name: Validate generated JSON
         run: |
