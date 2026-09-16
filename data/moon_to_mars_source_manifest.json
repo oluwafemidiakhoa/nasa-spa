@@ -1,0 +1,42 @@
+{
+  "generated_at": "2026-09-16T02:44:39+00:00",
+  "architecture_page": "https://www.nasa.gov/moontomarsarchitecture-architecturedefinitiondocuments/",
+  "document_id": "20250010956",
+  "revision": "C",
+  "sources": {
+    "lunar_objectives": {
+      "url": "https://www.nasa.gov/wp-content/uploads/2025/12/2025-lunar-objective-decomposition.xlsx?emrc=1c834a",
+      "filename": "2025-lunar-objective-decomposition.xlsx",
+      "sha256": "0e060af1600384faacc257d1b731831d66a1fecd15155fcf495d4bd2fe956272",
+      "bytes": 446208,
+      "record_count": 10871
+    },
+    "mars_objectives": {
+      "url": "https://www.nasa.gov/wp-content/uploads/2025/12/2025-mars-objective-decomposition.xlsx?emrc=1c834a",
+      "filename": "2025-mars-objective-decomposition.xlsx",
+      "sha256": "a693df15ab7986e7c5a5b2ca475d0a49646809b59e66d79e2cea4a55298e9027",
+      "bytes": 150928,
+      "record_count": 4094
+    },
+    "technology_gaps": {
+      "url": "https://www.nasa.gov/wp-content/uploads/2025/12/2025-architecture-driven-technology-gaps.xlsx?emrc=3ccc4c",
+      "filename": "2025-architecture-driven-technology-gaps.xlsx",
+      "sha256": "6ed6eb35e27b71a8017f073e47f9df6e1259d9d96f48478e38043223ccbaf29a",
+      "bytes": 58209,
+      "record_count": 57
+    },
+    "data_gaps": {
+      "url": "https://www.nasa.gov/wp-content/uploads/2025/12/2025-architecture-driven-data-gaps.xlsx?emrc=3ccc4c",
+      "filename": "2025-architecture-driven-data-gaps.xlsx",
+      "sha256": "d05c441bb6da5f3b7c00b6092596c071b6d85bd4f0b09168be7206cc8625bfa0",
+      "bytes": 81896,
+      "record_count": 35
+    }
+  },
+  "normalized_counts": {
+    "technology_gaps": 57,
+    "data_gaps": 19,
+    "lunar_objective_rows": 10871,
+    "mars_objective_rows": 4094
+  }
+}
