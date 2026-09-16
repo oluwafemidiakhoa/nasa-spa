@@ -1,0 +1,32 @@
+name: Validate Moon-to-Mars Competition Readiness
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Run competition-readiness validator
+        run: python scripts/validate_competition_readiness.py
+
+      - name: Confirm retired patch helper is absent
+        run: |
+          test ! -e scripts/patch_residual_dependency_engine.py
+          test ! -e .github/workflows/patch-residual-dependency.yml
+          echo 'No stale one-off residual patch workflow remains.'
