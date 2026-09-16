@@ -2,6 +2,12 @@ name: Sync NASA Moon-to-Mars Data
 
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/sync_nasa_moon_to_mars.py'
+      - 'scripts/test_sync_nasa_moon_to_mars.py'
+      - '.github/workflows/sync-moon-to-mars-data.yml'
   pull_request:
     paths:
       - 'scripts/sync_nasa_moon_to_mars.py'
