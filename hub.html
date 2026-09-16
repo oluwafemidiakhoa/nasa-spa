@@ -2,83 +2,64 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Artemis Platform — Integrated Space Mission Control</title>
-<meta name="description" content="Artemis Platform turns NASA and NOAA data into mission navigation, space-weather awareness, and evidence-driven scientific reasoning.">
-<link rel="manifest" href="/site.webmanifest">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ARTEMIS NAVIGATOR | Moon-to-Mars Mission Intelligence</title>
+<meta name="description" content="A focused NASA Space Apps 2026 mission-intelligence experience for exploring Moon-to-Mars trajectories, mission phases, live NASA context, and AI-assisted mission reasoning.">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Space+Grotesk:wght@300;400;500;700&family=JetBrains+Mono:wght@400;700&display=swap');
-:root{--void:#020408;--deep:#07101d;--panel:rgba(7,16,29,.88);--border:rgba(200,212,227,.12);--white:#eef5ff;--silver:#c8d4e3;--grey:#8fa3bf;--gold:#ffd166;--mars:#ff6235;--cyan:#00f5ff;--green:#06d6a0;--blue:#5c9dff;--fd:'Orbitron',monospace;--fb:'Space Grotesk',sans-serif;--fm:'JetBrains Mono',monospace}
-*{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}body{font-family:var(--fb);background:radial-gradient(circle at 50% -10%,#11223d 0,#040a13 35%,var(--void) 72%);color:var(--white);min-height:100vh;overflow-x:hidden}a{text-decoration:none;color:inherit}#stars{position:fixed;inset:0;z-index:0;pointer-events:none}.wrap{position:relative;z-index:1;max-width:1280px;margin:0 auto;padding:58px 28px 84px}
-header{text-align:center;max-width:1050px;margin:0 auto 46px}.eyebrow{font:700 .72rem var(--fm);letter-spacing:4px;text-transform:uppercase;color:var(--cyan);margin-bottom:16px}h1{font:900 clamp(2.8rem,7vw,5.8rem)/.95 var(--fd);letter-spacing:-2px;margin-bottom:18px}.gold{color:var(--gold)}.lead{font-size:clamp(1.05rem,2vw,1.25rem);line-height:1.6;color:var(--silver);max-width:850px;margin:0 auto}.promise{margin:24px auto 0;display:inline-flex;gap:10px;align-items:center;padding:11px 16px;border:1px solid rgba(0,245,255,.2);border-radius:999px;background:rgba(0,245,255,.04);font:700 .69rem var(--fm);letter-spacing:.12em;color:var(--grey)}
-.workflow{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:12px;align-items:stretch;margin:44px 0 28px}.flowCard{background:linear-gradient(180deg,rgba(10,23,40,.96),rgba(5,12,22,.97));border:1px solid var(--border);border-radius:18px;padding:28px;position:relative;overflow:hidden;transition:.2s transform,.2s border-color,.2s box-shadow}.flowCard:hover{transform:translateY(-4px);border-color:var(--accent);box-shadow:0 18px 45px rgba(0,0,0,.35)}.flowCard::before{content:"";position:absolute;left:0;right:0;top:0;height:3px;background:linear-gradient(90deg,transparent,var(--accent),transparent)}.stepNo{font:800 .68rem var(--fm);letter-spacing:.15em;color:var(--accent);text-transform:uppercase}.flowCard h2{font:700 1.4rem var(--fd);margin:10px 0 8px}.flowCard p{color:var(--silver);line-height:1.6;font-size:.94rem}.question{margin:12px 0 0;padding-top:12px;border-top:1px solid var(--border);font-weight:700;color:var(--white)}.go{margin-top:18px;font:700 .68rem var(--fm);letter-spacing:.12em;color:var(--accent);text-transform:uppercase}.arrow{display:grid;place-items:center;color:var(--grey);font-size:1.6rem}.missionbar{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:26px 0 52px}.stat{border:1px solid var(--border);background:rgba(6,14,25,.75);border-radius:12px;padding:16px}.stat .k{font:700 .62rem var(--fm);letter-spacing:.13em;color:var(--grey);text-transform:uppercase}.stat .v{margin-top:5px;font-weight:700;color:var(--white)}
-.sectionLabel{display:flex;align-items:center;gap:12px;margin:46px 0 16px;font:700 .65rem var(--fm);letter-spacing:3px;text-transform:uppercase;color:var(--grey)}.sectionLabel::after{content:"";height:1px;flex:1;background:var(--border)}.support{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:22px;transition:.2s transform,.2s border-color}.card:hover{transform:translateY(-3px);border-color:rgba(0,245,255,.3)}.card .tag{font:700 .6rem var(--fm);letter-spacing:1.8px;text-transform:uppercase;color:var(--grey)}.card h3{font:700 1.02rem var(--fd);margin:9px 0}.card p{color:var(--silver);font-size:.89rem;line-height:1.55}.card .go{color:var(--cyan)}
-footer{text-align:center;margin-top:62px;padding-top:28px;border-top:1px solid var(--border);color:var(--grey);font:400 .72rem var(--fm);line-height:1.8}.brand{font:700 .8rem var(--fd);color:var(--gold);letter-spacing:2px;margin-bottom:8px}
-@media(max-width:980px){.workflow{grid-template-columns:1fr}.arrow{transform:rotate(90deg);min-height:28px}.missionbar{grid-template-columns:1fr 1fr}.support{grid-template-columns:1fr 1fr}}
-@media(max-width:650px){.missionbar,.support{grid-template-columns:1fr}.wrap{padding:42px 18px 70px}.promise{border-radius:12px;line-height:1.5}}
+:root{--bg:#020408;--panel:#07111e;--line:rgba(200,212,227,.13);--white:#f2f6fb;--silver:#c4d0de;--grey:#8397b1;--gold:#ffd166;--mars:#ff6235;--cyan:#00e8ff;--green:#06d6a0;--fd:'Orbitron',monospace;--fb:'Space Grotesk',sans-serif;--fm:'JetBrains Mono',monospace}
+*{box-sizing:border-box;margin:0;padding:0}body{min-height:100vh;background:radial-gradient(circle at 68% 25%,rgba(255,98,53,.12),transparent 27%),radial-gradient(circle at 25% 20%,rgba(0,232,255,.07),transparent 26%),var(--bg);color:var(--white);font-family:var(--fb);overflow-x:hidden}a{text-decoration:none;color:inherit}#stars{position:fixed;inset:0;pointer-events:none}.shell{position:relative;z-index:1;max-width:1240px;margin:auto;padding:34px 30px 72px}.top{display:flex;align-items:center;justify-content:space-between;padding:8px 0 22px;border-bottom:1px solid var(--line)}.brand{font:900 .9rem var(--fd);letter-spacing:.16em;color:var(--gold)}.status{font:700 .66rem var(--fm);letter-spacing:.12em;color:var(--green);border:1px solid rgba(6,214,160,.28);padding:8px 11px;border-radius:999px}.hero{min-height:72vh;display:grid;grid-template-columns:1.18fr .82fr;gap:56px;align-items:center;padding:68px 0}.eyebrow{font:700 .72rem var(--fm);letter-spacing:.22em;text-transform:uppercase;color:var(--mars);margin-bottom:18px}h1{font:900 clamp(3.4rem,8vw,7.4rem)/.9 var(--fd);letter-spacing:-.055em}.moon{color:var(--silver)}.mars{color:var(--mars);text-shadow:0 0 42px rgba(255,98,53,.25)}.lead{font-size:clamp(1.05rem,1.8vw,1.24rem);line-height:1.65;color:var(--silver);max-width:720px;margin:26px 0 30px}.cta{display:flex;gap:12px;flex-wrap:wrap}.btn{display:inline-flex;align-items:center;gap:10px;padding:14px 20px;border-radius:9px;border:1px solid var(--line);font:800 .7rem var(--fd);letter-spacing:.11em;text-transform:uppercase;transition:.18s}.btn.primary{background:linear-gradient(135deg,#8f2f09,var(--mars));border-color:var(--mars);box-shadow:0 10px 35px rgba(255,98,53,.22)}.btn:hover{transform:translateY(-2px)}.micro{margin-top:18px;font:600 .69rem var(--fm);color:var(--grey)}
+.console{border:1px solid var(--line);border-radius:20px;background:linear-gradient(180deg,rgba(10,22,38,.95),rgba(4,10,18,.96));padding:22px;box-shadow:0 30px 70px rgba(0,0,0,.35)}.consoleHead{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);padding-bottom:14px;margin-bottom:14px}.consoleHead b{font:800 .72rem var(--fm);letter-spacing:.13em}.dot{color:var(--green);font:700 .64rem var(--fm)}.route{display:grid;grid-template-columns:auto 1fr auto 1fr auto;align-items:center;gap:8px;margin:28px 0}.planet{width:58px;height:58px;border-radius:50%;display:grid;place-items:center;font:800 .58rem var(--fm);border:1px solid var(--line)}.earth{background:radial-gradient(circle at 35% 30%,#72c9ff,#0c548b 58%,#06233d)}.moonOrb{background:radial-gradient(circle at 35% 30%,#f1f3f6,#7f8c99 66%,#404b56)}.marsOrb{background:radial-gradient(circle at 35% 30%,#ff9a6d,#a33b18 62%,#4d160b)}.line{height:1px;background:linear-gradient(90deg,var(--cyan),var(--gold));position:relative}.line:after{content:'›';position:absolute;right:-2px;top:-13px;color:var(--gold);font-size:1.2rem}.readout{display:grid;grid-template-columns:1fr 1fr;gap:10px}.r{border:1px solid var(--line);border-radius:11px;padding:14px;background:rgba(255,255,255,.015)}.rk{font:700 .6rem var(--fm);letter-spacing:.12em;color:var(--grey);text-transform:uppercase}.rv{margin-top:6px;font-weight:700}.rv.good{color:var(--green)}
+.promise{border-top:1px solid var(--line);padding:46px 0 0}.promiseTitle{font:900 clamp(1.8rem,4vw,3.4rem)/1.05 var(--fd);max-width:900px}.promiseLead{max-width:780px;color:var(--silver);line-height:1.65;margin:16px 0 28px}.pillrow{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.pill{border:1px solid var(--line);background:rgba(7,17,30,.7);border-radius:13px;padding:18px}.pill b{display:block;font:800 .68rem var(--fm);letter-spacing:.12em;color:var(--gold);text-transform:uppercase;margin-bottom:8px}.pill span{color:var(--silver);font-size:.9rem;line-height:1.45}.note{margin-top:34px;color:var(--grey);font:600 .7rem var(--fm);line-height:1.6;border-top:1px solid var(--line);padding-top:20px}
+@media(max-width:900px){.hero{grid-template-columns:1fr;gap:34px}.pillrow{grid-template-columns:1fr 1fr}.console{max-width:620px}.top{gap:16px}.status{display:none}}@media(max-width:560px){.shell{padding:24px 18px 56px}.pillrow{grid-template-columns:1fr}.route{grid-template-columns:auto 1fr auto 1fr auto}.planet{width:48px;height:48px}.readout{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 <canvas id="stars"></canvas>
-<div class="wrap">
-<header>
-  <div class="eyebrow">NASA Space Apps 2026 · Integrated Mission Control</div>
-  <h1><span class="gold">ARTEMIS</span> PLATFORM</h1>
-  <p class="lead">Turn NASA and NOAA data into decisions. Artemis connects mission navigation, space-weather risk, and scientific evidence in one workflow so a user can understand <b>where a mission is going, what the environment may do to it, and what new observations mean for the underlying science.</b></p>
-  <div class="promise">NAVIGATE → FORECAST → DISCOVER</div>
-</header>
+<div class="shell">
+  <div class="top">
+    <div class="brand">ARTEMIS NAVIGATOR</div>
+    <div class="status">● 2026 MISSION INTELLIGENCE BUILD</div>
+  </div>
 
-<section class="workflow" aria-label="Artemis workflow">
-  <a class="flowCard" style="--accent:var(--mars)" href="index.html">
-    <div class="stepNo">01 · Navigate</div>
-    <h2>Artemis Navigator</h2>
-    <p>Explore an interactive Earth–Moon–Mars trajectory, mission phases, orbital parameters, and live mission context.</p>
-    <div class="question">Question answered: Where are we going, and what does the mission geometry look like?</div>
-    <div class="go">Enter Mission Navigator →</div>
-  </a>
-  <div class="arrow">→</div>
-  <a class="flowCard" style="--accent:var(--gold)" href="https://nextjs-iota-roan-zvucs5v659.vercel.app">
-    <div class="stepNo">02 · Forecast</div>
-    <h2>Solar Storyline</h2>
-    <p>Translate NASA DONKI and NOAA space-weather measurements into forecast context, uncertainty, and role-specific impact.</p>
-    <div class="question">Question answered: What can the Sun and near-Earth environment do to this mission?</div>
-    <div class="go">Open Space-Weather Intelligence →</div>
-  </a>
-  <div class="arrow">→</div>
-  <a class="flowCard" style="--accent:var(--cyan)" href="tno_fossil_lab.html">
-    <div class="stepNo">03 · Discover</div>
-    <h2>Evidence Lab</h2>
-    <p>Use observations, model expectations, uncertainty, and provenance to expose where evidence agrees with—or pressures—scientific explanations.</p>
-    <div class="question">Question answered: What does new evidence force us to rethink?</div>
-    <div class="go">Interrogate the Evidence →</div>
-  </a>
-</section>
+  <section class="hero">
+    <div>
+      <div class="eyebrow">NASA Space Apps 2026 · Moon-to-Mars Mission Intelligence</div>
+      <h1><span class="moon">PLAN</span> THE JOURNEY.<br><span class="mars">REASON</span> THROUGH THE MISSION.</h1>
+      <p class="lead">Artemis Navigator turns a Moon-to-Mars mission into an interactive decision environment. Explore the trajectory, change mission assumptions, inspect live NASA context, move through mission phases, and ask why a decision changes the journey.</p>
+      <div class="cta">
+        <a class="btn primary" href="index.html">ENTER MISSION CONTROL →</a>
+      </div>
+      <div class="micro">Focused 2026 build · no recycled dashboard showcase · educational/research prototype</div>
+    </div>
 
-<div class="missionbar">
-  <div class="stat"><div class="k">Mission layer</div><div class="v">Earth → Moon → Mars</div></div>
-  <div class="stat"><div class="k">Environment layer</div><div class="v">Sun → Earth · CME / Kp / solar wind</div></div>
-  <div class="stat"><div class="k">Science layer</div><div class="v">Prediction → observation → contradiction</div></div>
-  <div class="stat"><div class="k">Design principle</div><div class="v">Sources, uncertainty, and provenance stay visible</div></div>
-</div>
+    <div class="console" aria-label="Mission preview">
+      <div class="consoleHead"><b>MISSION CORRIDOR</b><span class="dot">● SYSTEM READY</span></div>
+      <div class="route"><div class="planet earth">EARTH</div><div class="line"></div><div class="planet moonOrb">MOON</div><div class="line"></div><div class="planet marsOrb">MARS</div></div>
+      <div class="readout">
+        <div class="r"><div class="rk">Mission model</div><div class="rv">Earth → Lunar Gateway → Mars</div></div>
+        <div class="r"><div class="rk">Reasoning layer</div><div class="rv">Trajectory + assumptions + phase context</div></div>
+        <div class="r"><div class="rk">NASA context</div><div class="rv good">Live-data capable</div></div>
+        <div class="r"><div class="rk">Interaction</div><div class="rv">3D navigation + advisor + story mode</div></div>
+      </div>
+    </div>
+  </section>
 
-<div class="sectionLabel">Supporting instruments</div>
-<div class="support">
-  <a class="card" href="working_3d_solar_system.html"><div class="tag">3D Context</div><h3>Solar System View</h3><p>Explore the planetary system spatially and use it as visual context for the mission and science layers.</p><div class="go">Open →</div></a>
-  <a class="card" href="spectacular_3d_space_weather.html"><div class="tag">Heliophysics</div><h3>3D Space Weather</h3><p>Visualize solar activity propagating through the Sun–Earth system.</p><div class="go">Open →</div></a>
-  <a class="card" href="dashboard_hub.html"><div class="tag">Operations</div><h3>Space Weather Hub</h3><p>Inspect CME, flare, solar-wind and geomagnetic dashboards in one control-room view.</p><div class="go">Open →</div></a>
-  <a class="card" href="iss_tracker.html"><div class="tag">Live Orbit</div><h3>ISS Tracker</h3><p>Track the International Space Station and connect orbital awareness to the larger mission-control experience.</p><div class="go">Open →</div></a>
-  <a class="card" href="aurora_alerts.html"><div class="tag">Public Impact</div><h3>Aurora Outlook</h3><p>Translate geomagnetic activity into an intuitive public-facing visibility outlook.</p><div class="go">Open →</div></a>
-  <a class="card" href="space_explorers_academy.html"><div class="tag">Education</div><h3>Space Explorers Academy</h3><p>Use the platform’s scientific concepts in an interactive learning experience.</p><div class="go">Open →</div></a>
-</div>
-
-<footer>
-  <div class="brand">ARTEMIS PLATFORM</div>
-  Built by Oluwafemi Idiakhoa · NASA/open-science research prototype<br>
-  NASA and NOAA sources are identified inside the relevant modules · Not an official NASA product
-</footer>
+  <section class="promise">
+    <div class="eyebrow">What makes the 2026 build worth opening</div>
+    <div class="promiseTitle">Not another NASA dashboard. A mission you can interrogate.</div>
+    <p class="promiseLead">The experience is organized around mission questions rather than a menu of unrelated apps. The user should be able to see a change, understand its consequence, and ask the system to explain the mission logic behind it.</p>
+    <div class="pillrow">
+      <div class="pill"><b>01 · Explore</b><span>Fly the Earth–Moon–Mars corridor in an interactive 3D mission view.</span></div>
+      <div class="pill"><b>02 · Change</b><span>Adjust mission parameters and see how orbital and trajectory context responds.</span></div>
+      <div class="pill"><b>03 · Understand</b><span>Walk through mission phases using a guided Story Mode instead of reading static documentation.</span></div>
+      <div class="pill"><b>04 · Ask Why</b><span>Use the mission advisor to interrogate assumptions and explain what the mission state means.</span></div>
+    </div>
+    <div class="note">This front door intentionally excludes prior-year experimental dashboards and the TNO Evidence Lab from the 2026 competition narrative. Existing research remains in repository history, but Artemis Navigator is the current flagship.</div>
+  </section>
 </div>
 <script>
-const c=document.getElementById('stars'),x=c.getContext('2d');function size(){c.width=innerWidth;c.height=innerHeight}size();addEventListener('resize',size);const stars=Array.from({length:260},()=>({x:Math.random()*innerWidth,y:Math.random()*innerHeight,r:Math.random()*1.3+.2,a:Math.random(),da:(Math.random()-.5)*.005}));(function draw(){x.clearRect(0,0,c.width,c.height);for(const s of stars){s.a+=s.da;if(s.a<=.1||s.a>=1)s.da*=-1;x.beginPath();x.arc(s.x,s.y,s.r,0,Math.PI*2);x.fillStyle=`rgba(232,244,248,${s.a})`;x.fill()}requestAnimationFrame(draw)})();
+const c=document.getElementById('stars'),x=c.getContext('2d');function fit(){c.width=innerWidth;c.height=innerHeight}fit();addEventListener('resize',fit);const s=Array.from({length:230},()=>({x:Math.random()*innerWidth,y:Math.random()*innerHeight,r:Math.random()*1.25+.2,a:Math.random()*.75+.15,d:(Math.random()-.5)*.004}));(function draw(){x.clearRect(0,0,c.width,c.height);for(const p of s){p.a+=p.d;if(p.a<.12||p.a>.9)p.d*=-1;x.beginPath();x.arc(p.x,p.y,p.r,0,Math.PI*2);x.fillStyle=`rgba(235,244,255,${p.a})`;x.fill()}requestAnimationFrame(draw)})();
 </script>
 </body>
 </html>
