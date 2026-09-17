@@ -1,75 +1,242 @@
 {
-  "cleanUrls": true,
   "redirects": [
-    { "source": "/", "destination": "/trainer?release=2026-09-17-r2", "permanent": false }
+    {
+      "source": "/",
+      "destination": "/trainer?release=2026-09-17-r3",
+      "permanent": false
+    },
+    {
+      "source": "/index.html",
+      "destination": "/atlas",
+      "permanent": false
+    },
+    {
+      "source": "/index",
+      "destination": "/atlas",
+      "permanent": false
+    },
+    {
+      "source": "/trainer.html",
+      "destination": "/trainer",
+      "permanent": false
+    },
+    {
+      "source": "/navigator.html",
+      "destination": "/navigator",
+      "permanent": false
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/trainer",
+      "destination": "/trainer.html"
+    },
+    {
+      "source": "/atlas",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/navigator",
+      "destination": "/navigator.html"
+    }
   ],
   "headers": [
     {
       "source": "/",
       "headers": [
-        { "key": "Cache-Control", "value": "no-store, no-cache, must-revalidate, max-age=0" },
-        { "key": "CDN-Cache-Control", "value": "no-store" },
-        { "key": "Vercel-CDN-Cache-Control", "value": "no-store" },
-        { "key": "X-Moon-Mars-Release", "value": "2026-09-17-r2" }
+        {
+          "key": "Cache-Control",
+          "value": "no-store, no-cache, must-revalidate, max-age=0"
+        },
+        {
+          "key": "CDN-Cache-Control",
+          "value": "no-store"
+        },
+        {
+          "key": "Vercel-CDN-Cache-Control",
+          "value": "no-store"
+        },
+        {
+          "key": "X-Moon-Mars-Release",
+          "value": "2026-09-17-r3"
+        }
       ]
     },
     {
       "source": "/trainer",
       "headers": [
-        { "key": "Cache-Control", "value": "no-store, no-cache, must-revalidate, max-age=0" },
-        { "key": "CDN-Cache-Control", "value": "no-store" },
-        { "key": "Vercel-CDN-Cache-Control", "value": "no-store" },
-        { "key": "X-Moon-Mars-Release", "value": "2026-09-17-r2" }
+        {
+          "key": "Cache-Control",
+          "value": "no-store, no-cache, must-revalidate, max-age=0"
+        },
+        {
+          "key": "CDN-Cache-Control",
+          "value": "no-store"
+        },
+        {
+          "key": "Vercel-CDN-Cache-Control",
+          "value": "no-store"
+        },
+        {
+          "key": "X-Moon-Mars-Release",
+          "value": "2026-09-17-r3"
+        }
       ]
     },
     {
       "source": "/trainer.html",
       "headers": [
-        { "key": "Cache-Control", "value": "no-store, no-cache, must-revalidate, max-age=0" },
-        { "key": "CDN-Cache-Control", "value": "no-store" },
-        { "key": "Vercel-CDN-Cache-Control", "value": "no-store" },
-        { "key": "X-Moon-Mars-Release", "value": "2026-09-17-r2" }
+        {
+          "key": "Cache-Control",
+          "value": "no-store, no-cache, must-revalidate, max-age=0"
+        },
+        {
+          "key": "CDN-Cache-Control",
+          "value": "no-store"
+        },
+        {
+          "key": "Vercel-CDN-Cache-Control",
+          "value": "no-store"
+        },
+        {
+          "key": "X-Moon-Mars-Release",
+          "value": "2026-09-17-r3"
+        }
+      ]
+    },
+    {
+      "source": "/atlas",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store, no-cache, must-revalidate, max-age=0"
+        },
+        {
+          "key": "CDN-Cache-Control",
+          "value": "no-store"
+        },
+        {
+          "key": "Vercel-CDN-Cache-Control",
+          "value": "no-store"
+        },
+        {
+          "key": "X-Moon-Mars-Release",
+          "value": "2026-09-17-r3"
+        }
+      ]
+    },
+    {
+      "source": "/index",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store, no-cache, must-revalidate, max-age=0"
+        },
+        {
+          "key": "CDN-Cache-Control",
+          "value": "no-store"
+        },
+        {
+          "key": "Vercel-CDN-Cache-Control",
+          "value": "no-store"
+        },
+        {
+          "key": "X-Moon-Mars-Release",
+          "value": "2026-09-17-r3"
+        }
       ]
     },
     {
       "source": "/index.html",
       "headers": [
-        { "key": "Cache-Control", "value": "no-store, no-cache, must-revalidate, max-age=0" },
-        { "key": "CDN-Cache-Control", "value": "no-store" },
-        { "key": "Vercel-CDN-Cache-Control", "value": "no-store" },
-        { "key": "X-Moon-Mars-Release", "value": "2026-09-17-r2" }
+        {
+          "key": "Cache-Control",
+          "value": "no-store, no-cache, must-revalidate, max-age=0"
+        },
+        {
+          "key": "CDN-Cache-Control",
+          "value": "no-store"
+        },
+        {
+          "key": "Vercel-CDN-Cache-Control",
+          "value": "no-store"
+        },
+        {
+          "key": "X-Moon-Mars-Release",
+          "value": "2026-09-17-r3"
+        }
       ]
     },
     {
       "source": "/navigator",
       "headers": [
-        { "key": "Cache-Control", "value": "no-store, no-cache, must-revalidate, max-age=0" },
-        { "key": "CDN-Cache-Control", "value": "no-store" },
-        { "key": "Vercel-CDN-Cache-Control", "value": "no-store" },
-        { "key": "X-Moon-Mars-Release", "value": "2026-09-17-r2" }
+        {
+          "key": "Cache-Control",
+          "value": "no-store, no-cache, must-revalidate, max-age=0"
+        },
+        {
+          "key": "CDN-Cache-Control",
+          "value": "no-store"
+        },
+        {
+          "key": "Vercel-CDN-Cache-Control",
+          "value": "no-store"
+        },
+        {
+          "key": "X-Moon-Mars-Release",
+          "value": "2026-09-17-r3"
+        }
       ]
     },
     {
       "source": "/navigator.html",
       "headers": [
-        { "key": "Cache-Control", "value": "no-store, no-cache, must-revalidate, max-age=0" },
-        { "key": "CDN-Cache-Control", "value": "no-store" },
-        { "key": "Vercel-CDN-Cache-Control", "value": "no-store" },
-        { "key": "X-Moon-Mars-Release", "value": "2026-09-17-r2" }
+        {
+          "key": "Cache-Control",
+          "value": "no-store, no-cache, must-revalidate, max-age=0"
+        },
+        {
+          "key": "CDN-Cache-Control",
+          "value": "no-store"
+        },
+        {
+          "key": "Vercel-CDN-Cache-Control",
+          "value": "no-store"
+        },
+        {
+          "key": "X-Moon-Mars-Release",
+          "value": "2026-09-17-r3"
+        }
       ]
     },
     {
       "source": "/release.json",
       "headers": [
-        { "key": "Cache-Control", "value": "no-store, no-cache, must-revalidate, max-age=0" },
-        { "key": "CDN-Cache-Control", "value": "no-store" },
-        { "key": "Vercel-CDN-Cache-Control", "value": "no-store" },
-        { "key": "X-Moon-Mars-Release", "value": "2026-09-17-r2" }
+        {
+          "key": "Cache-Control",
+          "value": "no-store, no-cache, must-revalidate, max-age=0"
+        },
+        {
+          "key": "CDN-Cache-Control",
+          "value": "no-store"
+        },
+        {
+          "key": "Vercel-CDN-Cache-Control",
+          "value": "no-store"
+        },
+        {
+          "key": "X-Moon-Mars-Release",
+          "value": "2026-09-17-r3"
+        }
       ]
     }
   ],
   "functions": {
-    "api/ai.js": { "maxDuration": 30 },
-    "api/nasa.js": { "maxDuration": 25 }
+    "api/ai.js": {
+      "maxDuration": 30
+    },
+    "api/nasa.js": {
+      "maxDuration": 25
+    }
   }
 }

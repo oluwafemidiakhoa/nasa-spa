@@ -16,7 +16,7 @@ async function waitForAtlasData() {
 }
 
 async function gotoAtlas(gap = '0801') {
-  await page.goto(`${BASE}/index.html?gap=${gap}`, { waitUntil: 'domcontentloaded' });
+  await page.goto(`${BASE}/atlas?gap=${gap}`, { waitUntil: 'domcontentloaded' });
   await waitForAtlasData();
 }
 
