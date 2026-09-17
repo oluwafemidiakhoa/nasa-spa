@@ -26,7 +26,7 @@ try {
   assert.match(await page.locator('#mapTitle').innerText(), /Gap → architecture/i);
   assert.match(await page.locator('#detailTitle').innerText(), /Lunar Dust/i);
   assert.match(await page.locator('.gap.active .gapId').innerText(), /0801/);
-  assert.match(await page.locator('#open3D').getAttribute('href'), /navigator\.html\?gap=0801$/);
+  assert.match(await page.locator('#open3D').getAttribute('href'), /\/navigator\?gap=0801$/);
   assert.ok((await page.locator('[data-hit="true"]').count()) > 0, 'Expected mapped architecture nodes for 0801');
 
   console.log('2. Select a different gap and verify state + URL + 3D handoff update');
@@ -34,7 +34,7 @@ try {
   await targetGap.click();
   await page.waitForURL(/gap=1104/);
   assert.match(await page.locator('#detailTitle').innerText(), /Mars Transportation Propulsion/i);
-  assert.match(await page.locator('#open3D').getAttribute('href'), /navigator\.html\?gap=1104$/);
+  assert.match(await page.locator('#open3D').getAttribute('href'), /\/navigator\?gap=1104$/);
 
   console.log('3. Exercise GAP ADDRESSED residual-dependency mode');
   await page.locator('[data-state="resolved"]').click();
@@ -60,7 +60,7 @@ try {
   await dustGap.click();
   await page.waitForURL(/gap=0801/);
   await Promise.all([
-    page.waitForURL(/navigator\.html\?gap=0801/),
+    page.waitForURL(/\/navigator\?gap=0801/),
     page.locator('#open3D').click(),
   ]);
   await page.waitForFunction(() => document.querySelector('#gapTitle')?.textContent?.includes('Lunar Dust'), null, { timeout: 15000 });
@@ -69,7 +69,7 @@ try {
 
   console.log('7. Verify 3D → Atlas round trip preserves gap');
   await Promise.all([
-    page.waitForURL(/index\.html\?gap=0801/),
+    page.waitForURL(/\/atlas\?gap=0801/),
     page.locator('#backLink').click(),
   ]);
   await waitForAtlasData();
