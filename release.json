@@ -1,0 +1,5 @@
+{
+  "product": "Moon→Mars Mission Trainer",
+  "release": "2026-09-17-r2",
+  "notes": "Cache-busting production release fingerprint. HTML routes are configured no-store at the Vercel edge."
+}
