@@ -118,7 +118,8 @@ def main() -> int:
         ok("All loaded technology gaps have detailed architecture traceability")
 
     trainer_markers = {
-        "locked 2026 challenge": "Build a Junior Astronaut Mission Trainer",
+        "product-first hero": "NASA ARCHITECTURE · INTERACTIVE MISSION TRAINING",
+        "challenge metadata retained": "Build a Junior Astronaut Mission Trainer",
         "lunar scenario": "Lunar South Pole Outpost",
         "Mars scenario": "Mars Surface Outpost",
         "limited training credits": "MAX_CREDITS=10",
@@ -135,6 +136,13 @@ def main() -> int:
         "no invented readiness claim": "does not calculate mission survival probability",
     }
     require_markers(trainer, trainer_markers, "Trainer", errors)
+
+    # Product identity must lead. The official challenge title belongs in footer/submission metadata,
+    # not as the primary hero label.
+    if "2026 Challenge · Build a Junior Astronaut Mission Trainer" in trainer:
+        fail("Trainer hero still exposes the challenge title as product branding", errors)
+    else:
+        ok("Trainer hero is product-first rather than challenge-title-first")
 
     atlas_markers = {
         "residual dependency engine": "function residualForGap",
