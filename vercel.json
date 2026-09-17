@@ -1,5 +1,8 @@
 {
   "cleanUrls": true,
+  "rewrites": [
+    { "source": "/", "destination": "/trainer.html" }
+  ],
   "functions": {
     "api/ai.js": { "maxDuration": 30 },
     "api/nasa.js": { "maxDuration": 25 }

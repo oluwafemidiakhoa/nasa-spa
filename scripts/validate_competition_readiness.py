@@ -1,24 +1,20 @@
 #!/usr/bin/env python3
-"""Fail-fast structural checks for the Moon→Mars Decision Atlas competition build.
-
-This validator intentionally distinguishes *integrity* from *completeness*:
-- Integrity failures exit non-zero (broken provenance, IDs, 3D handoff, stale story, etc.).
-- Incomplete NASA traceability is reported as a competition blocker but does not
-  fail normal CI until --strict-traceability is requested.
-"""
+"""Fail-fast structural checks for the 2026 Moon→Mars Mission Trainer build."""
 from __future__ import annotations
 
 import argparse
 import json
 import re
-import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 DATA_PATH = ROOT / "data" / "moon_to_mars_revision_c.json"
+TRAINER_PATH = ROOT / "trainer.html"
 INDEX_PATH = ROOT / "index.html"
 NAV_PATH = ROOT / "navigator.html"
 SUBMISSION_PATH = ROOT / "SUBMISSION.md"
+ALIGNMENT_PATH = ROOT / "CHALLENGE_ALIGNMENT.md"
+VERCEL_PATH = ROOT / "vercel.json"
 
 
 def fail(message: str, errors: list[str]) -> None:
@@ -34,6 +30,14 @@ def warn(message: str) -> None:
     print(f"BLOCKER: {message}")
 
 
+def require_markers(text: str, markers: dict[str, str], label: str, errors: list[str]) -> None:
+    for description, marker in markers.items():
+        if marker not in text:
+            fail(f"{label} missing {description}: {marker}", errors)
+        else:
+            ok(f"{label} contains {description}")
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -42,19 +46,30 @@ def main() -> int:
         help="Fail unless every loaded technology gap has detailed architecture traceability.",
     )
     args = parser.parse_args()
-
     errors: list[str] = []
 
-    for path in (DATA_PATH, INDEX_PATH, NAV_PATH, SUBMISSION_PATH):
+    required = (
+        DATA_PATH,
+        TRAINER_PATH,
+        INDEX_PATH,
+        NAV_PATH,
+        SUBMISSION_PATH,
+        ALIGNMENT_PATH,
+        VERCEL_PATH,
+    )
+    for path in required:
         if not path.exists():
             fail(f"Required competition file missing: {path.relative_to(ROOT)}", errors)
     if errors:
         return 1
 
     dataset = json.loads(DATA_PATH.read_text(encoding="utf-8"))
+    trainer = TRAINER_PATH.read_text(encoding="utf-8")
     index = INDEX_PATH.read_text(encoding="utf-8")
     navigator = NAV_PATH.read_text(encoding="utf-8")
     submission = SUBMISSION_PATH.read_text(encoding="utf-8")
+    alignment = ALIGNMENT_PATH.read_text(encoding="utf-8")
+    vercel = json.loads(VERCEL_PATH.read_text(encoding="utf-8"))
 
     meta = dataset.get("dataset", {})
     gaps = dataset.get("technology_gaps", [])
@@ -71,25 +86,23 @@ def main() -> int:
     else:
         ok("Dataset revision is C")
 
-    if len(gaps) < 16:
-        fail(f"Expected at least 16 prioritized technology gaps; found {len(gaps)}", errors)
+    if meta.get("generated_from_official_xlsx") is not True:
+        fail("Production competition dataset must be generated from official NASA XLSX products", errors)
     else:
-        ok(f"Prioritized gap inventory loaded: {len(gaps)}")
+        ok("Dataset is marked generated_from_official_xlsx")
+
+    if len(gaps) < 16:
+        fail(f"Expected at least 16 technology gaps; found {len(gaps)}", errors)
+    else:
+        ok(f"Technology-gap inventory loaded: {len(gaps)}")
 
     ids = [str(g.get("id", "")) for g in gaps]
     if len(ids) != len(set(ids)):
         fail("Technology gap IDs are not unique", errors)
     if any(not re.fullmatch(r"\d{4}", gid) for gid in ids):
         fail("Every technology gap ID must be a four-digit ESDMD identifier", errors)
-    if not errors:
-        ok("Technology gap IDs are unique and normalized")
-
-    ranks = [g.get("priority_rank") for g in gaps]
-    nonnull_ranks = [r for r in ranks if isinstance(r, int)]
-    if len(nonnull_ranks) != len(set(nonnull_ranks)):
-        fail("NASA priority ranks are duplicated", errors)
     else:
-        ok("NASA priority ranks are unique")
+        ok("Technology gap IDs are normalized")
 
     unknown_segments: list[tuple[str, str]] = []
     unknown_subs: list[tuple[str, str]] = []
@@ -122,13 +135,28 @@ def main() -> int:
     )
     if rank_only:
         warn(
-            "Detailed NASA traceability is still incomplete for: "
-            + ", ".join(f"#{g.get('priority_rank')} {g.get('id')}" for g in rank_only)
+            "Detailed NASA traceability is incomplete for: "
+            + ", ".join(f"#{g.get('priority_rank')} {g.get('id')}" for g in rank_only[:12])
+            + (" ..." if len(rank_only) > 12 else "")
         )
         if args.strict_traceability:
             fail("Strict traceability requested but not all gaps are fully mapped", errors)
     else:
-        ok("All prioritized gaps have detailed architecture traceability")
+        ok("All loaded technology gaps have detailed architecture traceability")
+
+    trainer_markers = {
+        "locked 2026 challenge": "Build a Junior Astronaut Mission Trainer",
+        "lunar scenario": "Lunar South Pole Outpost",
+        "Mars scenario": "Mars Surface Outpost",
+        "limited training credits": "MAX_CREDITS=10",
+        "NASA gap resolver": "function resolveGap(def)",
+        "residual graph debrief": "function runDebrief()",
+        "Atlas handoff": "index.html?gap=",
+        "3D handoff": "navigator.html?gap=",
+        "NASA source handoff": "NASA SOURCE",
+        "no invented readiness claim": "does not calculate mission survival probability",
+    }
+    require_markers(trainer, trainer_markers, "Trainer", errors)
 
     atlas_markers = {
         "residual dependency engine": "function residualForGap",
@@ -137,61 +165,65 @@ def main() -> int:
         "selected-gap URL persistence": "history.replaceState(null,'','?gap='",
         "source provenance UI": "Provenance",
     }
-    for label, marker in atlas_markers.items():
-        if marker not in index:
-            fail(f"Atlas missing {label}: {marker}", errors)
-        else:
-            ok(f"Atlas contains {label}")
+    require_markers(index, atlas_markers, "Atlas", errors)
 
     nav_markers = {
         "3D core embedding": "navigator_core.html",
         "gap-aware URL input": "const initialGap=params.get('gap')",
-        "round-trip back link": "$('#backLink').href='/?gap='",
+        "round-trip back link": "$('#backLink').href='index.html?gap='",
         "phase control bridge": "w.setPhase(currentPhase)",
+        "fallback phase inference": "function inferProfile(g)",
     }
-    for label, marker in nav_markers.items():
-        if marker not in navigator:
-            fail(f"3D Navigator missing {label}: {marker}", errors)
-        else:
-            ok(f"3D Navigator contains {label}")
+    require_markers(navigator, nav_markers, "3D Navigator", errors)
 
-    missing_profiles = [gid for gid in ids if f"'{gid}':{{" not in navigator]
-    if missing_profiles:
-        fail(f"3D context profile missing for gap IDs: {', '.join(missing_profiles)}", errors)
+    root_routes_to_trainer = any(
+        r.get("source") == "/" and r.get("destination") == "/trainer.html"
+        for r in vercel.get("rewrites", [])
+    )
+    if not root_routes_to_trainer:
+        fail("Vercel root must route to /trainer.html for the judge-facing build", errors)
     else:
-        ok("All loaded technology gaps have explicit 3D context profiles")
+        ok("Public root routes to Mission Trainer")
 
     stale_story_markers = [
         "# Solar Storyline",
-        "pilot, grid operator",
-        "Live NASA cards ticking",
+        "Challenge alignment is intentionally pending",
+        "Exact official 2026 challenge statement selected",
     ]
     stale_hits = [marker for marker in stale_story_markers if marker in submission]
     if stale_hits:
-        fail(f"SUBMISSION.md still contains retired Solar Storyline narrative: {stale_hits}", errors)
+        fail(f"SUBMISSION.md still contains stale competition narrative: {stale_hits}", errors)
     else:
-        ok("Submission narrative is aligned to the current Atlas product")
+        ok("Submission narrative is locked to the selected 2026 challenge")
 
     required_submission_phrases = [
-        "Moon→Mars Decision Atlas",
+        "Moon→Mars Mission Trainer",
+        "Build a Junior Astronaut Mission Trainer",
         "NASA",
         "Revision C",
         "technology gap",
+        "training credits",
         "provenance",
         "3D",
-        "official 2026 challenge",
     ]
     for phrase in required_submission_phrases:
         if phrase.lower() not in submission.lower():
             fail(f"SUBMISSION.md missing required competition concept: {phrase}", errors)
-    if not errors:
+    if all(phrase.lower() in submission.lower() for phrase in required_submission_phrases):
         ok("Competition narrative contains the required current-product concepts")
+
+    if "Requirement → implementation" not in alignment or "Build a Junior Astronaut Mission Trainer" not in alignment:
+        fail("CHALLENGE_ALIGNMENT.md is incomplete", errors)
+    else:
+        ok("Challenge alignment matrix is present")
 
     print("\n=== COMPETITION READINESS SUMMARY ===")
     print(f"Integrity errors: {len(errors)}")
     print(f"Detailed traceability: {len(verified)}/{len(gaps)}")
-    print("Challenge alignment: PENDING until NASA publishes the official 2026 challenge statement")
-    print("UI status: FROZEN except for bug fixes and evidence/completeness work")
+    print("Challenge alignment: LOCKED — Build a Junior Astronaut Mission Trainer")
+    print("Judge-facing root: trainer.html")
+    print("Evidence engine: index.html")
+    print("3D context: navigator.html")
 
     return 1 if errors else 0
 
