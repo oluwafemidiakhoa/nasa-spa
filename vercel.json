@@ -1,7 +1,7 @@
 {
   "cleanUrls": true,
-  "rewrites": [
-    { "source": "/", "destination": "/trainer.html" }
+  "redirects": [
+    { "source": "/", "destination": "/trainer", "permanent": false }
   ],
   "functions": {
     "api/ai.js": { "maxDuration": 30 },

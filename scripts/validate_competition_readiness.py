@@ -176,14 +176,16 @@ def main() -> int:
     }
     require_markers(navigator, nav_markers, "3D Navigator", errors)
 
-    root_routes_to_trainer = any(
-        r.get("source") == "/" and r.get("destination") == "/trainer.html"
-        for r in vercel.get("rewrites", [])
+    root_redirects_to_trainer = any(
+        r.get("source") == "/"
+        and r.get("destination") == "/trainer"
+        and r.get("permanent") is False
+        for r in vercel.get("redirects", [])
     )
-    if not root_routes_to_trainer:
-        fail("Vercel root must route to /trainer.html for the judge-facing build", errors)
+    if not root_redirects_to_trainer:
+        fail("Vercel root must explicitly redirect to /trainer for the judge-facing build", errors)
     else:
-        ok("Public root routes to Mission Trainer")
+        ok("Public root explicitly redirects to Mission Trainer")
 
     stale_story_markers = [
         "# Solar Storyline",
@@ -221,7 +223,7 @@ def main() -> int:
     print(f"Integrity errors: {len(errors)}")
     print(f"Detailed traceability: {len(verified)}/{len(gaps)}")
     print("Challenge alignment: LOCKED — Build a Junior Astronaut Mission Trainer")
-    print("Judge-facing root: trainer.html")
+    print("Judge-facing root: / -> /trainer")
     print("Evidence engine: index.html")
     print("3D context: navigator.html")
 
