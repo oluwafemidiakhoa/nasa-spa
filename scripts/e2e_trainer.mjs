@@ -20,7 +20,7 @@ async function waitForTrainerData() {
 }
 
 async function gotoTrainer() {
-  await page.goto(`${BASE}/trainer.html`, { waitUntil: 'domcontentloaded' });
+  await page.goto(`${BASE}/trainer`, { waitUntil: 'domcontentloaded' });
   await waitForTrainerData();
 }
 
@@ -61,7 +61,7 @@ try {
   const atlasHref = await firstEvidence.locator('a').filter({ hasText: 'DECISION ATLAS' }).getAttribute('href');
   const sourceHref = await firstEvidence.locator('a').filter({ hasText: 'NASA SOURCE' }).getAttribute('href');
   assert.match(threeDHref || '', /^\/navigator\?gap=\d{4}$/);
-  assert.match(atlasHref || '', /^\/index\.html\?gap=\d{4}$/);
+  assert.match(atlasHref || '', /^\/atlas\?gap=\d{4}$/);
   assert.match(sourceHref || '', /^https:\/\/www\.nasa\.gov\//);
 
   console.log('5. Verify Trainer → 3D handoff loads selected NASA gap context');
@@ -81,7 +81,7 @@ try {
   const selectedGap = navUrl.searchParams.get('gap');
   assert.match(selectedGap || '', /^\d{4}$/);
   await Promise.all([
-    page.waitForURL(new RegExp(`index\\.html\\?gap=${selectedGap}`)),
+    page.waitForURL(new RegExp(`/atlas\\?gap=${selectedGap}`)),
     page.locator('#backLink').click(),
   ]);
   await page.waitForFunction(
@@ -95,9 +95,9 @@ try {
   await gotoTrainer();
   const dustAtlas = page.locator('.decision[data-key="dust"] a').filter({ hasText: 'ATLAS' });
   const dustAtlasHref = await dustAtlas.getAttribute('href');
-  assert.match(dustAtlasHref || '', /^\/index\.html\?gap=\d{4}$/);
+  assert.match(dustAtlasHref || '', /^\/atlas\?gap=\d{4}$/);
   await Promise.all([
-    page.waitForURL(/index\.html\?gap=\d{4}/),
+    page.waitForURL(/\/atlas\?gap=\d{4}/),
     dustAtlas.click(),
   ]);
   await page.waitForFunction(
