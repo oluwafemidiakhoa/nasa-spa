@@ -1,129 +1,124 @@
-# 🚀 Artemis Navigator — Moon to Mars Mission Platform
+# Moon→Mars Mission Trainer
 
-**A NASA Space Apps Challenge 2026 entry.**
+**NASA Space Apps Challenge 2026 — Build a Junior Astronaut Mission Trainer**
 
-🔗 **Live demo:** [nasa-spa.vercel.app](https://nasa-spa.vercel.app) · **Platform launcher:** [nasa-spa.vercel.app/hub](https://nasa-spa.vercel.app/hub)
+🔗 **Live demo:** https://nasa-spa.vercel.app/
 
-Artemis Navigator turns NASA's open data and modern AI into an interactive Moon-to-Mars mission console: a 3D trajectory you can fly, live space-weather context, and an AI mission advisor you can question in plain language. It is built to make the science of deep-space navigation — orbital mechanics, lunar staging, Mars transfer windows, and radiation hazards — understandable to students, communicators, and judges alike.
+Moon→Mars Mission Trainer is a student-facing lunar/Martian outpost simulation powered by NASA's Moon-to-Mars architecture data. Students receive limited training credits, choose which NASA-documented technology gaps to address, then run a debrief to see which mission systems still carry other unresolved dependencies.
 
-The flagship experience is a single, dependency-light HTML page ([`index.html`](index.html)) that runs entirely in the browser. The repository also includes a polished Next.js companion app (**Solar Storyline**) and a collection of supporting space-weather dashboards.
+The competition experience is intentionally layered:
 
----
+- `trainer.html` — public Mission Trainer front door.
+- `index.html` — Moon→Mars Decision Atlas evidence engine.
+- `navigator.html` — gap-aware 3D mission context.
+- `data/moon_to_mars_revision_c.json` — normalized NASA architecture dataset.
+- `data/moon_to_mars_source_manifest.json` — authoritative source URLs, hashes, and counts.
 
-## ✨ Flagship: Artemis Navigator (`index.html`)
+## Competition concept
 
-Open [`index.html`](index.html) in any modern browser — no build step required.
+The 2026 challenge asks teams to build an interactive game or app that lets students run a lunar or Martian outpost while balancing competing engineering demands.
 
-### What it does
+Our response is not a fictional mission simulator disconnected from real data. The game layer uses clearly labeled training mechanics, while the engineering relationships underneath come from NASA's official Moon-to-Mars Architecture Revision C products.
 
-- **3D trajectory visualization** — a [Three.js](https://threejs.org/) (r128) scene renders the Earth–Moon–Mars corridor and animates the spacecraft along its transfer path.
-- **Orbital mechanics, live** — computes orbit altitude and orbital period from adjustable mission parameters so users can see how geometry drives the trajectory.
-- **Moon-to-Mars mission phases** — walks through Lunar Orbit, the Lunar Gateway, Lunar Surface Ops, Mars Approach, Mars Orbital Insertion, and the Mars Prep Hub.
-- **Story Mode** — a guided, narrative walkthrough of the mission for outreach and demos.
-- **Live NASA data** — pulls real space-weather and imagery context from NASA's open APIs (see below) so the mission environment reflects current solar conditions.
+### Student flow
 
-### 🤖 AI Mission Advisor — four providers, bring-your-own-key
-
-Ask mission-briefing questions in natural language and get answers from the AI engine of your choice. Keys are entered in the UI and used **client-side only** — they are never committed or sent anywhere except directly to the chosen provider's API.
-
-| Provider | Model | Endpoint |
-|----------|-------|----------|
-| **Anthropic** | Claude | `api.anthropic.com/v1/messages` |
-| **OpenAI** | GPT-4o | `api.openai.com/v1/chat/completions` |
-| **DeepSeek** | DeepSeek | `api.deepseek.com/v1/chat/completions` |
-| **Google** | Gemini | `generativelanguage.googleapis.com` |
-
-Get a key from the provider you prefer:
-[Anthropic](https://console.anthropic.com) ·
-[OpenAI](https://platform.openai.com/api-keys) ·
-[DeepSeek](https://platform.deepseek.com) ·
-Google AI Studio.
-
-> ⚠️ **Security:** API keys are billable secrets. Paste them only into the running app; do not commit them. Rotate any key that has been shared.
-
----
-
-## 🌌 Companion app: Solar Storyline (`web/nextjs`)
-
-A focused Next.js MVP that turns live space-weather data into **role-based human stories**. Instead of asking people to interpret raw CME, flare, Kp, and solar-wind feeds, it explains what current Sun–Earth conditions could mean for a pilot, satellite operator, grid operator, astronaut, aurora chaser, or student.
-
-Highlights:
-- Earth-impact-weighted readiness score (measured Kp/Bz/solar wind/storms drive the level; CMEs count only when geometrically Earth-directed).
-- Evidence panel with DONKI event IDs, timestamps, and source links.
-- Live / partial / fallback data states with explicit feed-health reporting.
-
-### Run it locally
-
-```bash
-cd web/nextjs
-npm install
-npm run dev
-# open http://localhost:3000
+```text
+Choose lunar or Mars outpost
+        ↓
+Spend limited training credits
+        ↓
+Select NASA technology gaps to address
+        ↓
+Run mission debrief
+        ↓
+Inspect clear vs still-exposed architecture nodes
+        ↓
+Open Decision Atlas / 3D context / NASA source evidence
 ```
 
-Optional — for higher NASA API rate limits, create `web/nextjs/.env.local`:
+## NASA evidence layer
+
+The automated sync pipeline ingests NASA's official 2025 Architecture Concept Review XLSX products:
+
+- Lunar Objective Decomposition
+- Mars Objective Decomposition
+- Architecture-Driven Technology Gaps
+- Architecture-Driven Data Gaps
+
+The current production sync contains:
+
+- **57 technology gaps**
+- **19 normalized data gaps**
+- **10,871 lunar objective rows**
+- **4,094 Mars objective rows**
+
+Each source is recorded with URL, filename, byte size, record count, and SHA-256 provenance. Technology-gap rows also preserve source workbook, sheet, and row where available.
+
+## Decision Atlas
+
+`index.html` is the engineering/evidence layer behind the student trainer. It supports:
+
+- Gap → Architecture
+- Architecture → Gaps
+- Compare Gaps
+- Residual Dependency Analysis
+- NASA source provenance
+
+The residual engine performs deterministic graph subtraction: when a technology gap is assumed addressed in a training scenario, the Atlas removes only that gap from the loaded graph and reports which other mapped gaps still touch the same architecture nodes.
+
+## 3D mission context
+
+`navigator.html` preserves the selected ESDMD technology-gap ID and maps it into an illustrative mission locus such as Earth→Moon, lunar/cislunar operations, Moon→Mars transit, or Mars approach.
+
+The 3D geometry is explicitly labeled illustrative. NASA architecture relationships remain source-backed and are not inferred from scene geometry.
+
+## Scientific guardrails
+
+This project deliberately avoids claims the data cannot support:
+
+- no invented mission-readiness percentage;
+- no fabricated survival or mission-success probability;
+- no inferred graph edge when NASA relationships are absent;
+- no claim that broad architecture reach equals strategic importance;
+- no claim that a selected training investment means NASA has solved that gap;
+- no claim that closing one gap makes a mission ready;
+- training-credit values are fictional educational mechanics and are labeled as such.
+
+## Data pipeline
+
+The NASA sync is implemented in `scripts/sync_nasa_moon_to_mars.py` and validated in GitHub Actions. The workflow:
+
+1. discovers the current NASA Moon-to-Mars Architecture Definition Documents page;
+2. downloads the official XLSX products;
+3. computes SHA-256 hashes;
+4. normalizes the workbook rows;
+5. validates IDs, counts, objectives, and source provenance;
+6. fails closed if required source products or integrity checks are missing;
+7. commits generated data only after validation passes.
+
+Transient NASA HTTP 429 responses are handled with bounded backoff retries.
+
+## Local use
+
+The flagship experiences are dependency-light static HTML pages. Serve the repository with any local HTTP server so browser `fetch()` calls can load the JSON dataset.
+
+Example:
 
 ```bash
-NEXT_PUBLIC_NASA_API_KEY=your_nasa_api_key
+python -m http.server 8000
+# open http://localhost:8000/trainer.html
 ```
 
-Without a key the app falls back to NASA's rate-limited `DEMO_KEY`. Get a free key at [api.nasa.gov](https://api.nasa.gov/).
+## Competition validation
 
-### Build checks
+`scripts/validate_competition_readiness.py` checks the NASA dataset structure, Atlas markers, Trainer markers, 3D handoff, provenance, challenge narrative, and other competition-critical invariants on CI.
 
-```bash
-cd web/nextjs
-npm run type-check
-npm run build
-```
+See `SUBMISSION.md` for the current 30-second and 2-minute judge demo scripts.
 
----
+## Attribution
 
-## 🛰️ Supporting dashboards
+Built by **Oluwafemi Idiakhoa** for NASA Space Apps Challenge 2026.
 
-A set of standalone HTML visualizations live at the repository root (open any directly in a browser):
+Core technologies: NASA public Moon-to-Mars architecture data · HTML/CSS/JavaScript · Three.js · Python · GitHub Actions · Vercel.
 
-- `dashboard_hub.html` — space-weather dashboard hub
-- `3d_solar_system.html`, `working_3d_solar_system.html`, `spectacular_3d_space_weather.html` — 3D solar-system and space-weather scenes
-- `iss_tracker.html` — ISS tracking
-- `aurora_alerts.html` — aurora visibility alerts
-- `space_weather_chatbot.html`, `space_weather_research_center.html`, `space_explorers_academy.html` — educational and research views
-
-These are earlier prototypes and exploratory demos; the **Artemis Navigator** (`index.html`) and **Solar Storyline** (`web/nextjs`) are the maintained submission pieces.
-
----
-
-## 📡 NASA & open data used
-
-- **NASA DONKI** — CME, FLR (solar flare), and GST (geomagnetic storm) notifications
-- **NASA APOD** — Astronomy Picture of the Day
-- **NASA EPIC** — recent natural-color Earth imagery (Solar Storyline)
-- **NOAA SWPC** — planetary K index, solar-wind plasma, and magnetic-field feeds (Solar Storyline)
-
----
-
-## 🧰 Tech stack
-
-- **Artemis Navigator:** vanilla HTML/CSS/JS + Three.js (r128), fetched from CDN; multi-provider AI integration via `fetch`.
-- **Solar Storyline:** Next.js 14, React 18, TypeScript, Tailwind CSS.
-- **Data:** direct browser calls to NASA and NOAA public APIs.
-
----
-
-## 🏆 Why it fits NASA Space Apps
-
-- **Impact:** makes deep-space mission planning and space-weather risk legible to a general audience.
-- **Creativity:** combines a flyable 3D trajectory with a conversational, multi-model AI advisor.
-- **Use of NASA/open data:** NASA DONKI and APOD drive the live mission environment; sources stay visible.
-- **Scientific credibility:** real orbital-mechanics calculations, real agency data, and an explicit educational disclaimer.
-- **Storytelling:** Story Mode gives the mission a clear beginning, middle, and end.
-
----
-
-## ⚠️ Scientific caveat
-
-This project is an educational NASA Space Apps prototype. It uses NASA and NOAA open data to explain space mission and space-weather context, but it is **not** an official operational forecast or flight-planning tool. Operational decisions should rely on NOAA Space Weather Prediction Center products, NASA mission systems, and established mission procedures.
-
----
-
-*Built for the NASA Space Apps Challenge 2026.*
+**Independent educational/research prototype. Not an official NASA product or flight-planning system.**
