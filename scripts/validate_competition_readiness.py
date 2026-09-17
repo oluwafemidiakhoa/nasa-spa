@@ -40,23 +40,11 @@ def require_markers(text: str, markers: dict[str, str], label: str, errors: list
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "--strict-traceability",
-        action="store_true",
-        help="Fail unless every loaded technology gap has detailed architecture traceability.",
-    )
+    parser.add_argument("--strict-traceability", action="store_true")
     args = parser.parse_args()
     errors: list[str] = []
 
-    required = (
-        DATA_PATH,
-        TRAINER_PATH,
-        INDEX_PATH,
-        NAV_PATH,
-        SUBMISSION_PATH,
-        ALIGNMENT_PATH,
-        VERCEL_PATH,
-    )
+    required = (DATA_PATH, TRAINER_PATH, INDEX_PATH, NAV_PATH, SUBMISSION_PATH, ALIGNMENT_PATH, VERCEL_PATH)
     for path in required:
         if not path.exists():
             fail(f"Required competition file missing: {path.relative_to(ROOT)}", errors)
@@ -80,17 +68,14 @@ def main() -> int:
         fail("NASA Revision C document_id must remain 20250010956", errors)
     else:
         ok("NASA Revision C document ID is pinned")
-
     if meta.get("revision") != "C":
         fail("Dataset revision must be C", errors)
     else:
         ok("Dataset revision is C")
-
     if meta.get("generated_from_official_xlsx") is not True:
         fail("Production competition dataset must be generated from official NASA XLSX products", errors)
     else:
         ok("Dataset is marked generated_from_official_xlsx")
-
     if len(gaps) < 16:
         fail(f"Expected at least 16 technology gaps; found {len(gaps)}", errors)
     else:
@@ -121,24 +106,12 @@ def main() -> int:
     if not unknown_segments and not unknown_subs:
         ok("All architecture mappings resolve to declared NASA taxonomy nodes")
 
-    verified = [
-        g
-        for g in gaps
-        if g.get("detail_status") == "verified"
-        and (g.get("segments") or g.get("subarchitectures"))
-    ]
+    verified = [g for g in gaps if g.get("detail_status") == "verified" and (g.get("segments") or g.get("subarchitectures"))]
     rank_only = [g for g in gaps if g not in verified]
     coverage = (len(verified) / len(gaps) * 100) if gaps else 0.0
-    print(
-        f"TRACEABILITY COVERAGE: {len(verified)}/{len(gaps)} gaps "
-        f"({coverage:.1f}%) have detailed loaded architecture mappings"
-    )
+    print(f"TRACEABILITY COVERAGE: {len(verified)}/{len(gaps)} gaps ({coverage:.1f}%) have detailed loaded architecture mappings")
     if rank_only:
-        warn(
-            "Detailed NASA traceability is incomplete for: "
-            + ", ".join(f"#{g.get('priority_rank')} {g.get('id')}" for g in rank_only[:12])
-            + (" ..." if len(rank_only) > 12 else "")
-        )
+        warn("Detailed NASA traceability is incomplete for: " + ", ".join(f"#{g.get('priority_rank')} {g.get('id')}" for g in rank_only[:12]) + (" ..." if len(rank_only) > 12 else ""))
         if args.strict_traceability:
             fail("Strict traceability requested but not all gaps are fully mapped", errors)
     else:
@@ -150,9 +123,14 @@ def main() -> int:
         "Mars scenario": "Mars Surface Outpost",
         "limited training credits": "MAX_CREDITS=10",
         "NASA gap resolver": "function resolveGap(def)",
-        "residual graph debrief": "function runDebrief()",
-        "Atlas handoff": "index.html?gap=",
-        "3D handoff": "navigator.html?gap=",
+        "residual graph debrief": "function runDebrief(scroll=true)",
+        "real timed judge demo": "const demoStages=[",
+        "30-second runtime": "elapsed>=30000",
+        "demo data readiness gate": "$('#demoBtn').disabled=false",
+        "direct per-gap 3D handoff": "🌐 VIEW IN 3D",
+        "debrief 3D handoff": "🌐 OPEN IN 3D",
+        "Atlas handoff": "/index.html?gap=",
+        "3D URL handoff": "/navigator?gap=",
         "NASA source handoff": "NASA SOURCE",
         "no invented readiness claim": "does not calculate mission survival probability",
     }
@@ -177,9 +155,7 @@ def main() -> int:
     require_markers(navigator, nav_markers, "3D Navigator", errors)
 
     root_redirects_to_trainer = any(
-        r.get("source") == "/"
-        and r.get("destination") == "/trainer"
-        and r.get("permanent") is False
+        r.get("source") == "/" and r.get("destination") == "/trainer" and r.get("permanent") is False
         for r in vercel.get("redirects", [])
     )
     if not root_redirects_to_trainer:
@@ -187,27 +163,14 @@ def main() -> int:
     else:
         ok("Public root explicitly redirects to Mission Trainer")
 
-    stale_story_markers = [
-        "# Solar Storyline",
-        "Challenge alignment is intentionally pending",
-        "Exact official 2026 challenge statement selected",
-    ]
+    stale_story_markers = ["# Solar Storyline", "Challenge alignment is intentionally pending", "Exact official 2026 challenge statement selected"]
     stale_hits = [marker for marker in stale_story_markers if marker in submission]
     if stale_hits:
         fail(f"SUBMISSION.md still contains stale competition narrative: {stale_hits}", errors)
     else:
         ok("Submission narrative is locked to the selected 2026 challenge")
 
-    required_submission_phrases = [
-        "Moon→Mars Mission Trainer",
-        "Build a Junior Astronaut Mission Trainer",
-        "NASA",
-        "Revision C",
-        "technology gap",
-        "training credits",
-        "provenance",
-        "3D",
-    ]
+    required_submission_phrases = ["Moon→Mars Mission Trainer", "Build a Junior Astronaut Mission Trainer", "NASA", "Revision C", "technology gap", "training credits", "provenance", "3D"]
     for phrase in required_submission_phrases:
         if phrase.lower() not in submission.lower():
             fail(f"SUBMISSION.md missing required competition concept: {phrase}", errors)
@@ -224,9 +187,9 @@ def main() -> int:
     print(f"Detailed traceability: {len(verified)}/{len(gaps)}")
     print("Challenge alignment: LOCKED — Build a Junior Astronaut Mission Trainer")
     print("Judge-facing root: / -> /trainer")
+    print("Timed judge demo: 30 seconds")
     print("Evidence engine: index.html")
     print("3D context: navigator.html")
-
     return 1 if errors else 0
 
 
