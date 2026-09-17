@@ -1,0 +1,38 @@
+name: Apply Product-First Branding
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [feat/product-first-judge-polish]
+    paths:
+      - 'scripts/patch_product_first_branding.py'
+      - '.github/workflows/apply-product-first-branding.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/product-first-judge-polish
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Apply branding patch
+        run: python scripts/patch_product_first_branding.py
+      - name: Validate competition build
+        run: python scripts/validate_competition_readiness.py
+      - name: Commit product changes
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add trainer.html scripts/validate_competition_readiness.py
+          if git diff --cached --quiet; then
+            echo 'No product changes to commit.'
+            exit 0
+          fi
+          git commit -m 'feat: make Mission Trainer product-first'
+          git push
