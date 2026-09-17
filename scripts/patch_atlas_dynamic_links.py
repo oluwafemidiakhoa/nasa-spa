@@ -1,5 +1,6 @@
 from pathlib import Path
 
+# One-off branch patch: migrate the final dynamic Trainer links to the stable /atlas route.
 p = Path('trainer.html')
 text = p.read_text(encoding='utf-8')
 old = '/index.html?gap=${encodeURIComponent(g.id)}'
