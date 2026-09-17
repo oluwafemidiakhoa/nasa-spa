@@ -1,0 +1,50 @@
+name: Atlas Browser E2E
+
+on:
+  pull_request:
+    paths:
+      - 'index.html'
+      - 'navigator.html'
+      - 'navigator_core.html'
+      - 'data/moon_to_mars_revision_c.json'
+      - 'scripts/e2e_atlas.mjs'
+      - '.github/workflows/atlas-e2e.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install Playwright
+        run: |
+          npm init -y
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+
+      - name: Serve static site
+        run: |
+          python3 -m http.server 4173 --bind 127.0.0.1 > /tmp/nasa-spa-http.log 2>&1 &
+          echo $! > /tmp/nasa-spa-http.pid
+          sleep 2
+          curl --fail http://127.0.0.1:4173/index.html >/dev/null
+
+      - name: Run Atlas browser E2E
+        env:
+          E2E_BASE_URL: http://127.0.0.1:4173
+        run: node scripts/e2e_atlas.mjs
+
+      - name: Show server log on failure
+        if: failure()
+        run: cat /tmp/nasa-spa-http.log || true
