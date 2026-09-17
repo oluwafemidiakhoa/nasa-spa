@@ -15,6 +15,7 @@ NAV_PATH = ROOT / "navigator.html"
 SUBMISSION_PATH = ROOT / "SUBMISSION.md"
 ALIGNMENT_PATH = ROOT / "CHALLENGE_ALIGNMENT.md"
 VERCEL_PATH = ROOT / "vercel.json"
+RELEASE_PATH = ROOT / "release.json"
 
 
 def fail(message: str, errors: list[str]) -> None:
@@ -44,7 +45,7 @@ def main() -> int:
     args = parser.parse_args()
     errors: list[str] = []
 
-    required = (DATA_PATH, TRAINER_PATH, INDEX_PATH, NAV_PATH, SUBMISSION_PATH, ALIGNMENT_PATH, VERCEL_PATH)
+    required = (DATA_PATH, TRAINER_PATH, INDEX_PATH, NAV_PATH, SUBMISSION_PATH, ALIGNMENT_PATH, VERCEL_PATH, RELEASE_PATH)
     for path in required:
         if not path.exists():
             fail(f"Required competition file missing: {path.relative_to(ROOT)}", errors)
@@ -58,6 +59,7 @@ def main() -> int:
     submission = SUBMISSION_PATH.read_text(encoding="utf-8")
     alignment = ALIGNMENT_PATH.read_text(encoding="utf-8")
     vercel = json.loads(VERCEL_PATH.read_text(encoding="utf-8"))
+    release = json.loads(RELEASE_PATH.read_text(encoding="utf-8"))
 
     meta = dataset.get("dataset", {})
     gaps = dataset.get("technology_gaps", [])
@@ -137,8 +139,6 @@ def main() -> int:
     }
     require_markers(trainer, trainer_markers, "Trainer", errors)
 
-    # Product identity must lead. The official challenge title belongs in footer/submission metadata,
-    # not as the primary hero label.
     if "2026 Challenge · Build a Junior Astronaut Mission Trainer" in trainer:
         fail("Trainer hero still exposes the challenge title as product branding", errors)
     else:
@@ -162,14 +162,35 @@ def main() -> int:
     }
     require_markers(navigator, nav_markers, "3D Navigator", errors)
 
+    release_id = str(release.get("release", "")).strip()
+    if not release_id:
+        fail("release.json must contain a non-empty release identifier", errors)
+    else:
+        ok(f"Production release fingerprint present: {release_id}")
+
     root_redirects_to_trainer = any(
-        r.get("source") == "/" and r.get("destination") == "/trainer" and r.get("permanent") is False
+        r.get("source") == "/"
+        and str(r.get("destination", "")).startswith("/trainer")
+        and r.get("permanent") is False
         for r in vercel.get("redirects", [])
     )
     if not root_redirects_to_trainer:
-        fail("Vercel root must explicitly redirect to /trainer for the judge-facing build", errors)
+        fail("Vercel root must explicitly redirect to the versioned /trainer judge-facing build", errors)
     else:
-        ok("Public root explicitly redirects to Mission Trainer")
+        ok("Public root explicitly redirects to versioned Mission Trainer")
+
+    html_routes = {"/", "/trainer", "/trainer.html", "/index.html", "/navigator", "/navigator.html", "/release.json"}
+    header_blocks = {h.get("source"): h.get("headers", []) for h in vercel.get("headers", [])}
+    for route in sorted(html_routes):
+        headers = {item.get("key", "").lower(): item.get("value", "") for item in header_blocks.get(route, [])}
+        if "no-store" not in headers.get("cache-control", "").lower():
+            fail(f"Vercel route {route} must send Cache-Control: no-store", errors)
+        if headers.get("x-moon-mars-release") != release_id:
+            fail(f"Vercel route {route} must expose X-Moon-Mars-Release={release_id}", errors)
+    if not any(f"release={release_id}" in str(r.get("destination", "")) for r in vercel.get("redirects", [])):
+        fail("Root redirect must include the current release fingerprint as a cache-busting query parameter", errors)
+    else:
+        ok("Root redirect carries the current cache-busting release fingerprint")
 
     stale_story_markers = ["# Solar Storyline", "Challenge alignment is intentionally pending", "Exact official 2026 challenge statement selected"]
     stale_hits = [marker for marker in stale_story_markers if marker in submission]
@@ -194,7 +215,8 @@ def main() -> int:
     print(f"Integrity errors: {len(errors)}")
     print(f"Detailed traceability: {len(verified)}/{len(gaps)}")
     print("Challenge alignment: LOCKED — Build a Junior Astronaut Mission Trainer")
-    print("Judge-facing root: / -> /trainer")
+    print(f"Judge-facing root: / -> /trainer?release={release_id}")
+    print(f"Production release: {release_id}")
     print("Timed judge demo: 30 seconds")
     print("Evidence engine: index.html")
     print("3D context: navigator.html")
