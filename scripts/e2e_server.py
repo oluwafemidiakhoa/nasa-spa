@@ -5,6 +5,7 @@ from urllib.parse import urlsplit
 CLEAN_URLS = {
     "/": "/trainer.html",
     "/trainer": "/trainer.html",
+    "/atlas": "/index.html",
     "/navigator": "/navigator.html",
 }
 
