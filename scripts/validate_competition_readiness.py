@@ -170,6 +170,8 @@ def main() -> int:
 
     redirects = vercel.get("redirects", [])
     rewrites = vercel.get("rewrites", [])
+    redirects = vercel.get("redirects", [])
+    rewrites = vercel.get("rewrites", [])
     root_redirects_to_trainer = any(
         r.get("source") == "/" and str(r.get("destination", "")).startswith("/trainer?release=") and r.get("permanent") is False
         for r in redirects
