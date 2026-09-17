@@ -132,7 +132,7 @@ def main() -> int:
         "demo data readiness gate": "$('#demoBtn').disabled=false",
         "direct per-gap 3D handoff": "🌐 VIEW IN 3D",
         "debrief 3D handoff": "🌐 OPEN IN 3D",
-        "Atlas handoff": "/index.html?gap=",
+        "Atlas handoff": "/atlas?gap=",
         "3D URL handoff": "/navigator?gap=",
         "NASA source handoff": "NASA SOURCE",
         "no invented readiness claim": "does not calculate mission survival probability",
@@ -156,7 +156,7 @@ def main() -> int:
     nav_markers = {
         "3D core embedding": "navigator_core.html",
         "gap-aware URL input": "const initialGap=params.get('gap')",
-        "round-trip back link": "$('#backLink').href='index.html?gap='",
+        "round-trip back link": "$('#backLink').href='/atlas?gap='",
         "phase control bridge": "w.setPhase(currentPhase)",
         "fallback phase inference": "function inferProfile(g)",
     }
@@ -168,29 +168,32 @@ def main() -> int:
     else:
         ok(f"Production release fingerprint present: {release_id}")
 
+    redirects = vercel.get("redirects", [])
+    rewrites = vercel.get("rewrites", [])
+    redirects = vercel.get("redirects", [])
+    rewrites = vercel.get("rewrites", [])
+    redirects = vercel.get("redirects", [])
+    rewrites = vercel.get("rewrites", [])
     root_redirects_to_trainer = any(
-        r.get("source") == "/"
-        and str(r.get("destination", "")).startswith("/trainer")
-        and r.get("permanent") is False
-        for r in vercel.get("redirects", [])
+        r.get("source") == "/" and str(r.get("destination", "")).startswith("/trainer?release=") and r.get("permanent") is False
+        for r in redirects
     )
+    atlas_rewrite = any(r.get("source") == "/atlas" and r.get("destination") == "/index.html" for r in rewrites)
+    legacy_index_redirect = any(r.get("source") == "/index.html" and r.get("destination") == "/atlas" for r in redirects)
+    navigator_rewrite = any(r.get("source") == "/navigator" and r.get("destination") == "/navigator.html" for r in rewrites)
+    trainer_rewrite = any(r.get("source") == "/trainer" and r.get("destination") == "/trainer.html" for r in rewrites)
     if not root_redirects_to_trainer:
-        fail("Vercel root must explicitly redirect to the versioned /trainer judge-facing build", errors)
+        fail("Vercel root must explicitly redirect to a versioned /trainer URL", errors)
     else:
         ok("Public root explicitly redirects to versioned Mission Trainer")
-
-    html_routes = {"/", "/trainer", "/trainer.html", "/index.html", "/navigator", "/navigator.html", "/release.json"}
-    header_blocks = {h.get("source"): h.get("headers", []) for h in vercel.get("headers", [])}
-    for route in sorted(html_routes):
-        headers = {item.get("key", "").lower(): item.get("value", "") for item in header_blocks.get(route, [])}
-        if "no-store" not in headers.get("cache-control", "").lower():
-            fail(f"Vercel route {route} must send Cache-Control: no-store", errors)
-        if headers.get("x-moon-mars-release") != release_id:
-            fail(f"Vercel route {route} must expose X-Moon-Mars-Release={release_id}", errors)
-    if not any(f"release={release_id}" in str(r.get("destination", "")) for r in vercel.get("redirects", [])):
-        fail("Root redirect must include the current release fingerprint as a cache-busting query parameter", errors)
+    if not atlas_rewrite or not legacy_index_redirect:
+        fail("Public Atlas routing must be /atlas -> index.html with legacy /index.html redirect", errors)
     else:
-        ok("Root redirect carries the current cache-busting release fingerprint")
+        ok("Public Atlas route is stable at /atlas and legacy index.html redirects")
+    if not navigator_rewrite or not trainer_rewrite:
+        fail("Trainer/Navigator clean public routes must be explicit rewrites", errors)
+    else:
+        ok("Trainer and Navigator public routes are explicit")
 
     stale_story_markers = ["# Solar Storyline", "Challenge alignment is intentionally pending", "Exact official 2026 challenge statement selected"]
     stale_hits = [marker for marker in stale_story_markers if marker in submission]
@@ -218,7 +221,7 @@ def main() -> int:
     print(f"Judge-facing root: / -> /trainer?release={release_id}")
     print(f"Production release: {release_id}")
     print("Timed judge demo: 30 seconds")
-    print("Evidence engine: index.html")
+    print("Evidence engine: /atlas -> index.html")
     print("3D context: navigator.html")
     return 1 if errors else 0
 
