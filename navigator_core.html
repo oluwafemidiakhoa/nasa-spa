@@ -1440,19 +1440,19 @@ footer {
       <div class="nasa-card-label">CME EVENTS · 7 DAYS</div>
       <div class="nasa-card-value" id="cme-val" style="color:var(--artemis-gold)">—</div>
       <div class="nasa-card-unit">Coronal Mass Ejections</div>
-      <div class="nasa-card-source">SOURCE: NASA DONKI API</div>
+      <div class="nasa-card-source">SOURCE: NASA CCMC DONKI</div>
     </div>
     <div class="nasa-card">
       <div class="nasa-card-label">SOLAR FLARES · 7 DAYS</div>
       <div class="nasa-card-value" id="flare-val" style="color:var(--mars-glow)">—</div>
       <div class="nasa-card-unit">X + M Class Flares</div>
-      <div class="nasa-card-source">SOURCE: NASA DONKI API</div>
+      <div class="nasa-card-source">SOURCE: NASA CCMC DONKI</div>
     </div>
     <div class="nasa-card">
       <div class="nasa-card-label">GEOMAGNETIC STORMS</div>
       <div class="nasa-card-value" id="storm-val" style="color:var(--mission-blue)">—</div>
       <div class="nasa-card-unit">Storm events this week</div>
-      <div class="nasa-card-source">SOURCE: NASA DONKI API</div>
+      <div class="nasa-card-source">SOURCE: NASA CCMC DONKI</div>
     </div>
     <div class="nasa-card">
       <div class="nasa-card-label">APOD — TODAY</div>
@@ -1484,7 +1484,7 @@ footer {
   <div style="text-align:center;">
     <div style="font-size:0.75rem;color:var(--lunar-grey);font-family:var(--font-data);margin-bottom:6px;">DATA SOURCES</div>
     <div style="font-size:0.7rem;color:var(--lunar-grey);font-family:var(--font-data);line-height:1.8;">
-      NASA DONKI · NASA APOD (live APIs)<br>
+      NASA CCMC DONKI · NASA APOD (live APIs)<br>
       Keplerian ephemeris (J2000) · NASA Artemis program references
     </div>
   </div>
@@ -2026,14 +2026,17 @@ async function nasaGet(type, directUrl) {
     }
   }
 
-  // Local/static fallback. Throw on HTTP/API errors so the UI shows N/A rather
-  // than presenting a failed request as valid mission data.
+  // Only use the legacy direct URL when the app is running without the
+  // serverless proxy (for example from a local static file). If the deployed
+  // proxy exists but fails, surface that error instead of calling retired
+  // api.nasa.gov routes and hiding the real problem.
+  if (proxyError && location.protocol !== 'file:') throw proxyError;
+
   const r = await fetch(directUrl);
   const d = await r.json().catch(() => ({}));
   if (!r.ok || (d && d.error)) {
     throw new Error((d && (d.error?.message || d.error)) || ('NASA API error ' + r.status));
   }
-  if (proxyError) console.warn('NASA proxy unavailable; direct fallback succeeded:', proxyError);
   return d;
 }
 
@@ -2103,14 +2106,24 @@ async function fetchNASAData() {
       .filter(Boolean)
       .join(' ');
 
-    if (d.media_type === 'image' && (d.hdurl || d.url)) {
-      img.src = d.hdurl || d.url;
+    const mediaKind = d.media_kind || d.media_type;
+    const mediaUrl = d.media_url || d.hdurl || d.url;
+
+    if (mediaKind === 'image' && mediaUrl) {
+      img.src = mediaUrl;
       img.style.display = 'block';
       container.style.display = 'block';
-    } else if (d.media_type === 'video' && d.url) {
-      video.src = d.url;
+    } else if ((mediaKind === 'video' || mediaKind === 'iframe') && mediaUrl) {
+      video.src = mediaUrl;
       video.style.display = 'block';
       container.style.display = 'block';
+    } else if (d.page_url) {
+      // Some NASA APOD video entries no longer expose an embeddable media URL.
+      // Keep the title/explanation visible and provide a safe canonical link.
+      container.style.display = 'block';
+      caption.textContent = [caption.textContent, 'View the media on NASA: ' + d.page_url]
+        .filter(Boolean)
+        .join(' ');
     } else {
       throw new Error('NASA APOD returned unsupported media');
     }
