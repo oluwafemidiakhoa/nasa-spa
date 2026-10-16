@@ -28,7 +28,7 @@ function absoluteUrl(value, base = 'https://science.nasa.gov') {
 function firstHtmlUrl(html, tag, attribute = 'src') {
   if (!html) return null;
   const pattern = new RegExp(
-    '<' + tag + '\\b[^>]*\\b' + attribute + '=["\\\']([^"\\\']+)["\\\']',
+    `<${tag}\\b[^>]*\\b${attribute}=["']([^"']+)["']`,
     'i'
   );
   const match = String(html).match(pattern);
@@ -37,8 +37,8 @@ function firstHtmlUrl(html, tag, attribute = 'src') {
 
 function stripHtml(value) {
   return String(value || '')
-    .replace(/<script\\b[^>]*>[\\s\\S]*?<\\/script>/gi, ' ')
-    .replace(/<style\\b[^>]*>[\\s\\S]*?<\\/style>/gi, ' ')
+    .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, ' ')
+    .replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, ' ')
     .replace(/<[^>]+>/g, ' ')
     .replace(/&nbsp;/gi, ' ')
     .replace(/&amp;/gi, '&')
@@ -46,7 +46,7 @@ function stripHtml(value) {
     .replace(/&#39;|&apos;/gi, "'")
     .replace(/&lt;/gi, '<')
     .replace(/&gt;/gi, '>')
-    .replace(/\\s+/g, ' ')
+    .replace(/\s+/g, ' ')
     .trim();
 }
 
