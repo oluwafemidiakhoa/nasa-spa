@@ -1462,10 +1462,11 @@ footer {
     </div>
   </div>
 
-  <!-- APOD IMAGE -->
+  <!-- APOD MEDIA -->
   <div id="apod-container" style="margin-top:32px;display:none;">
     <div style="font-family:var(--font-data);font-size:0.6rem;letter-spacing:3px;text-transform:uppercase;color:var(--lunar-grey);margin-bottom:12px;">NASA ASTRONOMY PICTURE OF THE DAY</div>
-    <img id="apod-img" src="" alt="NASA APOD" style="width:100%;max-height:500px;object-fit:cover;border-radius:6px;border:1px solid var(--panel-border);" />
+    <img id="apod-img" src="" alt="NASA APOD" style="display:none;width:100%;max-height:500px;object-fit:cover;border-radius:6px;border:1px solid var(--panel-border);" />
+    <iframe id="apod-video" title="NASA Astronomy Picture of the Day video" src="" style="display:none;width:100%;aspect-ratio:16/9;border-radius:6px;border:1px solid var(--panel-border);background:#000;" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
     <div id="apod-caption" style="font-size:0.82rem;color:var(--lunar-grey);margin-top:12px;line-height:1.6;font-family:var(--font-body);max-width:800px;"></div>
   </div>
 </section>
@@ -2010,17 +2011,30 @@ function onResize() {
 // with no user key on the deployed site). Falls back to a direct api.nasa.gov
 // call with the user's key when no proxy is present (e.g. running locally).
 async function nasaGet(type, directUrl) {
-  // Try the proxy with one retry, so a transient cold-start/timeout on any
-  // single feed doesn't leave a permanent N/A.
+  // Try the serverless proxy first. Treat HTTP failures and NASA error payloads
+  // as real failures instead of silently turning them into zero counts.
+  let proxyError = null;
   for (let attempt = 0; attempt < 2; attempt++) {
     try {
-      const pr = await fetch('/api/nasa?type=' + type);
-      if (pr.status === 404) break;      // no serverless function here → direct
-      if (pr.ok) return await pr.json(); // success
-    } catch (e) { /* transient → retry, then fall through to direct */ }
+      const pr = await fetch('/api/nasa?type=' + encodeURIComponent(type));
+      if (pr.status === 404) break; // no serverless function here → direct
+      const pd = await pr.json().catch(() => ({}));
+      if (pr.ok && !(pd && pd.error)) return pd;
+      proxyError = new Error((pd && pd.error) || ('NASA proxy error ' + pr.status));
+    } catch (e) {
+      proxyError = e;
+    }
   }
+
+  // Local/static fallback. Throw on HTTP/API errors so the UI shows N/A rather
+  // than presenting a failed request as valid mission data.
   const r = await fetch(directUrl);
-  return await r.json();
+  const d = await r.json().catch(() => ({}));
+  if (!r.ok || (d && d.error)) {
+    throw new Error((d && (d.error?.message || d.error)) || ('NASA API error ' + r.status));
+  }
+  if (proxyError) console.warn('NASA proxy unavailable; direct fallback succeeded:', proxyError);
+  return d;
 }
 
 async function fetchNASAData() {
@@ -2064,16 +2078,46 @@ async function fetchNASAData() {
 
   // APOD
   try {
-    const d = await nasaGet('apod', `https://api.nasa.gov/planetary/apod?api_key=${NASA_KEY}`);
+    const d = await nasaGet('apod', `https://api.nasa.gov/planetary/apod?api_key=${NASA_KEY}&thumbs=true`);
     nasaLiveData.apod = d;
-    document.getElementById('apod-val').textContent = d.title || 'Loaded';
-    if (d.media_type === 'image') {
-      document.getElementById('apod-img').src = d.url;
-      document.getElementById('apod-caption').textContent = d.explanation?.slice(0, 360) + '…';
-      document.getElementById('apod-container').style.display = 'block';
+
+    const title = d.title || 'Loaded';
+    const img = document.getElementById('apod-img');
+    const video = document.getElementById('apod-video');
+    const caption = document.getElementById('apod-caption');
+    const container = document.getElementById('apod-container');
+
+    document.getElementById('apod-val').textContent =
+      d.fallback_used ? title + ' (recent APOD)' : title;
+
+    img.style.display = 'none';
+    img.removeAttribute('src');
+    video.style.display = 'none';
+    video.removeAttribute('src');
+
+    const explanation = String(d.explanation || '').trim();
+    const fallbackNote = d.fallback_used
+      ? `Showing the most recent usable APOD (${d.date || 'recent date'}) because today's NASA media response was unavailable.`
+      : '';
+    caption.textContent = [fallbackNote, explanation.slice(0, 360) + (explanation.length > 360 ? '…' : '')]
+      .filter(Boolean)
+      .join(' ');
+
+    if (d.media_type === 'image' && (d.hdurl || d.url)) {
+      img.src = d.hdurl || d.url;
+      img.style.display = 'block';
+      container.style.display = 'block';
+    } else if (d.media_type === 'video' && d.url) {
+      video.src = d.url;
+      video.style.display = 'block';
+      container.style.display = 'block';
+    } else {
+      throw new Error('NASA APOD returned unsupported media');
     }
   } catch(e) {
-    document.getElementById('apod-val').textContent = 'N/A';
+    console.error('APOD load failed:', e);
+    document.getElementById('apod-val').textContent = 'Temporarily unavailable';
+    document.getElementById('apod-container').style.display = 'none';
   }
 
   // Mars distance (Keplerian model)
