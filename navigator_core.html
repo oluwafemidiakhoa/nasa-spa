@@ -1466,8 +1466,10 @@ footer {
   <div id="apod-container" style="margin-top:32px;display:none;">
     <div style="font-family:var(--font-data);font-size:0.6rem;letter-spacing:3px;text-transform:uppercase;color:var(--lunar-grey);margin-bottom:12px;">NASA ASTRONOMY PICTURE OF THE DAY</div>
     <img id="apod-img" src="" alt="NASA APOD" style="display:none;width:100%;max-height:500px;object-fit:cover;border-radius:6px;border:1px solid var(--panel-border);" />
-    <iframe id="apod-video" title="NASA Astronomy Picture of the Day video" src="" style="display:none;width:100%;aspect-ratio:16/9;border-radius:6px;border:1px solid var(--panel-border);background:#000;" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    <video id="apod-video" controls playsinline preload="metadata" style="display:none;width:100%;max-height:560px;aspect-ratio:16/9;object-fit:contain;border-radius:6px;border:1px solid var(--panel-border);background:#000;"></video>
+    <iframe id="apod-iframe" title="NASA Astronomy Picture of the Day embed" src="" style="display:none;width:100%;aspect-ratio:16/9;border-radius:6px;border:1px solid var(--panel-border);background:#000;" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
     <div id="apod-caption" style="font-size:0.82rem;color:var(--lunar-grey);margin-top:12px;line-height:1.6;font-family:var(--font-body);max-width:800px;"></div>
+    <a id="apod-link" href="#" target="_blank" rel="noopener noreferrer" style="display:none;margin-top:12px;width:fit-content;font-family:var(--font-data);font-size:0.7rem;letter-spacing:1px;color:var(--mission-green);text-decoration:none;border-bottom:1px solid rgba(6,214,160,0.35);">VIEW THIS APOD ON NASA SCIENCE ↗</a>
   </div>
 </section>
 
@@ -2087,7 +2089,9 @@ async function fetchNASAData() {
     const title = d.title || 'Loaded';
     const img = document.getElementById('apod-img');
     const video = document.getElementById('apod-video');
+    const frame = document.getElementById('apod-iframe');
     const caption = document.getElementById('apod-caption');
+    const link = document.getElementById('apod-link');
     const container = document.getElementById('apod-container');
 
     document.getElementById('apod-val').textContent =
@@ -2095,8 +2099,18 @@ async function fetchNASAData() {
 
     img.style.display = 'none';
     img.removeAttribute('src');
+
+    video.pause();
     video.style.display = 'none';
     video.removeAttribute('src');
+    video.onerror = null;
+    video.load();
+
+    frame.style.display = 'none';
+    frame.removeAttribute('src');
+
+    link.style.display = 'none';
+    link.removeAttribute('href');
 
     const explanation = String(d.explanation || '').trim();
     const fallbackNote = d.fallback_used
@@ -2106,6 +2120,10 @@ async function fetchNASAData() {
       .filter(Boolean)
       .join(' ');
 
+    if (d.page_url) {
+      link.href = d.page_url;
+    }
+
     const mediaKind = d.media_kind || d.media_type;
     const mediaUrl = d.media_url || d.hdurl || d.url;
 
@@ -2113,17 +2131,27 @@ async function fetchNASAData() {
       img.src = mediaUrl;
       img.style.display = 'block';
       container.style.display = 'block';
-    } else if ((mediaKind === 'video' || mediaKind === 'iframe') && mediaUrl) {
+    } else if (mediaKind === 'video' && mediaUrl) {
+      // NASA's APOD WordPress API may return a direct MP4/WebM asset. Direct
+      // media URLs must be played by <video>; NASA blocks them in iframes.
       video.src = mediaUrl;
       video.style.display = 'block';
       container.style.display = 'block';
-    } else if (d.page_url) {
-      // Some NASA APOD video entries no longer expose an embeddable media URL.
-      // Keep the title/explanation visible and provide a safe canonical link.
+      video.onerror = () => {
+        console.warn('Direct APOD video could not be played; showing NASA link instead.');
+        video.style.display = 'none';
+        if (d.page_url) link.style.display = 'inline-block';
+      };
+      video.load();
+    } else if (mediaKind === 'iframe' && mediaUrl) {
+      // Only true embed URLs belong in an iframe.
+      frame.src = mediaUrl;
+      frame.style.display = 'block';
       container.style.display = 'block';
-      caption.textContent = [caption.textContent, 'View the media on NASA: ' + d.page_url]
-        .filter(Boolean)
-        .join(' ');
+      if (d.page_url) link.style.display = 'inline-block';
+    } else if (d.page_url) {
+      container.style.display = 'block';
+      link.style.display = 'inline-block';
     } else {
       throw new Error('NASA APOD returned unsupported media');
     }
