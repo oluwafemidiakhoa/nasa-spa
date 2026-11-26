@@ -4,7 +4,7 @@
 
 Gaia Observatory is the independent research-platform evolution of the earlier NASA Space Apps project in this repository. The existing Moon-to-Mars Mission Trainer, Decision Atlas and 3D navigator remain intact. This is separate from [Gaia Lunar Systems — The First Night](https://github.com/oluwafemidiakhoa/gaia-lunar-systems-2026), the 2026 team project.
 
-## Observatory v1.0 RC4 (development)
+## Observatory v1.0 RC7 (development)
 
 - [Observatory entrance](observatory.html): links to existing modules and a NASA source-manifest catalog.
 - Recorded source URLs, SHA-256 digests, workbook row counts and normalized record counts are displayed separately. The catalog validates manifest structure, not authenticity or raw source bytes.
@@ -73,7 +73,7 @@ Open [research.html](research.html) on localhost. This deterministic question in
 
 Local verification: 27 JavaScript tests passed (6 new research and 21 regression); four new Python research tests passed, including cross-runtime replay for all supported commands, unsupported queries, altered values/pointers, query substitution and wrong digest. The manufactured synthetic example explains one above-baseline facility and two not above. No live-data scientific validation, full repository regression, browser interaction, CI or deployment is established.
 
-## Mission Control and cloud Earth workspace (v1.0 RC4)
+## Mission Control and cloud Earth workspace (v1.0 RC7)
 
 Open the [visual observation console](live_dashboard.html) for the world map, NASA imagery and space-weather charts, or [Mission Control](mission-control.html) for the four product areas: Earth Intelligence, Cosmic Research, Space Intelligence and Universe Academy, with shared evidence tools. The new [Earth workspace](workspace.html) uses the preview-only bounded EONET retrieval endpoint; public date and category parameters go to Vercel, while location screening, evidence packaging and imports remain in the browser. Mission Control automatically requests EONET wildfires from the last seven complete UTC days, APOD and DONKI CME records on entry. The Earth workspace automatically runs a recent wildfire study. Manual refresh is available; no continuous polling is used. APOD and DONKI reuse the existing API; runtime availability of all cloud sources remains to be verified. They display recorded title/date and returned-record counts, not scientific predictions. FIRMS, JPL and Earthdata are planned, not connected. Academy and other mission prototypes remain preserved and have not been revalidated.
 
@@ -222,3 +222,7 @@ The RC2 preview showed a 502 on EONET while APOD and DONKI reported records in a
 ### RC4 visual observation console
 
 The dashboard uses a generalized Natural Earth land-outline basemap (public domain, https://www.naturalearthdata.com/about/terms-of-use/), not satellite imagery. It automatically requests EONET, APOD and DONKI on entry. Select EONET categories and returned event markers, zoom to a point, and inspect or download evidence. APOD may show a validated NASA-hosted still-image URL and returned text; DONKI shows counts by usable returned UTC observation dates. Source coverage, authenticity and scientific validity remain unknown. On acquisition failure the map remains visible without fabricated points. Synthetic data is displayed only through an explicit labeled selection. Local Node 22.16.0 tests: 26/26 passed, exit 0; the test suite includes controlled upstream responses, real loopback compressed HTTP and simulated DOM interactions, not a browser end-to-end or successful live NASA test. RC3 transport recovery is not independently confirmed in the live preview. The protected preview is not production-ready. Original main, root routes and scientific methods are unchanged.
+
+### RC7 Wonders of the Universe
+
+The visual dashboard now opens with four image-led product tiles. It includes a historical NASA GIBS Blue Marble mosaic (with Natural Earth outlines as a fallback), historical NASA SDO and Webb images with source links, current feed summaries, and an interactive illustrative eight-planet model. The latter uses approximate NASA orbital periods, arbitrary phases and compressed scales; it is not an ephemeris. The new regional FIRMS NOAA-20 VIIRS panel requires `FIRMS_MAP_KEY` in Preview; thermal detection rows are not confirmed fires. Historical imagery and simulated positions are not live data. JPL, NOAA continuous measurements and authenticated Earthdata remain planned. RC5 selected-event histories and safe APOD credits are included. Node 22.16.0: 43/43 targeted tests passed (`node --test tests/*.test.cjs tests/*.test.mjs`); static HTML inspection found 79 unique IDs and valid internal anchors. Browser navigation was blocked by local Chromium policy, and NASA image download was blocked by local DNS; external imagery and deployed FIRMS operation remain unverified. The previously confirmed RC4 deployment displayed EONET severe storms, APOD imagery and a DONKI empty collection in the user's browser. No production promotion, credential-scope change, paid service, or polling was performed.
