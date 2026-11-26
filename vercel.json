@@ -237,6 +237,15 @@
     },
     "api/nasa.js": {
       "maxDuration": 25
+    },
+    "api/gaia-eonet.js": {
+      "maxDuration": 20
+    },
+    "api/gaia-firms.js": {
+      "maxDuration": 20
+    },
+    "api/gaia-magnetic.js": {
+      "maxDuration": 20
     }
   }
 }

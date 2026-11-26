@@ -1,0 +1,13 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
+import {historyReport} from '../history.mjs';
+import {sha} from '../facility.mjs';
+const bytes=await readFile(new URL('../data/earth-evidence-synthetic.json',import.meta.url));
+const report=await historyReport(bytes,await sha(bytes));
+test('inclusive 72-hour interval produces four UTC dates',()=>{assert.equal(report.startUtc,'2026-10-29T12:00:00.000Z');assert.equal(report.endUtc,'2026-11-01T12:00:00.000Z');assert.deepEqual(report.facilities[0].days.map(d=>d.date),['2026-10-29','2026-10-30','2026-10-31','2026-11-01']);});
+test('recorded point rows and unique events differ',()=>{assert.deepEqual(report.facilities.map(f=>{const d=f.days.at(-1);return [f.id,d.availablePointRows,d.matchingPointRows,d.matchingEvents];}),[['EXAMPLE-A',3,2,1],['EXAMPLE-B',3,1,1],['EXAMPLE-C',3,0,0]]);});
+test('no observations differs from zero matching rows',()=>{assert(report.facilities.every(f=>f.days.slice(0,3).every(d=>d.state==='NO_ELIGIBLE_POINTS'&&d.availablePointRows===0)));assert.equal(report.facilities[2].days.at(-1).state,'OBSERVATIONS_AVAILABLE');assert.equal(report.coverage,'unknown');});
+test('determinism and original evidence binding',async()=>{assert.deepEqual(await historyReport(bytes),report);assert.equal(report.bundleSha256,await sha(bytes));assert.equal(report.snapshotKind,'synthetic-demo');});
+test('wrong digest and malformed bundle fail closed',async()=>{await assert.rejects(historyReport(bytes,'0'.repeat(64)),/digest mismatch/);await assert.rejects(historyReport(Buffer.from('{}')));});
+test('tampered report with recomputed component digest rejected',async()=>{const b=JSON.parse(bytes),r=JSON.parse(Buffer.from(b.files.report.base64,'base64'));r.results[0].matches[0].distanceKm=0;const v=Buffer.from(JSON.stringify(r));b.files.report={sha256:await sha(v),bytes:v.length,base64:v.toString('base64')};await assert.rejects(historyReport(Buffer.from(JSON.stringify(b))),/replay mismatch/);});
