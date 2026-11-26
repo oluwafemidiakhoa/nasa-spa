@@ -23,8 +23,9 @@ async function retrieve(id,key,transport=fetch){
 async function handler(req,res){
  res.setHeader('Cache-Control','no-store');res.setHeader('X-Content-Type-Options','nosniff');
  if(req.method!=='GET'){res.setHeader('Allow','GET');return res.status(405).json({code:'METHOD_NOT_ALLOWED'});}
- if(process.env.VERCEL_ENV!=='preview')return res.status(403).json({code:'PREVIEW_ONLY'});
+ if(!['preview','production'].includes(process.env.VERCEL_ENV))return res.status(403).json({code:'ENVIRONMENT_NOT_ENABLED'});
+ if(process.env.VERCEL_ENV==='production'&&process.env.GAIA_PUBLIC_FIRMS_ENABLED!=='1')return res.status(403).json({code:'PUBLIC_FEED_NOT_ENABLED'});
  try{const {region}=await import('../firms-core.mjs');if(!req.query||Object.keys(req.query).length!==1||!Object.hasOwn(req.query,'region'))throw Error();region(req.query.region);}catch{return res.status(400).json({code:'INVALID_REGION'});}
- try{return res.status(200).json(await retrieve(req.query.region,process.env.FIRMS_MAP_KEY));}catch(e){const code=['KEY_NOT_CONFIGURED','UPSTREAM_NETWORK','UPSTREAM_HTTP','UPSTREAM_CONTENT','UPSTREAM_LIMIT','UPSTREAM_BODY','UPSTREAM_DATA'].includes(e.message)?e.message:'UPSTREAM_INTERNAL';return res.status(code==='KEY_NOT_CONFIGURED'?503:502).json({code});}
+ try{const result=await retrieve(req.query.region,process.env.FIRMS_MAP_KEY);if(process.env.VERCEL_ENV==='production')res.setHeader('Vercel-CDN-Cache-Control','public, s-maxage=600');return res.status(200).json(result);}catch(e){const code=['KEY_NOT_CONFIGURED','UPSTREAM_NETWORK','UPSTREAM_HTTP','UPSTREAM_CONTENT','UPSTREAM_LIMIT','UPSTREAM_BODY','UPSTREAM_DATA'].includes(e.message)?e.message:'UPSTREAM_INTERNAL';return res.status(code==='KEY_NOT_CONFIGURED'?503:502).json({code});}
 }
 module.exports=handler;module.exports.retrieve=retrieve;

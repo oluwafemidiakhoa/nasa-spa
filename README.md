@@ -4,7 +4,7 @@
 
 Gaia Observatory is the independent research-platform evolution of the earlier NASA Space Apps project in this repository. The existing Moon-to-Mars Mission Trainer, Decision Atlas and 3D navigator remain intact. This is separate from [Gaia Lunar Systems — The First Night](https://github.com/oluwafemidiakhoa/gaia-lunar-systems-2026), the 2026 team project.
 
-## Observatory v1.0 RC8 (development)
+## Observatory v1.0 RC10 (release candidate)
 
 - [Observatory entrance](observatory.html): links to existing modules and a NASA source-manifest catalog.
 - Recorded source URLs, SHA-256 digests, workbook row counts and normalized record counts are displayed separately. The catalog validates manifest structure, not authenticity or raw source bytes.
@@ -19,7 +19,7 @@ python -m http.server 8000
 node --test tests/observatory.test.mjs tests/earth.test.mjs
 ```
 
-The existing root route, competition validation, datasets and submission documents are unchanged. Do not treat the Observatory as an operational alert or flight-planning service. Before a public or commercial release, confirm contributor permissions, licenses, source terms, browser integration and deployment safety.
+The RC10 candidate changes the Vercel root to `/live_dashboard.html`; the preserved competition trainer remains at `/mission-trainer`, `/trainer`, `/atlas` and `/navigator`. Competition datasets and submission documents are unchanged. Do not treat the Observatory as an operational alert or flight-planning service. Before a public or commercial release, confirm contributor permissions, licenses, source terms, browser integration and deployment safety.
 
 ## Earth Intelligence pilot
 
@@ -223,10 +223,18 @@ The RC2 preview showed a 502 on EONET while APOD and DONKI reported records in a
 
 The dashboard uses a generalized Natural Earth land-outline basemap (public domain, https://www.naturalearthdata.com/about/terms-of-use/), not satellite imagery. It automatically requests EONET, APOD and DONKI on entry. Select EONET categories and returned event markers, zoom to a point, and inspect or download evidence. APOD may show a validated NASA-hosted still-image URL and returned text; DONKI shows counts by usable returned UTC observation dates. Source coverage, authenticity and scientific validity remain unknown. On acquisition failure the map remains visible without fabricated points. Synthetic data is displayed only through an explicit labeled selection. Local Node 22.16.0 tests: 26/26 passed, exit 0; the test suite includes controlled upstream responses, real loopback compressed HTTP and simulated DOM interactions, not a browser end-to-end or successful live NASA test. RC3 transport recovery is not independently confirmed in the live preview. The protected preview is not production-ready. Original main, root routes and scientific methods are unchanged.
 
-### RC7 Wonders of the Universe
+### RC7 visual scientific dashboard
 
 The visual dashboard now opens with four image-led product tiles. It includes a historical NASA GIBS Blue Marble mosaic (with Natural Earth outlines as a fallback), historical NASA SDO and Webb images with source links, current feed summaries, and an interactive illustrative eight-planet model. The latter uses approximate NASA orbital periods, arbitrary phases and compressed scales; it is not an ephemeris. The new regional FIRMS NOAA-20 VIIRS panel requires `FIRMS_MAP_KEY` in Preview; thermal detection rows are not confirmed fires. Historical imagery and simulated positions are not live data. JPL, NOAA continuous measurements and authenticated Earthdata remain planned. RC5 selected-event histories and safe APOD credits are included. Node 22.16.0: 43/43 targeted tests passed (`node --test tests/*.test.cjs tests/*.test.mjs`); static HTML inspection found 79 unique IDs and valid internal anchors. Browser navigation was blocked by local Chromium policy, and NASA image download was blocked by local DNS; external imagery and deployed FIRMS operation remain unverified. The previously confirmed RC4 deployment displayed EONET severe storms, APOD imagery and a DONKI empty collection in the user's browser. No production promotion, credential-scope change, paid service, or polling was performed.
 
 ### RC8 regional imagery and measured geomagnetic indices
 
 The visual console requests a region-specific historical GIBS Blue Marble mosaic instead of magnifying the global image. The two independently fetched NOAA SWPC products are `https://services.swpc.noaa.gov/products/noaa-planetary-k-index.json` and `https://services.swpc.noaa.gov/products/kyoto-dst.json`. Charts plot recorded estimated planetary Kp (three-hour cadence) and Kyoto Dst (hourly), retain missing samples, break lines across gaps, and offer exact-byte source receipts. These are geomagnetic indices, not solar-wind measurements or forecasts. No new keys, paid services, polling or production changes. Local Node 22.16.0 targeted suite: 51/51 passed, exit 0; 90 unique HTML IDs and valid internal anchors; static scanner found no pattern matches (not a security certification). Browser rendering blocked by local Chromium policy. Live retrieval and regional imagery sharpness remain unverified. FIRMS and Earthdata credentials were confirmed production-only; their scopes were not changed. Protected preview only.
+
+### RC9 Vercel landing and recovery candidate
+
+The public name is Gaia Observatory. This candidate redirects `/` to `/live_dashboard.html` and keeps `/mission-trainer` as a versioned entry into the original competition experience. The EONET transport accepts mislabeled JSON only after strict envelope and observation validation; HTML errors still fail closed. A fixed-origin solar image proxy is added; NOAA and EONET support the production environment with bounded responses and shared cache directives. FIRMS remains gated in production pending a quota and authentication check; keys are never exposed. Existing mission and evidence algorithms are preserved. The focused 56-test suite was re-executed locally on Node 22.16.0; all passed. Live endpoint and image checks, complete CI, public release and source-rights review remain open. RC8 was previously merged as PR #33; this is a separate corrective candidate.
+
+### RC10 My Locations — environmental observation reviews
+
+Open [My Locations](portfolio.html) from the dashboard. Save up to 25 reference locations and the selected category/radius in browser-local storage. The review makes two bounded global EONET requests for the two most recent adjacent seven-day UTC calendar windows; site coordinates stay local. It compares retained event-ID sets at each location, not hazard rates or newly occurring incidents. The screening intervals share their midnight endpoint, and completeness/authenticity are unknown. If either global collection has no eligible points or reaches the source limit, derived set comparisons are withheld. Users can download both original evidence bundles and a derived JSON report, and recompute from retained bundles. No independent scientific validation, background monitoring, account sync, alerting or subscriptions are provided. Controlled-response tests passed 61/61 on Node v22.16.0 on 2026-11-26; all 32 tested local files matched the staged Git blobs. This is a focused subset, not the entire repository or browser acceptance suite. Production RC8 and the existing trainer remain available until release gates pass. No new paid service, secrets, or automatic polling.
