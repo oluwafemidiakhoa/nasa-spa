@@ -243,6 +243,9 @@
     },
     "api/gaia-firms.js": {
       "maxDuration": 20
+    },
+    "api/gaia-magnetic.js": {
+      "maxDuration": 20
     }
   }
 }

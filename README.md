@@ -4,7 +4,7 @@
 
 Gaia Observatory is the independent research-platform evolution of the earlier NASA Space Apps project in this repository. The existing Moon-to-Mars Mission Trainer, Decision Atlas and 3D navigator remain intact. This is separate from [Gaia Lunar Systems — The First Night](https://github.com/oluwafemidiakhoa/gaia-lunar-systems-2026), the 2026 team project.
 
-## Observatory v1.0 RC7 (development)
+## Observatory v1.0 RC8 (development)
 
 - [Observatory entrance](observatory.html): links to existing modules and a NASA source-manifest catalog.
 - Recorded source URLs, SHA-256 digests, workbook row counts and normalized record counts are displayed separately. The catalog validates manifest structure, not authenticity or raw source bytes.
@@ -226,3 +226,7 @@ The dashboard uses a generalized Natural Earth land-outline basemap (public doma
 ### RC7 Wonders of the Universe
 
 The visual dashboard now opens with four image-led product tiles. It includes a historical NASA GIBS Blue Marble mosaic (with Natural Earth outlines as a fallback), historical NASA SDO and Webb images with source links, current feed summaries, and an interactive illustrative eight-planet model. The latter uses approximate NASA orbital periods, arbitrary phases and compressed scales; it is not an ephemeris. The new regional FIRMS NOAA-20 VIIRS panel requires `FIRMS_MAP_KEY` in Preview; thermal detection rows are not confirmed fires. Historical imagery and simulated positions are not live data. JPL, NOAA continuous measurements and authenticated Earthdata remain planned. RC5 selected-event histories and safe APOD credits are included. Node 22.16.0: 43/43 targeted tests passed (`node --test tests/*.test.cjs tests/*.test.mjs`); static HTML inspection found 79 unique IDs and valid internal anchors. Browser navigation was blocked by local Chromium policy, and NASA image download was blocked by local DNS; external imagery and deployed FIRMS operation remain unverified. The previously confirmed RC4 deployment displayed EONET severe storms, APOD imagery and a DONKI empty collection in the user's browser. No production promotion, credential-scope change, paid service, or polling was performed.
+
+### RC8 regional imagery and measured geomagnetic indices
+
+The visual console requests a region-specific historical GIBS Blue Marble mosaic instead of magnifying the global image. The two independently fetched NOAA SWPC products are `https://services.swpc.noaa.gov/products/noaa-planetary-k-index.json` and `https://services.swpc.noaa.gov/products/kyoto-dst.json`. Charts plot recorded estimated planetary Kp (three-hour cadence) and Kyoto Dst (hourly), retain missing samples, break lines across gaps, and offer exact-byte source receipts. These are geomagnetic indices, not solar-wind measurements or forecasts. No new keys, paid services, polling or production changes. Local Node 22.16.0 targeted suite: 51/51 passed, exit 0; 90 unique HTML IDs and valid internal anchors; static scanner found no pattern matches (not a security certification). Browser rendering blocked by local Chromium policy. Live retrieval and regional imagery sharpness remain unverified. FIRMS and Earthdata credentials were confirmed production-only; their scopes were not changed. Protected preview only.
