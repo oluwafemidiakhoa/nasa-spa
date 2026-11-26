@@ -4,7 +4,7 @@
 
 Gaia Observatory is the independent research-platform evolution of the earlier NASA Space Apps project in this repository. The existing Moon-to-Mars Mission Trainer, Decision Atlas and 3D navigator remain intact. This is separate from [Gaia Lunar Systems — The First Night](https://github.com/oluwafemidiakhoa/gaia-lunar-systems-2026), the 2026 team project.
 
-## Observatory v0.5 (development)
+## Observatory v0.6 (development)
 
 - [Observatory entrance](observatory.html): links to existing modules and a NASA source-manifest catalog.
 - Recorded source URLs, SHA-256 digests, workbook row counts and normalized record counts are displayed separately. The catalog validates manifest structure, not authenticity or raw source bytes.
@@ -49,10 +49,16 @@ Replay is the acceptance gate: the Node JSON parser alone permits duplicate obje
 
 Verified locally with Python 3.13.5 and Node.js 22.16.0: 9 new integration and adversarial test methods passed; the earlier synthetic baseline independently replayed all three facilities. The original source files used in the test were matched to their Git blob identifiers at baseline commit `2b38ae2f749df73723112811110b77e913e49ec0`. The synthetic result contains two facilities with matches and one without. The method contract was hashed before testing (SHA-256 `d2e193e5aeaab320a236c63964978a7a2b14a81a8df2264e9569fa48693329f9`); this is local and unsigned, not trusted chronology. No live data, browser QA, whole-repository regression, CI or production readiness is claimed.
 
+## Facility evidence dashboard (v0.6)
+
+Open [facilities.html](facilities.html) on localhost to inspect an existing v0.5 bundle or load the committed synthetic demonstration. The interface checks component digests, archived source bytes and declared method identifiers; it reruns the JavaScript screening method and compares all report results before showing them. Optional independent digest matching, a facility selector, paginated observations and explicit coverage limits are included. No remote data requests or application dependencies are introduced. The browser does not run the independent Python verifier. See [method and limitations](docs/facility-dashboard.md).
+
+Local verification on 2026-11-26: Node 22.16.0 `node --test tests/facility.test.mjs` passed 9 tests; Python 3.13.5 `python -m unittest discover -s tests -p 'test_earth_evidence.py' -v` passed 9 regression tests. Independent CLI replay of the committed synthetic fixture with SHA-256 `581858bf6af04be1b2ecdbe6d9db6e50d621c9cac0629dbb2076d8fe22905bb8` returned `REPLAY_MATCH` for three facilities. Chromium launched, but navigation to the local HTTP server was blocked (`ERR_BLOCKED_BY_ADMINISTRATOR`); browser interaction, mobile layout, whole-repository regression, CI, live NASA data and production readiness remain unverified. The method contract digest recorded locally before testing was `daae2bc6489686c1085a988f9ea97f48dbd27bd6930552aed1289adfc854857b` (unsigned, not a trusted timestamp).
+
 ## Expansion roadmap
 
 1. Verify archived scientific source bytes independently and record reproducible verification receipts.
-2. Validate the implemented acquisition/archive and Earth batch replay against an actual authoritative snapshot, then build a multi-facility interface.
+2. Validate the implemented acquisition/archive and Earth batch replay against an actual authoritative snapshot, then validate the multi-facility interface in a real browser.
 3. Audit legacy astronomy and space-weather ingestion, freshness and scientific claims.
 4. Evaluate anomaly detection against frozen baselines before publishing scientific or commercial claims.
 
