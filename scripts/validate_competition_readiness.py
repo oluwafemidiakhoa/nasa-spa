@@ -174,18 +174,26 @@ def main() -> int:
     rewrites = vercel.get("rewrites", [])
     redirects = vercel.get("redirects", [])
     rewrites = vercel.get("rewrites", [])
-    root_redirects_to_trainer = any(
-        r.get("source") == "/" and str(r.get("destination", "")).startswith("/trainer?release=") and r.get("permanent") is False
+    root_redirects_to_observatory = any(
+        r.get("source") == "/" and r.get("destination") == "/live_dashboard.html" and r.get("permanent") is False
+        for r in redirects
+    )
+    legacy_trainer_entry = any(
+        r.get("source") == "/mission-trainer" and r.get("destination") == f"/trainer?release={release_id}" and r.get("permanent") is False
         for r in redirects
     )
     atlas_rewrite = any(r.get("source") == "/atlas" and r.get("destination") == "/index.html" for r in rewrites)
     legacy_index_redirect = any(r.get("source") == "/index.html" and r.get("destination") == "/atlas" for r in redirects)
     navigator_rewrite = any(r.get("source") == "/navigator" and r.get("destination") == "/navigator.html" for r in rewrites)
     trainer_rewrite = any(r.get("source") == "/trainer" and r.get("destination") == "/trainer.html" for r in rewrites)
-    if not root_redirects_to_trainer:
-        fail("Vercel root must explicitly redirect to a versioned /trainer URL", errors)
+    if not root_redirects_to_observatory or not (ROOT / "live_dashboard.html").is_file():
+        fail("Vercel root must explicitly redirect to the Gaia Observatory dashboard", errors)
     else:
-        ok("Public root explicitly redirects to versioned Mission Trainer")
+        ok("Public root explicitly redirects to Gaia Observatory")
+    if not legacy_trainer_entry:
+        fail("The preserved Mission Trainer must have a versioned /mission-trainer entry", errors)
+    else:
+        ok("Preserved Mission Trainer has a versioned legacy entry")
     if not atlas_rewrite or not legacy_index_redirect:
         fail("Public Atlas routing must be /atlas -> index.html with legacy /index.html redirect", errors)
     else:
@@ -218,7 +226,8 @@ def main() -> int:
     print(f"Integrity errors: {len(errors)}")
     print(f"Detailed traceability: {len(verified)}/{len(gaps)}")
     print("Challenge alignment: LOCKED — Build a Junior Astronaut Mission Trainer")
-    print(f"Judge-facing root: / -> /trainer?release={release_id}")
+    print("Public root: / -> /live_dashboard.html")
+    print(f"Preserved competition entry: /mission-trainer -> /trainer?release={release_id}")
     print(f"Production release: {release_id}")
     print("Timed judge demo: 30 seconds")
     print("Evidence engine: /atlas -> index.html")
