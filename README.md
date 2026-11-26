@@ -4,7 +4,7 @@
 
 Gaia Observatory is the independent research-platform evolution of the earlier NASA Space Apps project in this repository. The existing Moon-to-Mars Mission Trainer, Decision Atlas and 3D navigator remain intact. This is separate from [Gaia Lunar Systems — The First Night](https://github.com/oluwafemidiakhoa/gaia-lunar-systems-2026), the 2026 team project.
 
-## Observatory v0.9 (development)
+## Observatory v1.0 RC1 (development)
 
 - [Observatory entrance](observatory.html): links to existing modules and a NASA source-manifest catalog.
 - Recorded source URLs, SHA-256 digests, workbook row counts and normalized record counts are displayed separately. The catalog validates manifest structure, not authenticity or raw source bytes.
@@ -72,6 +72,12 @@ Local verification on 2026-11-26: Node 22.16.0 passed all 21 tests across anomal
 Open [research.html](research.html) on localhost. This deterministic question interface derives facts from the original retained bundle via historical and observation screening replay. It supports five exact command types: summary, explain FACILITY-ID, day FACILITY-ID YYYY-MM-DD, provenance and limits. Unknown commands and unavailable records abstain. Every answer binds the query, bundle/source digests, and data facts with intermediate-report JSON pointers. It is not a general chatbot or LLM. See [the method](docs/research-assistant.md) and [independent verifier](scripts/verify_research_answer.py).
 
 Local verification: 27 JavaScript tests passed (6 new research and 21 regression); four new Python research tests passed, including cross-runtime replay for all supported commands, unsupported queries, altered values/pointers, query substitution and wrong digest. The manufactured synthetic example explains one above-baseline facility and two not above. No live-data scientific validation, full repository regression, browser interaction, CI or deployment is established.
+
+## Mission Control and cloud Earth workspace (v1.0 RC1)
+
+Open [Mission Control](mission-control.html) for the four product areas: Earth Intelligence, Cosmic Research, Space Intelligence and Universe Academy, with shared evidence tools. The new [Earth workspace](workspace.html) uses the preview-only bounded EONET retrieval endpoint; public date and category parameters go to Vercel, while location screening, evidence packaging and imports remain in the browser. The APOD and DONKI panels reuse the existing API; their runtime availability remains to be verified. They display recorded title/date and returned-record counts, not scientific predictions. FIRMS, JPL and Earthdata are planned, not connected. Academy and other mission prototypes remain preserved and have not been revalidated.
+
+Local Node 22.16.0 execution: `node --test tests/cloud-eonet.test.cjs tests/cloud-workspace.test.mjs tests/mission-control.test.mjs` passed 12/12 targeted tests on 2026-11-26. Tests use controlled responses; no live retrieval through the cloud interface, browser end-to-end test, cross-runtime Python verification of newly generated browser bundles, or scientific validity is established by these tests. See [cloud workspace instructions](docs/cloud-workspace.md). Preview only; no production promotion or new paid services.
 
 ## Expansion roadmap
 

@@ -237,6 +237,9 @@
     },
     "api/nasa.js": {
       "maxDuration": 25
+    },
+    "api/gaia-eonet.js": {
+      "maxDuration": 20
     }
   }
 }
