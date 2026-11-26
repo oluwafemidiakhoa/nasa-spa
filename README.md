@@ -4,11 +4,11 @@
 
 Gaia Observatory is the independent research-platform evolution of the earlier NASA Space Apps project in this repository. The existing Moon-to-Mars Mission Trainer, Decision Atlas and 3D navigator remain intact. This is separate from [Gaia Lunar Systems — The First Night](https://github.com/oluwafemidiakhoa/gaia-lunar-systems-2026), the 2026 team project.
 
-## Observatory v0.1 (development)
+## Observatory v0.2 (development)
 
 - [Observatory entrance](observatory.html): links to existing modules and a NASA source-manifest catalog.
 - Recorded source URLs, SHA-256 digests, workbook row counts and normalized record counts are displayed separately. The catalog validates manifest structure, not authenticity or raw source bytes.
-- Legacy space-weather modules are linked as unvalidated prototypes. Earth and Cosmic Intelligence are planned, not shipped.
+- Legacy space-weather modules are linked as unvalidated prototypes. Earth Intelligence has an offline point-screening pilot; Cosmic Intelligence remains planned.
 - No new dependencies, API keys, or external requests are needed to render the local catalog.
 
 Run from the repository root:
@@ -16,15 +16,23 @@ Run from the repository root:
 ```sh
 python -m http.server 8000
 # open http://localhost:8000/observatory.html
-node --test tests/observatory.test.mjs
+node --test tests/observatory.test.mjs tests/earth.test.mjs
 ```
 
 The existing root route, competition validation, datasets and submission documents are unchanged. Do not treat the Observatory as an operational alert or flight-planning service. Before a public or commercial release, confirm contributor permissions, licenses, source terms, browser integration and deployment safety.
 
+## Earth Intelligence pilot
+
+Open [earth.html](earth.html) using localhost or HTTPS. Choose a location, UTC cutoff, lookback and radius, then use the explicitly synthetic fixture or import a saved NASA EONET v3 events JSON file (maximum 2 MB). The analysis is browser-local; there is no live data acquisition or API key. Export a JSON report containing the raw snapshot SHA-256, parameters, nearest point per matching event, and coverage exclusions. Retain the source bytes for replay. Source authenticity is not established, and no match does not imply safety.
+
+[Method and limits](earth-method.md) · [NASA EONET v3 documentation](https://eonet.gsfc.nasa.gov/docs/v3).
+
+Local Node 22.16.0: 18 Earth tests passed, including negative inputs, distance/time boundaries, coverage and an independent digest comparison. The method digest recorded before execution was `33518f869a0ac954c3700abc01482ef05ae9240d1e265afaee06fb52c65115fc` (unsigned, no trusted timestamp). Browser smoke testing was blocked by the execution environment; live NASA payload compatibility, visual QA, and full repository regression tests remain unverified.
+
 ## Expansion roadmap
 
 1. Verify archived scientific source bytes independently and record reproducible verification receipts.
-2. Implement an Earth-event pilot with authoritative data, timestamped observations, explicit coverage gaps, and offline fixtures.
+2. Validate the Earth pilot against archived authoritative snapshots; add bounded ingestion and replay verification before live monitoring.
 3. Audit legacy astronomy and space-weather ingestion, freshness and scientific claims.
 4. Evaluate anomaly detection against frozen baselines before publishing scientific or commercial claims.
 
