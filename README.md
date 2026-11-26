@@ -4,7 +4,7 @@
 
 Gaia Observatory is the independent research-platform evolution of the earlier NASA Space Apps project in this repository. The existing Moon-to-Mars Mission Trainer, Decision Atlas and 3D navigator remain intact. This is separate from [Gaia Lunar Systems — The First Night](https://github.com/oluwafemidiakhoa/gaia-lunar-systems-2026), the 2026 team project.
 
-## Observatory v0.3 (development)
+## Observatory v0.4 (development)
 
 - [Observatory entrance](observatory.html): links to existing modules and a NASA source-manifest catalog.
 - Recorded source URLs, SHA-256 digests, workbook row counts and normalized record counts are displayed separately. The catalog validates manifest structure, not authenticity or raw source bytes.
@@ -37,10 +37,16 @@ Verified locally with Node.js 22.16.0 and Python 3.13.5: 11 new cross-runtime te
 
 Replay is the acceptance gate: the Node JSON parser alone permits duplicate object keys; the Python verifier rejects them. Reports are limited to 16 MB. Numeric ties and cutoff boundaries may disagree across implementations and are rejected rather than silently accepted. Batch replay does not verify the older v0.2 single-facility report format. NASA's v3 documentation was consulted, but archived API data could not be retrieved in the execution environment. No real-event performance, source authenticity, browser QA, full repository regression, or production readiness is claimed.
 
+## NASA EONET acquisition and archive (v0.4)
+
+[Acquisition contract and CLI commands](docs/eonet-archive.md). The standard-library Python tool retrieves a bounded, explicit date/category query from the fixed EONET v3 endpoint, retains the exact response bytes, and records UTC capture time, query metadata, SHA-256, byte and observation counts, and unknown coverage. Offline imports never assert NASA retrieval. The verifier recomputes receipt consistency and optionally checks an independently retained archive digest; it can export exact source bytes for v0.3 screening. There are no new dependencies, API keys, redirects, automatic retries, or scheduled requests.
+
+**Verification (2026-11-26):** Python 3.13.5: 10 new test methods passed, including mocked HTTP failure paths, malformed data, tampered receipts, digest mismatch, worker timeout and no-overwrite behavior. Python compilation passed. The existing synthetic snapshot (Git blob `641024e82bf842a77ed25a616ae5fc5a089e5a09`) was imported and exported byte-for-byte with the separately supplied archive digest; 795 source bytes, four events, five points, one non-point geometry. Source SHA-256: `0d50093b50a4ec9657597fa5962627659495a70a68dcf735fb546d0271855f78`. The acquisition contract SHA-256 recorded before test execution was `729e3aab5f0ea0f32476251614c8efb269bc98cbe8b1a78338202a54841027c9` (unsigned local digest, not trusted chronology). One bounded live command failed with DNS resolution error, exit 1, and no output archive. No live payload, successful TLS session, end-to-end batch replay, browser, full repository regression, crash recovery or production readiness is claimed for v0.4. Network success paths were mocked; archive integrity is not authenticated scientific provenance. Retain the archive digest independently. A valid but modified archive with newly computed metadata can pass unanchored verification.
+
 ## Expansion roadmap
 
 1. Verify archived scientific source bytes independently and record reproducible verification receipts.
-2. Validate the Earth pilot and batch replay against archived authoritative snapshots; add bounded ingestion before live monitoring.
+2. Validate the implemented acquisition/archive and Earth batch replay against an actual authoritative snapshot, then build a multi-facility interface.
 3. Audit legacy astronomy and space-weather ingestion, freshness and scientific claims.
 4. Evaluate anomaly detection against frozen baselines before publishing scientific or commercial claims.
 
