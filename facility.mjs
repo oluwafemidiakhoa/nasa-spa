@@ -40,7 +40,7 @@ export async function inspectBundle(bytes,anchor=''){
   const results=[...c.facilities].sort((a,b)=>a.id<b.id?-1:a.id>b.id?1:0).map(f=>({facilityId:f.id,...screen(snapshot,{facility:f.coordinates,asOf:c.asOf,hours:c.hours,radiusKm:c.radiusKm})}));
   const cov=results[0].coverage;req(receipt.eventCount===cov.events&&receipt.pointCount===cov.eligiblePoints+cov.outsideWindow&&receipt.nonPointCount===cov.unsupportedGeometries&&receipt.eventsWithoutGeometry===cov.eventsWithoutGeometry,'Archive counts mismatch');
   const expected={schema:'gaia-earth-batch-v0.3',snapshot:{kind:c.snapshotKind,sha256:sourceHash,bytes:src.length,authenticity:'unverified'},configuration:{sha256:b.files.configuration.sha256,bytes:b.files.configuration.bytes},results};
-  req(same(r,expected),'Browser replay mismatch');return {digest,anchorChecked:!!anchor,sourceHash,archiveHash:b.files.archive.sha256,kind:c.snapshotKind,capturedAt:receipt.capturedAt,mode:receipt.mode,results};
+  req(same(r,expected),'Browser replay mismatch');return {digest,anchorChecked:!!anchor,sourceHash,archiveHash:b.files.archive.sha256,kind:c.snapshotKind,capturedAt:receipt.capturedAt,mode:receipt.mode,results,snapshot};
 }
 const labels={POINTS_WITHIN_RADIUS:'Matching points',NO_MATCH_IN_AVAILABLE_POINTS:'No matching point',NO_ELIGIBLE_POINTS:'No eligible points'};
 function start(){
@@ -55,4 +55,4 @@ function start(){
   for(const el of [file,anchor])el.addEventListener('input',()=>clear('Input changed. Inspect the bundle again.'));
   select.addEventListener('change',()=>{page=0;detail();});$('prev').addEventListener('click',()=>{if(page>0){page--;detail();}});$('next').addEventListener('click',()=>{if((page+1)*50<model.results[Number(select.value)].matches.length){page++;detail();}});$('clear').addEventListener('click',()=>{file.value='';anchor.value='';clear('No bundle loaded.');});
 }
-if(typeof document!=='undefined')start();
+if(typeof document!=='undefined'&&document.getElementById('matches'))start();

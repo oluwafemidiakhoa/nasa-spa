@@ -4,7 +4,7 @@
 
 Gaia Observatory is the independent research-platform evolution of the earlier NASA Space Apps project in this repository. The existing Moon-to-Mars Mission Trainer, Decision Atlas and 3D navigator remain intact. This is separate from [Gaia Lunar Systems — The First Night](https://github.com/oluwafemidiakhoa/gaia-lunar-systems-2026), the 2026 team project.
 
-## Observatory v0.6 (development)
+## Observatory v0.7 (development)
 
 - [Observatory entrance](observatory.html): links to existing modules and a NASA source-manifest catalog.
 - Recorded source URLs, SHA-256 digests, workbook row counts and normalized record counts are displayed separately. The catalog validates manifest structure, not authenticity or raw source bytes.
@@ -54,6 +54,12 @@ Verified locally with Python 3.13.5 and Node.js 22.16.0: 9 new integration and a
 Open [facilities.html](facilities.html) on localhost to inspect an existing v0.5 bundle or load the committed synthetic demonstration. The interface checks component digests, archived source bytes and declared method identifiers; it reruns the JavaScript screening method and compares all report results before showing them. Optional independent digest matching, a facility selector, paginated observations and explicit coverage limits are included. No remote data requests or application dependencies are introduced. The browser does not run the independent Python verifier. See [method and limitations](docs/facility-dashboard.md).
 
 Local verification on 2026-11-26: Node 22.16.0 `node --test tests/facility.test.mjs` passed 9 tests; Python 3.13.5 `python -m unittest discover -s tests -p 'test_earth_evidence.py' -v` passed 9 regression tests. Independent CLI replay of the committed synthetic fixture with SHA-256 `581858bf6af04be1b2ecdbe6d9db6e50d621c9cac0629dbb2076d8fe22905bb8` returned `REPLAY_MATCH` for three facilities. Chromium launched, but navigation to the local HTTP server was blocked (`ERR_BLOCKED_BY_ADMINISTRATOR`); browser interaction, mobile layout, whole-repository regression, CI, live NASA data and production readiness remain unverified. The method contract digest recorded locally before testing was `daae2bc6489686c1085a988f9ea97f48dbd27bd6930552aed1289adfc854857b` (unsigned, not a trusted timestamp).
+
+## Historical Earth Intelligence (v0.7)
+
+Open [history.html](history.html) on localhost. Import a v0.5 bundle or use the synthetic example. The new module verifies the original bundle using the existing browser replay, divides its original inclusive UTC window into at most 31 calendar dates, and reports eligible point rows, matching rows, and distinct matching event IDs separately for up to 25 facilities. Missing observations are distinguished from no matches. Export JSON and independently recompute every field using `python scripts/verify_earth_history.py BUNDLE.json HISTORY.json --expected-sha256 DIGEST` (optional independently retained digest). [Method and limitations](docs/earth-history.md).
+
+Local verification on 2026-11-26: Node 22.16.0 passed 6 new history and 9 existing dashboard tests; Python 3.13.5 passed 5 new history and 9 existing evidence tests. The synthetic history exported from JavaScript independently replayed against the committed bundle and its retained SHA-256. All 3 facilities and 4 dates matched; the report SHA-256 is `11cc5605548c43600d4a5d6a66ea6b2adce4dad720399f325401e84084aea613`. The method contract was hashed before implementation (`6e84171b0ab1857f27c4a545c38596595c6e629f23e36b1a2852fe35c037034d`, local unsigned hash, not trusted chronology). A bounded NASA EONET request for January 7–15, 2025 wildfires failed DNS resolution (exit 1, no output archive). New browser interaction, live data, entire-repository regression, CI, and production deployment remain unverified. The reported counts are not trends, exposure estimates, or evidence of operational safety.
 
 ## Expansion roadmap
 
