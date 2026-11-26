@@ -1,3 +1,37 @@
+# Gaia Observatory
+
+**From Scientific Data to Verifiable Intelligence.**
+
+Gaia Observatory is the independent research-platform evolution of the earlier NASA Space Apps project in this repository. The existing Moon-to-Mars Mission Trainer, Decision Atlas and 3D navigator remain intact. This is separate from [Gaia Lunar Systems — The First Night](https://github.com/oluwafemidiakhoa/gaia-lunar-systems-2026), the 2026 team project.
+
+## Observatory v0.1 (development)
+
+- [Observatory entrance](observatory.html): links to existing modules and a NASA source-manifest catalog.
+- Recorded source URLs, SHA-256 digests, workbook row counts and normalized record counts are displayed separately. The catalog validates manifest structure, not authenticity or raw source bytes.
+- Legacy space-weather modules are linked as unvalidated prototypes. Earth and Cosmic Intelligence are planned, not shipped.
+- No new dependencies, API keys, or external requests are needed to render the local catalog.
+
+Run from the repository root:
+
+```sh
+python -m http.server 8000
+# open http://localhost:8000/observatory.html
+node --test tests/observatory.test.mjs
+```
+
+The existing root route, competition validation, datasets and submission documents are unchanged. Do not treat the Observatory as an operational alert or flight-planning service. Before a public or commercial release, confirm contributor permissions, licenses, source terms, browser integration and deployment safety.
+
+## Expansion roadmap
+
+1. Verify archived scientific source bytes independently and record reproducible verification receipts.
+2. Implement an Earth-event pilot with authoritative data, timestamped observations, explicit coverage gaps, and offline fixtures.
+3. Audit legacy astronomy and space-weather ingestion, freshness and scientific claims.
+4. Evaluate anomaly detection against frozen baselines before publishing scientific or commercial claims.
+
+---
+
+## Preserved mission-training documentation
+
 # Moon→Mars Mission Trainer
 
 **NASA Space Apps Challenge 2026 — Build a Junior Astronaut Mission Trainer**
