@@ -4,7 +4,7 @@
 
 Gaia Observatory is the independent research-platform evolution of the earlier NASA Space Apps project in this repository. The existing Moon-to-Mars Mission Trainer, Decision Atlas and 3D navigator remain intact. This is separate from [Gaia Lunar Systems — The First Night](https://github.com/oluwafemidiakhoa/gaia-lunar-systems-2026), the 2026 team project.
 
-## Observatory v0.2 (development)
+## Observatory v0.3 (development)
 
 - [Observatory entrance](observatory.html): links to existing modules and a NASA source-manifest catalog.
 - Recorded source URLs, SHA-256 digests, workbook row counts and normalized record counts are displayed separately. The catalog validates manifest structure, not authenticity or raw source bytes.
@@ -29,10 +29,18 @@ Open [earth.html](earth.html) using localhost or HTTPS. Choose a location, UTC c
 
 Local Node 22.16.0: 18 Earth tests passed, including negative inputs, distance/time boundaries, coverage and an independent digest comparison. The method digest recorded before execution was `33518f869a0ac954c3700abc01482ef05ae9240d1e265afaee06fb52c65115fc` (unsigned, no trusted timestamp). Browser smoke testing was blocked by the execution environment; live NASA payload compatibility, visual QA, and full repository regression tests remain unverified.
 
+## Multi-facility screening and independent replay (v0.3)
+
+[Batch method and commands](docs/earth-batch.md). Screen up to 25 facility coordinates against a single retained snapshot and explicit shared time window/radius. The Node.js generator hashes the original snapshot and configuration bytes; a separate Python verifier independently recomputes results with a spherical vector formula and requires the original input files. Use the supplied synthetic configuration to exercise the workflow offline.
+
+Verified locally with Node.js 22.16.0 and Python 3.13.5: 11 new cross-runtime test methods (including 12 distinct report-tampering subcases and 9 invalid configuration subcases) and all 18 existing Earth tests passed. The synthetic run had two matching facilities and one with no matching point, and independent replay matched all three results. The locally recorded, unsigned method SHA-256 before testing is `f67d415382bf9994deca826a1496934e3df307d5f4f97597f23b4149a1cfd067`. This is not a trusted timestamp.
+
+Replay is the acceptance gate: the Node JSON parser alone permits duplicate object keys; the Python verifier rejects them. Reports are limited to 16 MB. Numeric ties and cutoff boundaries may disagree across implementations and are rejected rather than silently accepted. Batch replay does not verify the older v0.2 single-facility report format. NASA's v3 documentation was consulted, but archived API data could not be retrieved in the execution environment. No real-event performance, source authenticity, browser QA, full repository regression, or production readiness is claimed.
+
 ## Expansion roadmap
 
 1. Verify archived scientific source bytes independently and record reproducible verification receipts.
-2. Validate the Earth pilot against archived authoritative snapshots; add bounded ingestion and replay verification before live monitoring.
+2. Validate the Earth pilot and batch replay against archived authoritative snapshots; add bounded ingestion before live monitoring.
 3. Audit legacy astronomy and space-weather ingestion, freshness and scientific claims.
 4. Evaluate anomaly detection against frozen baselines before publishing scientific or commercial claims.
 
