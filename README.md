@@ -4,7 +4,7 @@
 
 Gaia Observatory is the independent research-platform evolution of the earlier NASA Space Apps project in this repository. The existing Moon-to-Mars Mission Trainer, Decision Atlas and 3D navigator remain intact. This is separate from [Gaia Lunar Systems — The First Night](https://github.com/oluwafemidiakhoa/gaia-lunar-systems-2026), the 2026 team project.
 
-## Observatory v0.4 (development)
+## Observatory v0.5 (development)
 
 - [Observatory entrance](observatory.html): links to existing modules and a NASA source-manifest catalog.
 - Recorded source URLs, SHA-256 digests, workbook row counts and normalized record counts are displayed separately. The catalog validates manifest structure, not authenticity or raw source bytes.
@@ -42,6 +42,12 @@ Replay is the acceptance gate: the Node JSON parser alone permits duplicate obje
 [Acquisition contract and CLI commands](docs/eonet-archive.md). The standard-library Python tool retrieves a bounded, explicit date/category query from the fixed EONET v3 endpoint, retains the exact response bytes, and records UTC capture time, query metadata, SHA-256, byte and observation counts, and unknown coverage. Offline imports never assert NASA retrieval. The verifier recomputes receipt consistency and optionally checks an independently retained archive digest; it can export exact source bytes for v0.3 screening. There are no new dependencies, API keys, redirects, automatic retries, or scheduled requests.
 
 **Verification (2026-11-26):** Python 3.13.5: 10 new test methods passed, including mocked HTTP failure paths, malformed data, tampered receipts, digest mismatch, worker timeout and no-overwrite behavior. Python compilation passed. The existing synthetic snapshot (Git blob `641024e82bf842a77ed25a616ae5fc5a089e5a09`) was imported and exported byte-for-byte with the separately supplied archive digest; 795 source bytes, four events, five points, one non-point geometry. Source SHA-256: `0d50093b50a4ec9657597fa5962627659495a70a68dcf735fb546d0271855f78`. The acquisition contract SHA-256 recorded before test execution was `729e3aab5f0ea0f32476251614c8efb269bc98cbe8b1a78338202a54841027c9` (unsigned local digest, not trusted chronology). One bounded live command failed with DNS resolution error, exit 1, and no output archive. No live payload, successful TLS session, end-to-end batch replay, browser, full repository regression, crash recovery or production readiness is claimed for v0.4. Network success paths were mocked; archive integrity is not authenticated scientific provenance. Retain the archive digest independently. A valid but modified archive with newly computed metadata can pass unanchored verification.
+
+## Portable Earth evidence (v0.5)
+
+[Evidence bundle contract and commands](docs/earth-evidence.md). The new offline CLI packs the exact v0.4 archive, v0.3 screening configuration and independently replayed report into one bounded JSON bundle. It records component SHA-256 digests and implementation fingerprints, repeats independent replay before publishing a new bundle, and refuses to overwrite output. An optional independently retained bundle digest detects complete replacement. No NASA authenticity, scientific validity, complete coverage, or operational safety is established.
+
+Verified locally with Python 3.13.5 and Node.js 22.16.0: 9 new integration and adversarial test methods passed; the earlier synthetic baseline independently replayed all three facilities. The original source files used in the test were matched to their Git blob identifiers at baseline commit `2b38ae2f749df73723112811110b77e913e49ec0`. The synthetic result contains two facilities with matches and one without. The method contract was hashed before testing (SHA-256 `d2e193e5aeaab320a236c63964978a7a2b14a81a8df2264e9569fa48693329f9`); this is local and unsigned, not trusted chronology. No live data, browser QA, whole-repository regression, CI or production readiness is claimed.
 
 ## Expansion roadmap
 
