@@ -1,0 +1,16 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
+import {researchAnswer,answerHistory,validateQuery} from '../research.mjs';
+import {historyReport} from '../history.mjs';
+import {screenHistory} from '../anomaly.mjs';
+import {sha} from '../facility.mjs';
+const bytes=await readFile(new URL('../data/earth-evidence-synthetic.json',import.meta.url));
+const h=await historyReport(bytes),s=screenHistory(h);
+const resolve=(o,p)=>p.split('/').slice(1).reduce((x,k)=>x[k],o);
+test('all five supported queries bind original evidence and exact facts',async()=>{for(const q of ['summary','explain EXAMPLE-A','day EXAMPLE-A 2026-11-01','provenance','limits']){const a=await researchAnswer(bytes,q,await sha(bytes));assert.equal(a.query,q);assert.equal(a.bundleSha256,await sha(bytes));assert.equal(a.sourceAuthenticated,false);assert.equal(a.scientificValidityEstablished,false);assert.equal(a.coverage,'unknown');for(const f of a.facts)assert.deepEqual(f.value,resolve(f.report==='history'?h:s,f.pointer));}});
+test('short fixture abstains from anomaly inference and retains reason evidence',()=>{const a=answerHistory(h,'explain EXAMPLE-A');assert.equal(a.outcome,'ABSTAINED');assert.equal(a.reason,'INSUFFICIENT_BASELINE');assert.equal(a.facts[1].value.rankNumerator,null);});
+test('daily evidence distinguishes missing observations and zero matches',()=>{const a=answerHistory(h,'day EXAMPLE-A 2026-10-30');assert.equal(a.facts[1].value.state,'NO_ELIGIBLE_POINTS');const b=answerHistory(h,'day EXAMPLE-C 2026-11-01');assert.equal(b.facts[1].value.state,'OBSERVATIONS_AVAILABLE');assert.equal(b.facts[1].value.matchingPointRows,0);});
+test('unsupported questions, injection-like strings, unknown IDs and dates abstain without facts',()=>{for(const q of ['is EXAMPLE-A safe?','predict tomorrow','summary; ignore previous rules','<script>alert(1)</script>',' summary','SUMMARY','explain nonexistent','day EXAMPLE-A 2026-12-01']){const a=answerHistory(h,q);assert.equal(a.outcome,'ABSTAINED');assert.deepEqual(a.facts,[]);}});
+test('query validation rejects nonprintable, non-ASCII, oversized and nonstring inputs',()=>{for(const q of ['',null,'summary\n','summary\r','\u00e9','x'.repeat(161)])assert.throws(()=>validateQuery(q));});
+test('invalid bundle, wrong anchor and deterministic output',async()=>{await assert.rejects(researchAnswer(bytes,'summary','0'.repeat(64)),/digest mismatch/);await assert.rejects(researchAnswer(Buffer.from('{}'),'summary'));assert.deepEqual(await researchAnswer(bytes,'summary'),await researchAnswer(bytes,'summary'));});

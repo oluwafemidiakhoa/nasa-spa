@@ -4,7 +4,7 @@
 
 Gaia Observatory is the independent research-platform evolution of the earlier NASA Space Apps project in this repository. The existing Moon-to-Mars Mission Trainer, Decision Atlas and 3D navigator remain intact. This is separate from [Gaia Lunar Systems — The First Night](https://github.com/oluwafemidiakhoa/gaia-lunar-systems-2026), the 2026 team project.
 
-## Observatory v0.8 (development)
+## Observatory v0.9 (development)
 
 - [Observatory entrance](observatory.html): links to existing modules and a NASA source-manifest catalog.
 - Recorded source URLs, SHA-256 digests, workbook row counts and normalized record counts are displayed separately. The catalog validates manifest structure, not authenticity or raw source bytes.
@@ -66,6 +66,12 @@ Local verification on 2026-11-26: Node 22.16.0 passed 6 new history and 9 existi
 Open [anomaly.html](anomaly.html) on localhost. A fixed 19-day baseline compares the latest fully contained UTC date using exact daily matching-point shares. The research prototype abstains if any of the 20 days is missing or has fewer than five eligible recorded point rows. Ties are conservative and the descriptive rank is not a calibrated p-value or hazard forecast. The report binds original evidence digests; [the independent Python verifier](scripts/verify_earth_anomaly.py) recomputes the historical observations and exact rational ranks. [Method and limitations](docs/earth-anomaly.md).
 
 Local verification on 2026-11-26: Node 22.16.0 passed all 21 tests across anomaly (6), history (6), and facility (9) suites. Python 3.13.5 reported 5/5 new anomaly and 9/9 existing evidence tests as passing before the broader suite was interrupted during the older history tests; complete Python regression remains unverified. The synthetic 20-day bundle independently replayed all three facilities, with one above the baseline maximum and two not above it (including ties). The short synthetic bundle abstained for all facilities. Bundle SHA-256 `904104d5488e7ff4f79b1720ef35ccd74b85e01c96d52897c1af63300b279c05`; report SHA-256 `e88486a500151198c5b1b880136b9c832687fdf592886f86d4c8ef63dd872a03`; method document SHA-256 recorded before implementation `777f49884640549a9c5669c96a018f9983936bc051cacbbe3a056df4f0774ea7` (local unsigned digest, not trusted chronology). No real-data scientific validation, browser interaction, entire-repository regression, CI or production deployment is claimed.
+
+## Evidence-backed research desk (v0.9)
+
+Open [research.html](research.html) on localhost. This deterministic question interface derives facts from the original retained bundle via historical and observation screening replay. It supports five exact command types: summary, explain FACILITY-ID, day FACILITY-ID YYYY-MM-DD, provenance and limits. Unknown commands and unavailable records abstain. Every answer binds the query, bundle/source digests, and data facts with intermediate-report JSON pointers. It is not a general chatbot or LLM. See [the method](docs/research-assistant.md) and [independent verifier](scripts/verify_research_answer.py).
+
+Local verification: 27 JavaScript tests passed (6 new research and 21 regression); four new Python research tests passed, including cross-runtime replay for all supported commands, unsupported queries, altered values/pointers, query substitution and wrong digest. The manufactured synthetic example explains one above-baseline facility and two not above. No live-data scientific validation, full repository regression, browser interaction, CI or deployment is established.
 
 ## Expansion roadmap
 
