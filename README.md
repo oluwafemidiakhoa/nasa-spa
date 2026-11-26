@@ -4,7 +4,7 @@
 
 Gaia Observatory is the independent research-platform evolution of the earlier NASA Space Apps project in this repository. The existing Moon-to-Mars Mission Trainer, Decision Atlas and 3D navigator remain intact. This is separate from [Gaia Lunar Systems — The First Night](https://github.com/oluwafemidiakhoa/gaia-lunar-systems-2026), the 2026 team project.
 
-## Observatory v0.7 (development)
+## Observatory v0.8 (development)
 
 - [Observatory entrance](observatory.html): links to existing modules and a NASA source-manifest catalog.
 - Recorded source URLs, SHA-256 digests, workbook row counts and normalized record counts are displayed separately. The catalog validates manifest structure, not authenticity or raw source bytes.
@@ -60,6 +60,12 @@ Local verification on 2026-11-26: Node 22.16.0 `node --test tests/facility.test.
 Open [history.html](history.html) on localhost. Import a v0.5 bundle or use the synthetic example. The new module verifies the original bundle using the existing browser replay, divides its original inclusive UTC window into at most 31 calendar dates, and reports eligible point rows, matching rows, and distinct matching event IDs separately for up to 25 facilities. Missing observations are distinguished from no matches. Export JSON and independently recompute every field using `python scripts/verify_earth_history.py BUNDLE.json HISTORY.json --expected-sha256 DIGEST` (optional independently retained digest). [Method and limitations](docs/earth-history.md).
 
 Local verification on 2026-11-26: Node 22.16.0 passed 6 new history and 9 existing dashboard tests; Python 3.13.5 passed 5 new history and 9 existing evidence tests. The synthetic history exported from JavaScript independently replayed against the committed bundle and its retained SHA-256. All 3 facilities and 4 dates matched; the report SHA-256 is `11cc5605548c43600d4a5d6a66ea6b2adce4dad720399f325401e84084aea613`. The method contract was hashed before implementation (`6e84171b0ab1857f27c4a545c38596595c6e629f23e36b1a2852fe35c037034d`, local unsigned hash, not trusted chronology). A bounded NASA EONET request for January 7–15, 2025 wildfires failed DNS resolution (exit 1, no output archive). New browser interaction, live data, entire-repository regression, CI, and production deployment remain unverified. The reported counts are not trends, exposure estimates, or evidence of operational safety.
+
+## Scientific observation screening (v0.8)
+
+Open [anomaly.html](anomaly.html) on localhost. A fixed 19-day baseline compares the latest fully contained UTC date using exact daily matching-point shares. The research prototype abstains if any of the 20 days is missing or has fewer than five eligible recorded point rows. Ties are conservative and the descriptive rank is not a calibrated p-value or hazard forecast. The report binds original evidence digests; [the independent Python verifier](scripts/verify_earth_anomaly.py) recomputes the historical observations and exact rational ranks. [Method and limitations](docs/earth-anomaly.md).
+
+Local verification on 2026-11-26: Node 22.16.0 passed all 21 tests across anomaly (6), history (6), and facility (9) suites. Python 3.13.5 reported 5/5 new anomaly and 9/9 existing evidence tests as passing before the broader suite was interrupted during the older history tests; complete Python regression remains unverified. The synthetic 20-day bundle independently replayed all three facilities, with one above the baseline maximum and two not above it (including ties). The short synthetic bundle abstained for all facilities. Bundle SHA-256 `904104d5488e7ff4f79b1720ef35ccd74b85e01c96d52897c1af63300b279c05`; report SHA-256 `e88486a500151198c5b1b880136b9c832687fdf592886f86d4c8ef63dd872a03`; method document SHA-256 recorded before implementation `777f49884640549a9c5669c96a018f9983936bc051cacbbe3a056df4f0774ea7` (local unsigned digest, not trusted chronology). No real-data scientific validation, browser interaction, entire-repository regression, CI or production deployment is claimed.
 
 ## Expansion roadmap
 
