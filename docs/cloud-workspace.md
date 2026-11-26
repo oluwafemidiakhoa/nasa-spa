@@ -1,4 +1,4 @@
-# Gaia Observatory v1.0 RC2: protected cloud preview
+# Gaia Observatory v1.0 RC3: protected cloud preview
 
 The preview adds Mission Control and the dynamic Earth workspace without changing the original mission trainer, root routes, scientific algorithms or existing data. Mission Control automatically requests EONET wildfire records for the last seven complete UTC days, APOD and DONKI CME records when opened. The Earth workspace automatically runs the same recent-date wildfire study using its displayed default locations. Buttons provide manual refresh; no continuous polling, new paid service, database, or additional package dependency is introduced. APOD displays only returned title/date and fallback status; DONKI counts returned records. Neither validates source authenticity or coverage. FIRMS, JPL and Earthdata are not integrated.
 
@@ -10,4 +10,8 @@ Sign in to the existing Vercel protected preview, open mission-control.html, the
 
 For independent verification in a trusted local checkout of the matching source, run `python scripts/earth_evidence.py verify DOWNLOADED.json --expected-sha256 DIGEST` using a separately retained digest. A new browser-generated bundle requires an actual Python replay before claiming cross-runtime agreement.
 
-Local targeted tests: `node --test tests/cloud-eonet.test.cjs tests/cloud-workspace.test.mjs tests/mission-control.test.mjs tests/auto-start.test.mjs`. All 17 passed on Node 22.16.0 with controlled responses. Browser E2E, deployed upstream requests, independently replaying a new browser bundle, license review and production readiness are not established. Preview authentication must remain enabled. No production promotion is authorized. Revert the feature-branch change in a new commit if required; retain the existing preview and original main unchanged.
+Local targeted tests: `node --test tests/cloud-eonet.test.cjs tests/cloud-workspace.test.mjs tests/mission-control.test.mjs tests/auto-start.test.mjs`. All 21 passed on Node 22.16.0 with controlled responses. Browser E2E, deployed upstream requests, independently replaying a new browser bundle, license review and production readiness are not established. Preview authentication must remain enabled. No production promotion is authorized. Revert the feature-branch change in a new commit if required; retain the existing preview and original main unchanged.
+
+## EONET 502 troubleshooting
+
+RC3 preserves decoded JSON response bytes rather than mistaking compressed wire length for decoded length. A returned `UPSTREAM_DNS`, `UPSTREAM_TIMEOUT`, `UPSTREAM_TLS`, `UPSTREAM_NETWORK`, `UPSTREAM_HTTP_503`, or other `UPSTREAM_*` code helps distinguish transport and response failures. Vercel logs record only the sanitized code, not upstream response content. No synthetic fallback is used. The actual RC2 upstream failure cause and RC3 live recovery are unconfirmed; local tests exercised real loopback HTTP gzip and controlled network errors.

@@ -34,6 +34,11 @@ export async function fetchStudy(x,transport=fetch){
   study(x);
   const q=new URLSearchParams({start:x.start,end:x.end,category:x.category});
   const r=await transport('/api/gaia-eonet?'+q,{cache:'no-store',signal:AbortSignal.timeout(20000)});
+  if(!r.ok){
+    let code='';
+    try{const bytes=await readResponse({ok:true,body:r.body},4096),body=strictJSON(bytes);if(typeof body?.code==='string'&&/^UPSTREAM_(?:TIMEOUT|DNS|TLS|NETWORK|STATUS|CONTENT_TYPE|ENCODING|SIZE|EMPTY|BODY|TRUNCATED|JSON|SCHEMA|INTERNAL|HTTP_[1-5]\d{2})$/.test(body.code))code='; '+body.code;}catch{}
+    throw Error('Request failed (HTTP '+r.status+code+')');
+  }
   return createBundle(strictJSON(await readResponse(r,3_000_000)),x);
 }
 export function startWorkspace(doc=document,transport=fetch,now=Date.now()){

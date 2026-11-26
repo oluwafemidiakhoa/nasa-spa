@@ -15,18 +15,38 @@ function url(q) {
   if (delta<0 || delta>29*DAY) throw Error('Choose 1-30 UTC dates');
   return BASE+'?'+new URLSearchParams({status:'all',start:q.start,end:q.end,category:q.category,limit:'200'});
 }
+class AcquisitionError extends Error {
+  constructor(code){super(code);this.code=code;}
+}
+function fail(code){throw new AcquisitionError(code);}
+function networkCode(e){
+  const code=e?.cause?.code || e?.code;
+  if(e?.name==='TimeoutError'||e?.name==='AbortError'||['ETIMEDOUT','UND_ERR_CONNECT_TIMEOUT','UND_ERR_HEADERS_TIMEOUT','UND_ERR_BODY_TIMEOUT'].includes(code))return 'UPSTREAM_TIMEOUT';
+  if(['ENOTFOUND','EAI_AGAIN'].includes(code))return 'UPSTREAM_DNS';
+  if(['CERT_HAS_EXPIRED','UNABLE_TO_VERIFY_LEAF_SIGNATURE','SELF_SIGNED_CERT_IN_CHAIN','ERR_TLS_CERT_ALTNAME_INVALID','DEPTH_ZERO_SELF_SIGNED_CERT'].includes(code))return 'UPSTREAM_TLS';
+  return 'UPSTREAM_NETWORK';
+}
 async function retrieve(requestUrl, transport=fetch) {
-  const r=await transport(requestUrl,{redirect:'error',signal:AbortSignal.timeout(12000),headers:{Accept:'application/json','Accept-Encoding':'identity'}});
-  if (r.status!==200 || r.headers.get('content-type')?.split(';')[0].trim().toLowerCase()!=='application/json' || ![null,'identity'].includes(r.headers.get('content-encoding'))) throw Error('Invalid upstream response');
+  let r;
+  try{r=await transport(requestUrl,{redirect:'error',signal:AbortSignal.timeout(12000),headers:{Accept:'application/json','Accept-Encoding':'identity','User-Agent':'Gaia-Observatory/1.0'}});}catch(e){fail(networkCode(e));}
+  if(r.status!==200)fail(Number.isInteger(r.status)&&r.status>=100&&r.status<=599?'UPSTREAM_HTTP_'+r.status:'UPSTREAM_STATUS');
+  if(r.headers.get('content-type')?.split(';')[0].trim().toLowerCase()!=='application/json')fail('UPSTREAM_CONTENT_TYPE');
+  // Node fetch decodes HTTP content encodings. Content-Length describes the
+  // encoded representation, so only compare it to decoded bytes for identity.
+  const encoding=(r.headers.get('content-encoding')||'identity').trim().toLowerCase();
+  if(!['identity','gzip','deflate','br'].includes(encoding))fail('UPSTREAM_ENCODING');
   const length=r.headers.get('content-length');
-  if (length!==null && (!/^\d+$/.test(length)||Number(length)>MAX)) throw Error('Source exceeds size limit');
-  const reader=r.body?.getReader();if(!reader)throw Error('Missing upstream body');
+  if(length!==null&&(!/^\d+$/.test(length)||Number(length)>MAX))fail('UPSTREAM_SIZE');
+  const reader=r.body?.getReader();if(!reader)fail('UPSTREAM_EMPTY');
   let size=0;const chunks=[];
-  try {while(true){const {done,value}=await reader.read();if(done)break;size+=value.byteLength;if(size>MAX)throw Error('Source exceeds size limit');chunks.push(value);}}
-  finally {try{await reader.cancel();}catch{}}
-  if(!size || (length!==null&&Number(length)!==size))throw Error('Incomplete upstream body');
-  const raw=Buffer.concat(chunks,size), parsed=JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(raw));
-  if(!Array.isArray(parsed?.events)||parsed.events.length>200)throw Error('Invalid event response');
+  try{while(true){const {done,value}=await reader.read();if(done)break;size+=value.byteLength;if(size>MAX)fail('UPSTREAM_SIZE');chunks.push(value);}}
+  catch(e){if(e instanceof AcquisitionError)throw e;const code=networkCode(e);fail(code==='UPSTREAM_NETWORK'?'UPSTREAM_BODY':code);}
+  finally{try{await reader.cancel();}catch{}}
+  if(!size)fail('UPSTREAM_EMPTY');
+  if(encoding==='identity'&&length!==null&&Number(length)!==size)fail('UPSTREAM_TRUNCATED');
+  const raw=Buffer.concat(chunks,size);let parsed;
+  try{parsed=JSON.parse(new TextDecoder('utf-8',{fatal:true,ignoreBOM:true}).decode(raw));}catch{fail('UPSTREAM_JSON');}
+  if(!Array.isArray(parsed?.events)||parsed.events.length>200)fail('UPSTREAM_SCHEMA');
   return {requestUrl,capturedAt:new Date().toISOString(),sourceSha256:createHash('sha256').update(raw).digest('hex'),bodyBase64:raw.toString('base64')};
 }
 async function handler(req,res){
@@ -34,7 +54,7 @@ async function handler(req,res){
   if(req.method!=='GET'){res.setHeader('Allow','GET');return res.status(405).json({error:'GET required'});}
   if(process.env.VERCEL_ENV!=='preview')return res.status(403).json({error:'Live retrieval is enabled only for preview deployments.'});
   let target;try{target=url(req.query);}catch(e){return res.status(400).json({error:e.message});}
-  try{return res.status(200).json(await retrieve(target));}catch{return res.status(502).json({error:'NASA retrieval failed or returned invalid data. No observation was accepted.'});}
+  try{return res.status(200).json(await retrieve(target));}catch(e){const code=e instanceof AcquisitionError?e.code:'UPSTREAM_INTERNAL';console.warn('GAIA_EONET_FAILURE '+code);return res.status(502).json({error:'NASA retrieval failed or returned invalid data. No observation was accepted.',code});}
 }
 module.exports=handler;
 module.exports.url=url;
