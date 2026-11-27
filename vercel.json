@@ -257,6 +257,9 @@
     },
     "api/gaia-nws.js": {
       "maxDuration": 20
+    },
+    "api/gaia-usgs.js": {
+      "maxDuration": 20
     }
   }
 }

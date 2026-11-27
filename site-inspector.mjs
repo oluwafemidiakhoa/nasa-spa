@@ -1,6 +1,7 @@
 import {inspectBundle,strictJSON,sha,MAX_BUNDLE} from './facility.mjs';
 import {buildSiteBriefing,LAYERS,LABELS,PACKET_LIMIT} from './site-briefing.mjs';
 import {compareSiteChange} from './site-change.mjs';
+import {verifyPacket as verifySeismicPacket} from './seismic.mjs';
 export const MAX_PACKET_BYTES=36_000_000;
 const ok=(v,m)=>{if(!v)throw Error(m);};
 const hex=s=>typeof s==='string'&&/^[a-f0-9]{64}$/.test(s);
@@ -12,6 +13,7 @@ export async function inspectPacket(bytes,anchor=''){
  ok(bytes instanceof Uint8Array&&bytes.length>0&&bytes.length<=MAX_PACKET_BYTES,'Choose a supported JSON packet up to 36 MB');
  ok(anchor===''||hex(anchor),'Expected a lowercase SHA-256 digest');const packetSha256=await sha(bytes);ok(!anchor||anchor===packetSha256,'Packet digest mismatch');
  const p=strictJSON(bytes),change=p?.schema==='gaia-site-change-packet-v1';
+ if(p?.schema==='gaia-seismic-packet-v1'){ok(keys(p,['schema','receipt','report']),'Invalid seismic packet fields');const finding=await verifySeismicPacket(p);return {schema:'gaia-packet-inspection-v1',packetSha256,anchorChecked:!!anchor,sourceAuthenticated:false,packetType:'seismic',outcome:'ALL_LAYERS_REPLAY_MATCH',layers:[{category:'earthquakes',outcome:'REPLAY_MATCH',finding}],limitations:'Same-method offline seismic screening replay. Catalog completeness, source authenticity and real-world shaking or safety are not verified.'};}
  ok(keys(p,['schema','report','evidence'])&&(change||p.schema==='gaia-site-briefing-packet-v1'),'Unsupported packet schema');
  const r=p.report,now=timestamp(r?.requestedAt);
  ok(r.schema===(change?'gaia-site-change-v1':'gaia-site-briefing-v1')&&Array.isArray(r.layers)&&r.layers.length===3&&r.layers.every((v,i)=>v?.category===LAYERS[i]),'Invalid report layers');
@@ -45,10 +47,10 @@ export function startInspector(doc=document,{inspect=inspectPacket,download}={})
  function clear(message){revision++;result=null;$('inspect-result').hidden=true;$('inspect-rows').replaceChildren();$('inspect-export').disabled=true;$('inspect-status').textContent=message;$('inspect-run').disabled=busy;}
  async function run(){if(busy)return;clear('Checking packet bytes and recomputing findings locally...');const token=revision;busy=true;$('inspect-run').disabled=true;
   try{const f=$('inspect-file').files[0];ok(f&&f.size>0&&f.size<=MAX_PACKET_BYTES,'Select a JSON packet up to 36 MB');const out=await inspect(new Uint8Array(await f.arrayBuffer()),$('inspect-anchor').value.trim());if(token!==revision)return;
-   result=out;$('inspect-status').textContent=out.outcome==='ALL_LAYERS_REPLAY_MATCH'?'All three reported layers replayed.':'Included findings replayed; missing layers could not be verified.';$('inspect-digest').textContent=out.packetSha256;$('inspect-anchor-result').textContent=out.anchorChecked?'Supplied digest matched.':'No external digest supplied.';
-   for(const row of out.layers){const tr=doc.createElement('tr');const h=node('th',LABELS[row.category]);h.scope='row';tr.append(h,node('td',row.outcome==='REPLAY_MATCH'?'Replayed':'No evidence to replay'),node('td',row.finding?JSON.stringify(row.finding,null,2):'No finding verified'));$('inspect-rows').append(tr);}$('inspect-result').hidden=false;$('inspect-export').disabled=false;
+   result=out;$('inspect-status').textContent=out.outcome==='ALL_LAYERS_REPLAY_MATCH'?'All included findings replayed.':'Included findings replayed; missing layers could not be verified.';$('inspect-digest').textContent=out.packetSha256;$('inspect-anchor-result').textContent=out.anchorChecked?'Supplied digest matched.':'No external digest supplied.';
+   for(const row of out.layers){const tr=doc.createElement('tr');const h=node('th',LABELS[row.category]||'Earthquakes');h.scope='row';tr.append(h,node('td',row.outcome==='REPLAY_MATCH'?'Replayed':'No evidence to replay'),node('td',row.finding?JSON.stringify(row.finding,null,2):'No finding verified'));$('inspect-rows').append(tr);}$('inspect-result').hidden=false;$('inspect-export').disabled=false;
   }catch(e){if(token===revision)clear('Packet not accepted: '+String(e.message).slice(0,180));}finally{busy=false;$('inspect-run').disabled=false;}}
  $('inspect-run').addEventListener('click',run);for(const id of ['inspect-file','inspect-anchor'])$(id).addEventListener('input',()=>clear('Input changed. Inspect again.'));
- $('inspect-export').addEventListener('click',()=>{if(result)save(JSON.stringify(result,null,2),'gaia-inspection-'+result.packetSha256.slice(0,12)+'.json');});clear('Select a site briefing or change evidence packet.');return {run};
+ $('inspect-export').addEventListener('click',()=>{if(result)save(JSON.stringify(result,null,2),'gaia-inspection-'+result.packetSha256.slice(0,12)+'.json');});clear('Select a site briefing, change or seismic evidence packet.');return {run};
 }
 if(typeof document!=='undefined'&&document.getElementById('inspect-run'))startInspector();

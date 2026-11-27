@@ -1,0 +1,10 @@
+const {createHash}=require('node:crypto');
+async function retrieve(transport=fetch,clock=()=>Date.now()){
+ const {SOURCE,MAX_BYTES,parseCatalog}=await import('../seismic.mjs');const r=await transport(SOURCE,{redirect:'error',signal:AbortSignal.timeout(12000),headers:{Accept:'application/geo+json, application/json','Accept-Encoding':'identity','User-Agent':'Gaia-Observatory/1.0'}});
+ if(r.status!==200||!['application/json','application/geo+json'].includes((r.headers.get('content-type')||'').split(';')[0].trim().toLowerCase()))throw Error('UPSTREAM_RESPONSE');
+ const len=r.headers.get('content-length'),enc=(r.headers.get('content-encoding')||'identity').trim().toLowerCase();if(len!==null&&(!/^\d+$/.test(len)||Number(len)>MAX_BYTES)||!['identity','gzip','deflate','br'].includes(enc))throw Error('UPSTREAM_LIMIT');
+ const reader=r.body?.getReader();if(!reader)throw Error('UPSTREAM_BODY');let n=0;const chunks=[];try{while(true){const {done,value}=await reader.read();if(done)break;n+=value.byteLength;if(n>MAX_BYTES)throw Error('UPSTREAM_LIMIT');chunks.push(value);}}finally{try{await reader.cancel();}catch{}}
+ if(enc==='identity'&&len!==null&&Number(len)!==n)throw Error('UPSTREAM_TRUNCATED');const b=Buffer.concat(chunks,n),catalog=parseCatalog(b),now=clock();if(Date.parse(catalog.generatedAt)>now+300000)throw Error('UPSTREAM_CLOCK');return {schema:'gaia-usgs-v1',sourceUrl:SOURCE,capturedAt:new Date(now).toISOString(),sourceBytes:n,sourceSha256:createHash('sha256').update(b).digest('hex'),bodyBase64:b.toString('base64')};
+}
+async function handler(req,res){res.setHeader('Cache-Control','no-store');res.setHeader('X-Content-Type-Options','nosniff');if(req.method!=='GET'){res.setHeader('Allow','GET');return res.status(405).json({code:'METHOD_NOT_ALLOWED'});}if(process.env.VERCEL_ENV!=='preview')return res.status(403).json({code:'ENVIRONMENT_NOT_ENABLED'});if(Object.keys(req.query||{}).length)return res.status(400).json({code:'INVALID_QUERY'});try{return res.status(200).json(await retrieve());}catch{return res.status(502).json({code:'UPSTREAM_UNAVAILABLE'});}}
+module.exports=handler;module.exports.retrieve=retrieve;
