@@ -8,6 +8,19 @@ export function portfolio(input){
   study({...input,start:'2025-01-01',end:'2025-01-07'});
   return {category:input.category,radiusKm:input.radiusKm,facilities:input.facilities.map(f=>({id:f.id,coordinates:f.coordinates.slice()})).sort((a,b)=>a.id<b.id?-1:a.id>b.id?1:0)};
 }
+export function parseLocations(raw){
+ req(typeof raw==='string'&&raw.length<=12000,'Coordinate rows exceed the input limit.');
+ const rows=raw.split(/\r?\n/).filter(s=>s.trim());
+ if(!rows.length)return [];
+ req(rows.length<=25,'Add no more than 25 locations.');
+ const facilities=rows.map((row,index)=>{
+   const f=row.split(',').map(v=>v.trim());
+   req(f.length===3&&f.every(Boolean),'Row '+(index+1)+': use ID, longitude, latitude.');
+   req(f.slice(1).every(v=>/^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:e[+-]?\d+)?$/i.test(v)),'Row '+(index+1)+': enter decimal coordinates.');
+   return {id:f[0],coordinates:f.slice(1).map(Number)};
+ });
+ return portfolio({category:'wildfires',radiusKm:50,facilities}).facilities;
+}
 export function periods(now=Date.now()){
   const current=recentDates(now),t=Date.parse(current.start+'T00:00:00Z');
   const date=n=>new Date(t+n*DAY).toISOString().slice(0,10);
@@ -40,12 +53,12 @@ export async function review(input,transport=fetch,now=Date.now()){
   const [a,b]=await Promise.all([fetchStudy({...p,...w.previous},transport),fetchStudy({...p,...w.current},transport)]);
   return {previous:a.bytes,current:b.bytes,report:await compare(a.bytes,b.bytes)};
 }
-export function startPortfolio(doc=document,transport=fetch,storage=()=>localStorage,now=()=>Date.now()){
+export function startPortfolio(doc=document,transport=fetch,storage=()=>localStorage,now=()=>Date.now(),onChange=()=>{}){
   const $=id=>doc.getElementById(id),status=s=>{$('status').textContent=s;};let revision=0,result=null,busy=false;
-  function input(){return portfolio({category:$('category').value,radiusKm:Number($('radius').value),facilities:$('locations').value.split(/\r?\n/).filter(s=>s.trim()).map(s=>{const v=s.split(',').map(x=>x.trim());req(v.length===3&&v.every(Boolean),'Use ID, longitude, latitude');return {id:v[0],coordinates:v.slice(1).map(Number)};})});}
-  function fill(p){$('category').value=p.category;$('radius').value=String(p.radiusKm);$('locations').value=p.facilities.map(f=>[f.id,...f.coordinates].join(', ')).join('\n');}
-  function clear(s){revision++;result=null;busy=false;$('results').hidden=true;$('rows').replaceChildren();$('run').disabled=false;$('reopen').disabled=false;status(s);return revision;}
-  function render(v){result=v;const r=v.report;$('window').textContent=r.previous.start+' to '+r.previous.end+' vs '+r.current.start+' to '+r.current.end+' UTC';$('coverage').textContent=r.previous.eligiblePoints+' / '+r.current.eligiblePoints+' eligible global point rows (earlier / recent). '+(r.previous.limitReached||r.current.limitReached?'Source limit reached. ':'')+(r.comparison==='COMPARABLE_RETURNED_RECORDS'?'Returned record sets compared; coverage unknown.':'Comparison withheld: insufficient observations or source limit.');$('rows').replaceChildren();for(const row of r.rows){const tr=doc.createElement('tr');for(const value of [row.id,row.previousCount??'Unavailable',row.currentCount??'Unavailable',row.onlyCurrent?.length??'Withheld',row.nearestCurrentKm===null?'—':row.nearestCurrentKm+' km']){const td=doc.createElement('td');td.textContent=String(value);tr.append(td);}const td=doc.createElement('td');for(const m of row.currentMatches.slice(0,5)){const p=doc.createElement('p');p.textContent=m.title+' · '+m.observedAt+' · '+m.distanceKm+' km';td.append(p);}if(!row.currentMatches.length)td.textContent='No matching returned points';tr.append(td);$('rows').append(tr);}$('digests').textContent='Earlier bundle: '+r.previous.bundleSha256+' | Recent bundle: '+r.current.bundleSha256;$('results').hidden=false;status('Review ready. Download both original evidence bundles and the derived report.');}
+  function input(){return portfolio({category:$('category').value,radiusKm:Number($('radius').value),facilities:parseLocations($('locations').value)});}
+  function fill(p){$('category').value=p.category;$('radius').value=String(p.radiusKm);$('locations').value=p.facilities.map(f=>[f.id,...f.coordinates].join(', ')).join('\n');onChange();}
+  function clear(s){revision++;result=null;busy=false;$('results').hidden=true;const empty=$('review-empty');if(empty)empty.hidden=false;$('rows').replaceChildren();$('run').disabled=false;$('reopen').disabled=false;status(s);onChange();return revision;}
+  function render(v){result=v;const r=v.report;fill(r.portfolio);const empty=$('review-empty');if(empty)empty.hidden=true;const summary={locations:String(r.rows.length),matches:r.rows.every(row=>row.currentCount!==null)?String(r.rows.filter(row=>row.currentCount>0).length):'Unavailable',comparable:r.comparison==='COMPARABLE_RETURNED_RECORDS'?'Available':'Withheld'};for(const [id,value] of Object.entries(summary)){const n=$('summary-'+id);if(n)n.textContent=value;}$('window').textContent=r.previous.start+' to '+r.previous.end+' vs '+r.current.start+' to '+r.current.end+' UTC';$('coverage').textContent=r.previous.eligiblePoints+' / '+r.current.eligiblePoints+' eligible global point rows (earlier / recent). '+(r.previous.limitReached||r.current.limitReached?'Source limit reached. ':'')+(r.comparison==='COMPARABLE_RETURNED_RECORDS'?'Returned record sets compared; coverage unknown.':'Comparison withheld: insufficient observations or source limit.');$('rows').replaceChildren();for(const row of r.rows){const tr=doc.createElement('tr');for(const value of [row.id,row.previousCount??'Unavailable',row.currentCount??'Unavailable',row.onlyCurrent?.length??'Withheld',row.nearestCurrentKm===null?'—':row.nearestCurrentKm+' km']){const td=doc.createElement('td');td.textContent=String(value);tr.append(td);}const td=doc.createElement('td');for(const m of row.currentMatches.slice(0,5)){const p=doc.createElement('p');p.textContent=m.title+' · '+m.observedAt+' · '+m.distanceKm+' km';td.append(p);}if(!row.currentMatches.length)td.textContent=row.currentCount===null?'No eligible observations; count unavailable':'No matching returned points';tr.append(td);$('rows').append(tr);}$('digests').textContent='Earlier bundle: '+r.previous.bundleSha256+' | Recent bundle: '+r.current.bundleSha256;$('results').hidden=false;status('Review ready. Download both original evidence bundles and the derived report.');}
   async function run(work){if(busy)return;const rev=clear('Retrieving or checking observations…');busy=true;$('run').disabled=true;$('reopen').disabled=true;try{const v=await work();if(rev===revision)render(v);}catch(e){if(rev===revision)clear('Review unavailable: '+String(e.message).slice(0,180));}finally{if(rev===revision){busy=false;$('run').disabled=false;$('reopen').disabled=false;}}}
   function download(bytes,name){const url=URL.createObjectURL(new Blob([bytes],{type:'application/json'})),a=doc.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
   for(const id of ['category','radius','locations','previous-file','current-file'])$(id).addEventListener('input',()=>clear('Inputs changed. Run or reopen a review.'));
@@ -56,5 +69,5 @@ export function startPortfolio(doc=document,transport=fetch,storage=()=>localSto
   $('reopen').addEventListener('click',()=>run(async()=>{const files=[$('previous-file').files[0],$('current-file').files[0]];req(files.every(f=>f&&f.size>0&&f.size<=MAX_BUNDLE),'Choose two evidence bundles, each at most 26 MB');const [previous,current]=await Promise.all(files.map(async f=>new Uint8Array(await f.arrayBuffer())));return {previous,current,report:await compare(previous,current)};}));
   for(const [id,k] of [['download-previous','previous'],['download-current','current'],['download-report','report']])$(id).addEventListener('click',()=>{if(result)download(k==='report'?JSON.stringify(result.report,null,2)+'\n':result[k],'gaia-'+k+'.json');});
   clear('Enter locations or choose the public example. No data has been requested.');try{const p=restore(storage());if(p){fill(p);status('Saved portfolio restored. Run a new review for recent observations.');}}catch{status('Saved portfolio unavailable. Enter locations again.');}
+  return Object.freeze({getReview:()=>result});
 }
-if(typeof document!=='undefined'&&document.getElementById('portfolio-page'))startPortfolio();

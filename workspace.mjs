@@ -63,4 +63,4 @@ export function startWorkspace(doc=document,transport=fetch,now=Date.now()){
   setRecent(now);
   return runLive();
 }
-if(typeof document!=='undefined'&&document.getElementById('run'))startWorkspace();
+if(typeof document!=='undefined'&&document.getElementById('workspace-page'))startWorkspace();
