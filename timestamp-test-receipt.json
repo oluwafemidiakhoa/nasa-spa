@@ -1,0 +1,48 @@
+{
+  "schema": "gaia-timestamp-test-receipt-v1",
+  "baseline_commit": "11aa11fcc5346d283556ef5a50214e1ae8dda433",
+  "environment": {
+    "node": "v22.16.0",
+    "openssl": "OpenSSL 3.5.5 27 Jan 2026 (Library: OpenSSL 3.5.5 27 Jan 2026)",
+    "workspace": "isolated regression fixture workspace"
+  },
+  "focused": {
+    "command": "node --test tests/gaia-timestamp.test.mjs",
+    "passed": 9,
+    "failed": 0,
+    "skipped": 0,
+    "log_sha256": "5d8d788ead2bdb6182456781049fa006cc640855c252785b5c1bbb0e9c41ea70"
+  },
+  "regression": {
+    "command": "node --test tests/*.test.mjs",
+    "passed": 113,
+    "failed": 0,
+    "skipped": 0,
+    "log_sha256": "2c36686d6c6bd19839c68be9175d4f3299e7630e507883c3fe828836683a0fa6"
+  },
+  "fixtures": "Ephemeral self-signed and CA-issued fictional TSA certificates; no external TSA requests or actual independent timestamp established.",
+  "files": [
+    {
+      "path": "scripts/gaia-timestamp.mjs",
+      "sha256": "7f10584798d90e967a22ce1f609318f4894c94f03406d35d3954d8fe17f58187",
+      "git_blob_sha1": "d70125367216d78fae8b5f6bf7e3e4f52b4cc537"
+    },
+    {
+      "path": "tests/gaia-timestamp.test.mjs",
+      "sha256": "e7875bb56e2867625f52a6b37d83895340b33635029ef9bde6e341888d4b211b",
+      "git_blob_sha1": "743ba6147c13f98fc8048359ec7c62678de4c550"
+    },
+    {
+      "path": "docs/gaia-timestamp.md",
+      "sha256": "08388d8ff26b98f50b2c529ec3eeeb67c676753cb150d694aed831fb6a91e7aa",
+      "git_blob_sha1": "f7d10f7ec1fcf4208972fe4e50109d6847c3efe1"
+    }
+  ],
+  "limitations": [
+    "Available regression subset, not full repository checkout",
+    "Existing facility and workspace calculation cores match committed prefixes; local UI tails not full checkout",
+    "Revocation and trusted TSA clock/independence not verified",
+    "Linux OpenSSL CLI tested; no browser, Windows or real TSA acceptance",
+    "Local verification receipt is not a signed timestamp"
+  ]
+}
