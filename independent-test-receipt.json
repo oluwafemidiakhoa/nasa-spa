@@ -1,0 +1,133 @@
+{
+  "schema": "gaia-independent-test-receipt-v1",
+  "parentCommit": "d66c48a0fe0a9f09a0218f85cf7a12bbdfb096b9",
+  "environment": {
+    "python": "Python 3.13.5",
+    "node": "v22.16.0",
+    "scope": "isolated local workspace with exact analytical cores"
+  },
+  "commands": [
+    "python -m py_compile scripts/verify_gaia_proof.py",
+    "python -m unittest discover -s tests -p 'test_verify_gaia_proof.py' -v",
+    "node --test tests/gaia-proof.test.mjs tests/gaia-adversary.test.mjs"
+  ],
+  "crossRuntimeCases": {
+    "total": 89,
+    "matched": 71,
+    "rejected": 16,
+    "inconclusive": 2,
+    "unexpected": 0
+  },
+  "pythonTests": {
+    "passed": 4,
+    "failed": 0
+  },
+  "priorNodeTests": {
+    "passed": 25,
+    "failed": 0
+  },
+  "initialTestRun": "Timed out while launching a separate Python process for each case; same fixture manifest checked in-process, CLI independently tested on representative cases.",
+  "protocolSha256": "f1d85feae5eb8f142b5e660d770dcb8ad2e5ea6707a4bfc19432820d65dd49ba",
+  "logs": [
+    {
+      "path": "independent-tests.log",
+      "bytes": 667,
+      "sha256": "7ad3d60268e836ce79f2be28ec496cee0f99481ba0d9114b615165a696a3f758",
+      "gitBlob": "ae4528ed2cefcba2876d97b0752d6b5083099337"
+    },
+    {
+      "path": "baseline.log",
+      "bytes": 5980,
+      "sha256": "686328ca53eb65a46db53c6a3e55571318add8f8628347a45b63ed5dc05208b5",
+      "gitBlob": "67c58c58c65e41f06b0e8ef1c2b710ece1dd4950"
+    }
+  ],
+  "files": [
+    {
+      "path": "scripts/verify_gaia_proof.py",
+      "bytes": 19883,
+      "sha256": "d8d7663bad92fad1cebf00f644dd22f37682045f87b683374c2fa193366dbc7f",
+      "gitBlob": "1a261fd8c0e20936e162a395f98633ac467cf714"
+    },
+    {
+      "path": "tests/gaia-independent-fixtures.mjs",
+      "bytes": 5727,
+      "sha256": "10bbea50f7d1a34dcd9107257a5c81436f3197365a9c8224db2c3d6a93049283",
+      "gitBlob": "5766ed902a4b3ec7116124098576540f624248ce"
+    },
+    {
+      "path": "tests/test_verify_gaia_proof.py",
+      "bytes": 4126,
+      "sha256": "960818191e826c88c4a0b9696016670fdf111c7eb67f38a6634b7c9a40c9ca38",
+      "gitBlob": "146fdcef1d3592882528b8680fb41cbbd7da0b80"
+    },
+    {
+      "path": "independent-protocol.json",
+      "bytes": 1343,
+      "sha256": "f1d85feae5eb8f142b5e660d770dcb8ad2e5ea6707a4bfc19432820d65dd49ba",
+      "gitBlob": "b2581bb8524930bb8a0a4989bb36bf8311fcabd2"
+    },
+    {
+      "path": "docs/gaia-independent.md",
+      "bytes": 3658,
+      "sha256": "247138e27ba532e4d6253d77d2f883fb1d38922e01332cb47977a82b2729f86f",
+      "gitBlob": "98d0c42e730e9c6e01e768616aedb6883750661a"
+    }
+  ],
+  "dependencyCores": [
+    {
+      "path": "earth.mjs",
+      "bytes": 4053,
+      "sha256": "a1ce541de7aa9d49e934fa8c642782741828aad3c8893bb2e29b9465b14df0bc",
+      "gitBlob": "a5033fea725732a157e5e09f416e219c530b9704"
+    },
+    {
+      "path": "facility.mjs",
+      "bytes": 7518,
+      "sha256": "d917da69530153e4b6253f67b466a5f29add3dfe43c7cd467bce9c239c219975",
+      "gitBlob": "8621fbb77267c5ff8b05fd779b3b7b4fc148b662"
+    },
+    {
+      "path": "workspace.mjs",
+      "bytes": 5781,
+      "sha256": "d5f9f344293c05f0e5bf4aa0d64e72bb4dba910d87a48d1febd8c22467042bee",
+      "gitBlob": "ddee4d35cf1d31463ab0957dc10d4df153a222e2"
+    },
+    {
+      "path": "boundary-lab.mjs",
+      "bytes": 5152,
+      "sha256": "b8b888bf59825a0d32e4f316d3395b55713d57eb81ac612bd7c19c833e34a315",
+      "gitBlob": "ea2bcf210be6c91b42100327e8eae5f3c3f8d91d"
+    },
+    {
+      "path": "ablation-lab.mjs",
+      "bytes": 4991,
+      "sha256": "8b4745aff67ac17b74a539f348a86e109545caa0d7773b8b6c2da6d96575726f",
+      "gitBlob": "e7c6aab6a471a42af258c397513cdd042680d966"
+    },
+    {
+      "path": "gaia-proof.mjs",
+      "bytes": 10263,
+      "sha256": "8324d078184befb37b86c653f10abc3a658e414a356a78129ad239db1e3584a6",
+      "gitBlob": "eacb6b5b13f252c5e16b2e9e5b773b97c64d78bf"
+    },
+    {
+      "path": "gaia-adversary.mjs",
+      "bytes": 7810,
+      "sha256": "b8fface5a1ef970d2d434dc778ab98325444656d6e9fc95a4b76d4c6ade84440",
+      "gitBlob": "fce023e6b23537d97c1b46b7d1903b6f523706de"
+    },
+    {
+      "path": "data/boundary-demo.json",
+      "bytes": 4772,
+      "sha256": "f616c0b715bf43775a062b591dbd8cb76fe97a6575e258352c8be11ce2bb5bd0",
+      "gitBlob": "a51414e725ef262c656f0e66f5f6a5bb39bf6d87"
+    }
+  ],
+  "limitations": [
+    "Designed synthetic fixtures and co-developed labels; not blinded external research",
+    "Four dependency calculation prefixes, not complete repository checkout",
+    "No external authentication or trusted chronology, browser runtime or Windows acceptance",
+    "Narrative metadata and display ordering outside verification scope"
+  ]
+}
