@@ -1,0 +1,102 @@
+{
+  "schema": "gaia-adversary-test-receipt-v1",
+  "parentCommit": "15a079d78de10feeaac0079d0653db6dfc92dde3",
+  "environment": "v22.16.0 isolated local calculation-core workspace",
+  "commands": [
+    "node --check gaia-adversary.mjs",
+    "node --test tests/*.test.mjs"
+  ],
+  "observed": {
+    "tests": 25,
+    "passed": 25,
+    "failed": 0,
+    "skipped": 0,
+    "newTests": 10,
+    "designedCases": 6,
+    "coherentSourceChangesAcceptedByReplay": 3,
+    "coherentSourceChangesDetectedBySeparateSourceDigest": 3,
+    "changedThresholdDetectedBySeparatePacketDigest": 1
+  },
+  "logSha256": "f30de5d25b763701cbe25041f978e576c7a1693221a53217d3adeddc48662da1",
+  "files": [
+    {
+      "path": "gaia-adversary.mjs",
+      "bytes": 7810,
+      "sha256": "b8fface5a1ef970d2d434dc778ab98325444656d6e9fc95a4b76d4c6ade84440",
+      "gitBlob": "fce023e6b23537d97c1b46b7d1903b6f523706de"
+    },
+    {
+      "path": "gaia-adversary.html",
+      "bytes": 4621,
+      "sha256": "b2ddc9b10b8bae8f18f3e45e9d64e382582990d8ebc853409c393360ec4def0d",
+      "gitBlob": "d40f2159bb2e036a6e413c20c21d3c66c7260436"
+    },
+    {
+      "path": "tests/gaia-adversary.test.mjs",
+      "bytes": 6258,
+      "sha256": "62bb38cb548b31a1b8bdd1356afc88421985cea3ccfb87e5ab99cb48a5ffb554",
+      "gitBlob": "4e581ef93c8550d9832ce3c0d2b7e2aeb2a261e1"
+    },
+    {
+      "path": "adversary-protocol.json",
+      "bytes": 1078,
+      "sha256": "788ee24dd6ea85a919cefc62d18fad4d6736cfd1297a43157204f64da12d3237",
+      "gitBlob": "ebcf24cd9d0feccc714af9cb6104dfec65757a53"
+    },
+    {
+      "path": "docs/gaia-adversary.md",
+      "bytes": 1767,
+      "sha256": "4aef0fdca4b2d522ca6a4c440b4bcade89be84a3c5ee6ce33f699f4f53dd6329",
+      "gitBlob": "0c9f2b0396d37d4170000a31f46dfa6231481ce1"
+    }
+  ],
+  "dependencies": [
+    {
+      "path": "earth.mjs",
+      "bytes": 4053,
+      "sha256": "a1ce541de7aa9d49e934fa8c642782741828aad3c8893bb2e29b9465b14df0bc",
+      "gitBlob": "a5033fea725732a157e5e09f416e219c530b9704"
+    },
+    {
+      "path": "facility.mjs",
+      "bytes": 7518,
+      "sha256": "d917da69530153e4b6253f67b466a5f29add3dfe43c7cd467bce9c239c219975",
+      "gitBlob": "8621fbb77267c5ff8b05fd779b3b7b4fc148b662"
+    },
+    {
+      "path": "workspace.mjs",
+      "bytes": 5781,
+      "sha256": "d5f9f344293c05f0e5bf4aa0d64e72bb4dba910d87a48d1febd8c22467042bee",
+      "gitBlob": "ddee4d35cf1d31463ab0957dc10d4df153a222e2"
+    },
+    {
+      "path": "boundary-lab.mjs",
+      "bytes": 5152,
+      "sha256": "b8b888bf59825a0d32e4f316d3395b55713d57eb81ac612bd7c19c833e34a315",
+      "gitBlob": "ea2bcf210be6c91b42100327e8eae5f3c3f8d91d"
+    },
+    {
+      "path": "ablation-lab.mjs",
+      "bytes": 4991,
+      "sha256": "8b4745aff67ac17b74a539f348a86e109545caa0d7773b8b6c2da6d96575726f",
+      "gitBlob": "e7c6aab6a471a42af258c397513cdd042680d966"
+    },
+    {
+      "path": "gaia-proof.mjs",
+      "bytes": 10263,
+      "sha256": "8324d078184befb37b86c653f10abc3a658e414a356a78129ad239db1e3584a6",
+      "gitBlob": "eacb6b5b13f252c5e16b2e9e5b773b97c64d78bf"
+    },
+    {
+      "path": "data/boundary-demo.json",
+      "bytes": 4772,
+      "sha256": "f616c0b715bf43775a062b591dbd8cb76fe97a6575e258352c8be11ce2bb5bd0",
+      "gitBlob": "a51414e725ef262c656f0e66f5f6a5bb39bf6d87"
+    }
+  ],
+  "limitations": [
+    "Existing facility, workspace, boundary and ablation modules contain exact committed calculation prefixes, not full UI tails.",
+    "Synthetic controlled contrast, no live source authentication or independent external anchor.",
+    "No complete repository regression or actual browser runtime acceptance."
+  ]
+}
