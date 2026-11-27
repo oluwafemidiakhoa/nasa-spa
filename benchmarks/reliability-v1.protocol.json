@@ -1,0 +1,28 @@
+{
+  "schema": "gaia-reliability-protocol-v1",
+  "candidateCommit": "f6dc0c0ef66f70a4017a9662691ef3a72fbdd9aa",
+  "endpoint": "Exact status on designed EONET count-claim comparisons; invalid evidence must be rejected",
+  "baseline": "Hash-and-scope comparator: validates artifact component and original source hashes, scope, count predicates and consistency of reported ID sets, without recomputing spatial membership from source coordinates",
+  "secondaryBaseline": "Always abstain; abstention is neither an exact status nor rejection of corrupt evidence",
+  "splits": [{"name":"development","seed":20261126,"perFamily":4},{"name":"locked-evaluation","seed":91731839,"perFamily":12}],
+  "families": [
+    ["same-exclusion","LOGICAL_CONFLICT_ON_SAME_EVIDENCE"],
+    ["same-compatible","NO_LOGICAL_CONFLICT_ESTABLISHED"],
+    ["same-zero","LOGICAL_CONFLICT_ON_SAME_EVIDENCE"],
+    ["empty","INSUFFICIENT_RECORDS"],
+    ["radius-scope","INCOMPARABLE_SCOPE"],
+    ["coordinate-scope","INCOMPARABLE_SCOPE"],
+    ["category-scope","INCOMPARABLE_SCOPE"],
+    ["time-scope","INCOMPARABLE_SCOPE"],
+    ["updated-snapshot","DIFFERENT_RETAINED_SNAPSHOTS"],
+    ["unknown-offline","UNKNOWN_OFFLINE_SCOPE"],
+    ["bad-component-hash","REJECT"],
+    ["rehashed-report","REJECT"],
+    ["rehashed-source","REJECT"],
+    ["duplicate-source-id","REJECT"]
+  ],
+  "metrics": ["exactStatusAccuracy","validExactAccuracy","invalidRejected","invalidAccepted","falseConflict","missedConflict","answerCoverage","selectiveError","pairedCandidateOnlyCorrect","pairedBaselineOnlyCorrect"],
+  "acceptance": {"candidateInvalidAccepted":0,"candidateValidExactErrors":0,"candidateFalseConflict":0,"noPostOutcomeTuning":true},
+  "scope": "Constructed fictional records only; geometry distances generated independently from candidate using unit vectors; no live NASA retrieval, model API or independent scientific adjudication. Both splits are known by design, not external blinded holdout. No proof of chronology beyond local digest. Cases share generators and are not independent population samples. No significance or generalization claim.",
+  "failurePolicy": "Retain all mismatches and exceptions. Do not alter the protocol or case generator after observing evaluation results; version a new benchmark if changes are needed."
+}

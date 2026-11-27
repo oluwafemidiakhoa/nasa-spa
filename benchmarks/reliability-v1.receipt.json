@@ -1,0 +1,137 @@
+{
+  "schema": "gaia-reliability-receipt-v1",
+  "candidateCommit": "f6dc0c0ef66f70a4017a9662691ef3a72fbdd9aa",
+  "protocolSha256": "78bef1718022e3be0ef072860d63aadb8b721ecb8cbefba937230cb3eb3cbaa7",
+  "manifestSha256": "6ecb629efa01f438841aeda8cb32c79bc0b0c22e58752e188e59eceab7de45b5",
+  "runnerSha256": "317ed5b2a3a684b8e281f79a03cf65aef5d7096ab0f2013628e8757f49b00cb5",
+  "rawResultsSha256": "145bf040c9931a3f016ea0f4f3c82358397fc51580201f6f4a3f04632aae97b2",
+  "node": "v22.16.0",
+  "development": {
+    "n": 56,
+    "candidateExact": 56,
+    "hashOnlyExact": 48
+  },
+  "lockedEvaluation": {
+    "n": 168,
+    "validN": 120,
+    "invalidN": 48,
+    "candidateExact": 168,
+    "hashOnlyExact": 144,
+    "candidateValidExact": 120,
+    "hashOnlyValidExact": 120,
+    "candidateInvalidRejected": 48,
+    "hashOnlyInvalidRejected": 24,
+    "candidateFalseConflict": 0,
+    "hashOnlyFalseConflict": 24,
+    "candidateOnlyCorrect": 24,
+    "baselineOnlyCorrect": 0,
+    "candidateMedianMs": 1.531,
+    "hashOnlyMedianMs": 0.082,
+    "byFamily": [
+      [
+        "same-exclusion",
+        12,
+        12,
+        12
+      ],
+      [
+        "same-compatible",
+        12,
+        12,
+        12
+      ],
+      [
+        "same-zero",
+        12,
+        12,
+        12
+      ],
+      [
+        "empty",
+        12,
+        12,
+        12
+      ],
+      [
+        "radius-scope",
+        12,
+        12,
+        12
+      ],
+      [
+        "coordinate-scope",
+        12,
+        12,
+        12
+      ],
+      [
+        "category-scope",
+        12,
+        12,
+        12
+      ],
+      [
+        "time-scope",
+        12,
+        12,
+        12
+      ],
+      [
+        "updated-snapshot",
+        12,
+        12,
+        12
+      ],
+      [
+        "unknown-offline",
+        12,
+        12,
+        12
+      ],
+      [
+        "bad-component-hash",
+        12,
+        12,
+        12
+      ],
+      [
+        "rehashed-report",
+        12,
+        0,
+        12
+      ],
+      [
+        "rehashed-source",
+        12,
+        0,
+        12
+      ],
+      [
+        "duplicate-source-id",
+        12,
+        12,
+        12
+      ]
+    ],
+    "candidateRejectionReasons": {
+      "bad-component-hash": [
+        "Component digest mismatch"
+      ],
+      "rehashed-report": [
+        "Browser replay mismatch"
+      ],
+      "rehashed-source": [
+        "Browser replay mismatch"
+      ],
+      "duplicate-source-id": [
+        "Invalid event or duplicate ID"
+      ]
+    }
+  },
+  "baselineRegression": {
+    "passed": 113,
+    "failed": 0,
+    "logSha256": "4e075bd0ac1f41904b9ab1983271ce6542c56c054fd6c55d65c2757125500af3"
+  },
+  "scope": "Designed EONET software benchmark; no external blinded holdout, live source or statistical generalization. Baseline verifies hashes, scope and structural IDs but trusts supplied spatial memberships. Exact committed calculation cores, not full repository checkout."
+}
