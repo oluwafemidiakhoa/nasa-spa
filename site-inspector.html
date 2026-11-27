@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<title>Evidence Inspector | Gaia Observatory</title>
+<link rel="stylesheet" href="observatory-ui.css">
+<script type="module" src="site-inspector.mjs"></script>
+<style>
+.inspector-layout{display:grid;grid-template-columns:minmax(260px,330px) minmax(0,1fr);gap:18px;align-items:start}.inspector-layout label{display:block;font-weight:650;margin:14px 0}.inspector-layout input{display:block;width:100%;margin-top:5px}.inspector-layout button{margin:6px 0}.inspector-layout table{border-collapse:collapse;width:100%;table-layout:fixed}.inspector-layout th,.inspector-layout td{text-align:left;vertical-align:top;border-bottom:1px solid var(--rule);overflow-wrap:anywhere;white-space:pre-wrap}.inspector-layout th:first-child{width:22%}.inspector-layout th:nth-child(2){width:22%}#inspect-digest{overflow-wrap:anywhere}.inspector-layout .status{margin:12px 0}@media(max-width:780px){.inspector-layout{grid-template-columns:1fr}.inspector-layout table{table-layout:auto}.inspector-layout th,.inspector-layout td{font-size:12px;padding:6px}}
+</style>
+</head>
+<body class="location-page">
+<a class="skip-link" href="#main-content">Skip to content</a>
+<header class="app-header"><a class="brand" href="live_dashboard.html"><span class="brand-mark" aria-hidden="true"></span>Gaia Observatory</a><nav aria-label="Main navigation"><a href="live_dashboard.html#local-screen">Site briefing</a><a href="portfolio.html">My locations</a><a href="site-inspector.html" aria-current="page">Evidence inspector</a></nav></header>
+<main id="main-content" tabindex="-1">
+<div class="mast"><div><h1>Evidence Inspector</h1><p class="intro">Check whether the findings reproduce from the retained evidence.</p><p>Open a site briefing or historical change evidence packet. The inspector recomputes the report locally; it does not send your file or coordinates to a server.</p></div></div>
+<div class="inspector-layout">
+<section class="panel" aria-labelledby="input-heading"><h2 id="input-heading">1. Open a packet</h2><label for="inspect-file">Evidence packet (.json)<input id="inspect-file" type="file" accept=".json,application/json"></label><small>Up to 36 MB. Download a packet from the site briefing or historical comparison.</small><label for="inspect-anchor">Optional independently retained SHA-256<input id="inspect-anchor" type="text" maxlength="64" autocomplete="off" spellcheck="false"></label><small>A matching independently obtained digest helps detect changes to packet bytes. It does not authenticate the source.</small><p><button type="button" id="inspect-run" class="primary" disabled>Inspect evidence</button></p><p><a href="live_dashboard.html#local-screen">Return to site briefing</a></p></section>
+<section class="panel" aria-labelledby="result-heading"><h2 id="result-heading">2. Inspect reproducibility</h2><p id="inspect-status" class="status" role="status">Waiting for JavaScript.</p><div id="inspect-result" hidden><h3>Packet integrity</h3><p id="inspect-digest"></p><p id="inspect-anchor-result"></p><h3>Finding replay</h3><div class="table" tabindex="0" aria-label="Replayed findings"><table><thead><tr><th scope="col">Category</th><th scope="col">Outcome</th><th scope="col">Recomputed finding</th></tr></thead><tbody id="inspect-rows"></tbody></table></div><p><button type="button" id="inspect-export" disabled>Download inspection report</button></p></div><p class="notice">Same-method offline replay, not independent scientific validation. Missing evidence cannot verify a claimed retrieval failure. Source authenticity, completeness, and real-world hazard conclusions are not established.</p></section>
+</div></main><footer>Gaia Observatory &middot; Evidence-first scientific screening.</footer>
+</body></html>
