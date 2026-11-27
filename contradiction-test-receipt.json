@@ -1,0 +1,46 @@
+{
+  "schema": "gaia-contradiction-test-receipt-v1",
+  "baselineRevision": "6eb63400077a6eea0134c8d0491f07414c2185e0",
+  "runtime": "Node.js v22.16.0",
+  "command": "node --test tests/*.test.mjs",
+  "scope": "Local targeted harness; not the full repository. Core facility, workspace, and portfolio prefixes matched prior repository inspection; full browser/runtime acceptance was not executed.",
+  "baselineTests": 72,
+  "testsPassed": 83,
+  "testsFailed": 0,
+  "newTests": 11,
+  "predicateOracleComparisons": 256,
+  "predicateOracleViolations": 0,
+  "designedContrastCases": 12,
+  "naiveFalsePositives": 5,
+  "naiveFalseNegatives": 4,
+  "typedFalsePositives": 0,
+  "typedFalseNegatives": 0,
+  "sourceAuthenticityVerified": false,
+  "scientificValidation": "Designed fixtures only; labels reflect the comparison contract. Not a real-world benchmark.",
+  "files": [
+    {
+      "path": "contradiction-lab.mjs",
+      "gitBlobSha1": "daaba00b784394bcfbb4eb4185ed1117d6f5b227",
+      "sha256": "a3d7426584d57e04c4e6b5f1da6695e408281cabc1168fae891bbba9d989d14b",
+      "bytes": 11976
+    },
+    {
+      "path": "tests/contradiction-lab.test.mjs",
+      "gitBlobSha1": "999f156e1a538de68b8bf6fd80e54e376639b046",
+      "sha256": "d36dce6a4b06b82aa53ec577614b5230c5c4538548027e1ced9ba405c10eee3e",
+      "bytes": 11408
+    },
+    {
+      "path": "contradiction-lab.html",
+      "gitBlobSha1": "a20c5a5a54ec6e56ac84893291dad50c55a0a411",
+      "sha256": "707af7f5cf31626a3373ec8806538165d14ead8642905144eaf44399daf247f0",
+      "bytes": 5429
+    },
+    {
+      "path": "contradiction-protocol.json",
+      "gitBlobSha1": "13ad06751d0028408d2844ba73e6a4ae6a911577",
+      "sha256": "945a6ac91688625b78a0d048e2c133d9554130e7f971cc5dd535f48ad7ba557b",
+      "bytes": 1198
+    }
+  ]
+}
