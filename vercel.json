@@ -254,6 +254,9 @@
     },
     "api/gaia-solar-image.js": {
       "maxDuration": 15
+    },
+    "api/gaia-nws.js": {
+      "maxDuration": 20
     }
   }
 }
