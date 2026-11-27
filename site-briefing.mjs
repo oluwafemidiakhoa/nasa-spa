@@ -49,11 +49,11 @@ export function briefingText(report){const p=report.site,w=report.window;
 function base64(bytes){let s='';for(let i=0;i<bytes.length;i+=16384)s+=String.fromCharCode(...bytes.subarray(i,i+16384));return btoa(s);}
 export function canPackage(v){return v.bundles.length>0&&v.bundles.reduce((n,b)=>n+b.bytes.length,0)<=PACKET_LIMIT;}
 export function evidencePacket(v){ok(canPackage(v),'No accepted bundles or package size limit exceeded');return {schema:'gaia-site-briefing-packet-v1',report:v.report,evidence:v.bundles.map(b=>({category:b.category,sha256:b.sha256,bytes:b.bytes.length,base64:base64(b.bytes)}))};}
-export function startSiteBriefing(doc=document,{load,dates,clock=()=>Date.now(),download}={}){
+export function startSiteBriefing(doc=document,{load,dates,clock=()=>Date.now(),download,onClear=()=>{},onResult=()=>{}}={}){
  if(!doc.querySelector?.('#site-briefing'))return null;
  const $=id=>doc.getElementById(id),node=(tag,t)=>{const el=doc.createElement(tag);el.textContent=t;return el;};let revision=0,busy=false,current=null;
  const save=download||((data,name,type)=>{const url=URL.createObjectURL(new Blob([data],{type})),a=doc.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);});
- function clear(message){revision++;current=null;$('briefing-result').hidden=true;$('briefing-rows').replaceChildren();$('briefing-status').textContent=message;$('briefing-text').disabled=true;$('briefing-packet').disabled=true;}
+ function clear(message){onClear();revision++;current=null;$('briefing-result').hidden=true;$('briefing-rows').replaceChildren();$('briefing-status').textContent=message;$('briefing-text').disabled=true;$('briefing-packet').disabled=true;}
  function render(v){current=v;const r=v.report;$('briefing-window').textContent=`${r.window.start} through ${r.window.end} UTC | ${r.site.coordinates.join(', ')} | ${r.site.radiusKm} km`;
   $('briefing-status').textContent=r.acceptedSources===3?'Three source collections accepted; geographic coverage remains unknown.':`${r.acceptedSources} of 3 source collections accepted. Missing collections are not zero observations.`;
   for(const row of r.layers){const tr=doc.createElement('tr'),header=node('th',LABELS[row.category]);header.scope='row';tr.append(header);
@@ -64,7 +64,7 @@ export function startSiteBriefing(doc=document,{load,dates,clock=()=>Date.now(),
   $('briefing-result').hidden=false;$('briefing-text').disabled=false;$('briefing-packet').disabled=!canPackage(v);$('briefing-export-status').textContent=canPackage(v)?'The packet includes the exact accepted evidence bundles; coordinates are included in both downloads.':v.bundles.length?'Combined evidence exceeds the package limit. Download the individual bundles.':'No evidence bundles accepted; only the attempt summary can be downloaded.';
  }
  async function run(){if(busy)return;clear('Retrieving and checking three NASA EONET collections…');const token=revision;busy=true;$('briefing-run').disabled=true;
-  try{const lon=$('local-lon').value.trim(),lat=$('local-lat').value.trim();ok(lon&&lat,'Enter both coordinates.');const t=clock(),v=await buildSiteBriefing({coordinates:[Number(lon),Number(lat)],radiusKm:Number($('local-radius').value)},dates(t),load,t);if(token===revision)render(v);}
+  try{const lon=$('local-lon').value.trim(),lat=$('local-lat').value.trim();ok(lon&&lat,'Enter both coordinates.');const t=clock(),v=await buildSiteBriefing({coordinates:[Number(lon),Number(lat)],radiusKm:Number($('local-radius').value)},dates(t),load,t);if(token===revision){render(v);onResult(v);}}
   catch(e){if(token===revision)clear(tidy(e.message));}finally{busy=false;$('briefing-run').disabled=false;}
  }
  $('briefing-run').addEventListener('click',run);

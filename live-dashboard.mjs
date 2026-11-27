@@ -4,6 +4,7 @@ import {apodSummary,donkiCount} from './mission-control.mjs';
 import {startLocalScreen} from './local-screen.mjs';
 import {startSpaceRecords} from './space-records.mjs';
 import {startSiteBriefing} from './site-briefing.mjs';
+import {startSiteChange} from './site-change.mjs';
 const HISTORY_LIMIT=20000, TABLE_LIMIT=100;
 const DAY=86400000, NS='http://www.w3.org/2000/svg';
 const req=(ok,message)=>{if(!ok)throw Error(message);};
@@ -44,7 +45,8 @@ async function nasa(type,transport){req(['apod','cme','flr','gst'].includes(type
 export function startDashboard(doc=document,transport=fetch,now=Date.now()){
  const $=id=>doc.getElementById(id),text=(id,v)=>{$(id).textContent=String(v);},svg=(tag,attrs,v)=>{const e=doc.createElementNS(NS,tag);for(const [k,x] of Object.entries(attrs))e.setAttribute(k,String(x));if(v!==undefined)e.textContent=v;return e;};let earthRev=0,spaceRev=0,current=null,selected=null,zoomed=false;
  const local=startLocalScreen(doc),spaceRecords=startSpaceRecords(doc);
- startSiteBriefing(doc,{load:x=>fetchStudy(x,transport),dates:recentDates});
+ const change=startSiteChange(doc,{load:x=>fetchStudy(x,transport)});
+ startSiteBriefing(doc,{load:x=>fetchStudy(x,transport),dates:recentDates,onClear:change.clear,onResult:change.accept});
  for(const id of ['earth-refresh','import','demo','apod-refresh','donki-refresh'])$(id).disabled=false;
  function mapGuide(){text('map-guide',!current?'Observation zoom is unavailable until records are loaded.':!selected?($('register').children.length?'Select an event in the register or a map marker to enable zoom.':'No eligible points to select for this query.'):zoomed?'Focused view. Choose another event to move the map, or select World view.':'Event selected. Use Zoom to selected to focus the map.');$('zoom').disabled=!selected||zoomed;$('reset').disabled=!zoomed;}
  function resetMap(){zoomed=false;$('map').setAttribute('viewBox','0 0 720 360');mapGuide();}
