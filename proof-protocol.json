@@ -1,0 +1,11 @@
+{
+  "schema": "gaia-proof-protocol-v1",
+  "candidateParent": "40f6300d8725e5ccbf1cd0141bd9b958245f5d99",
+  "purpose": "Combine conditional boundary sensitivity and whole-event deletion guarantees for one retained EONET point-count claim",
+  "claim": "At least K distinct returned event IDs have an eligible point inside the reference-site screening radius",
+  "assumptions": "Fixed retained observations and time window; user-specified site displacement, radius variation and at most B whole-event deletions; spherical distance with existing 1 m guard",
+  "candidate": "L' = max(0,L-B); U unchanged since zero deletions permitted. Support only if L' >= K. If U < K, threshold excluded on retained records only. Otherwise unresolved. No eligible records => unavailable.",
+  "baseline": "Nominal count alone; no geographic or removal uncertainty",
+  "acceptance": ["Original evidence and every report field replay before acceptance", "Synthetic six-point demonstration: nominal 3, bounds 1..5, budget 1 => lower 0", "No eligible events withheld, not zero observations", "Check support and exclusion separately, preserve unsupported and unavailable verdicts", "Altered packet, witness, parameters or supplied external digest rejected", "Independent finite-grid spherical displacement and deletion oracle: no support/exclusion certificate contradicted", "No source authenticity, independent verification, chronology or cross-source claim inferred", "User edits invalidate stale results and exports; no private file uploaded"],
+  "scope": "Designed local software verification; not independent scientific validation, externally registered chronology or population performance estimate"
+}

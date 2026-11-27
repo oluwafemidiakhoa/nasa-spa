@@ -1,0 +1,133 @@
+{
+  "schema": "gaia-proof-test-receipt-v1",
+  "parentCommit": "40f6300d8725e5ccbf1cd0141bd9b958245f5d99",
+  "environment": "Node.js v22.16.0; isolated local workspace with exact dependency calculation cores, not full checkout",
+  "commands": [
+    "node --check gaia-proof.mjs",
+    "node --test tests/gaia-proof.test.mjs",
+    "node scripts/gaia-reliability-benchmark.mjs --run 6ecb629efa01f438841aeda8cb32c79bc0b0c22e58752e188e59eceab7de45b5"
+  ],
+  "focusedTests": {
+    "passed": 15,
+    "failed": 0,
+    "skipped": 0,
+    "logSha256": "ec34de96b732a5594dbbfb34b0a1b54505476e4bc33d96584f31767a9fe71e1d"
+  },
+  "finiteGridOracle": {
+    "cases": 1134,
+    "observedViolations": 0,
+    "positiveNonzeroDeletionCases": 120,
+    "positiveViolations": 0
+  },
+  "priorBenchmarkRerun": {
+    "development": {
+      "candidate": 56,
+      "comparator": 48,
+      "n": 56
+    },
+    "lockedEvaluation": {
+      "candidate": 168,
+      "comparator": 144,
+      "n": 168,
+      "invalidRejected": 48,
+      "invalidN": 48
+    },
+    "manifestSha256": "6ecb629efa01f438841aeda8cb32c79bc0b0c22e58752e188e59eceab7de45b5",
+    "resultSha256": "e84bdcee0801ea3cc815cb2b97cd5507e82ee9bdc148215799a964fc785ca7f3"
+  },
+  "initialTestFailure": "A test harness attempted JSON.parse on Uint8Array; corrected to decode bytes. Final tests passed.",
+  "files": [
+    {
+      "path": "gaia-proof.mjs",
+      "sha256": "8324d078184befb37b86c653f10abc3a658e414a356a78129ad239db1e3584a6",
+      "gitBlob": "eacb6b5b13f252c5e16b2e9e5b773b97c64d78bf",
+      "bytes": 10263
+    },
+    {
+      "path": "gaia-proof.html",
+      "sha256": "b4c1d7ae91fc2e4a06099d1012e54f0721e3c1979c0c02287652d88070e3682d",
+      "gitBlob": "1004b751315e890e2e6da1f3b1e51ed4ec6a9644",
+      "bytes": 5503
+    },
+    {
+      "path": "tests/gaia-proof.test.mjs",
+      "sha256": "88ea191e6b471edde0b3a3594fe1bbd72aa337a5a71358c31c3243ad467f19ea",
+      "gitBlob": "6c28b42845d592929912806f30eec0138a270ef3",
+      "bytes": 13126
+    },
+    {
+      "path": "proof-protocol.json",
+      "sha256": "eae72328d6814da391c4499269e488f2cc22a5248ecc4a670535f876835c80e4",
+      "gitBlob": "f0a97dae65c552550f43bde2f896658f6e5a2046",
+      "bytes": 1683
+    },
+    {
+      "path": "docs/gaia-proof.md",
+      "sha256": "4c25a9d08ddc144f9db1573b8eb78c5a219a46991e1b0d24c14c8773021146b8",
+      "gitBlob": "bfc3663c247e906486ccaa9312e306b95e4469d3",
+      "bytes": 3042
+    }
+  ],
+  "dependencyCores": [
+    {
+      "path": "earth.mjs",
+      "sha256": "a1ce541de7aa9d49e934fa8c642782741828aad3c8893bb2e29b9465b14df0bc",
+      "gitBlob": "a5033fea725732a157e5e09f416e219c530b9704",
+      "bytes": 4053
+    },
+    {
+      "path": "facility.mjs",
+      "sha256": "d917da69530153e4b6253f67b466a5f29add3dfe43c7cd467bce9c239c219975",
+      "gitBlob": "8621fbb77267c5ff8b05fd779b3b7b4fc148b662",
+      "bytes": 7518
+    },
+    {
+      "path": "workspace.mjs",
+      "sha256": "d5f9f344293c05f0e5bf4aa0d64e72bb4dba910d87a48d1febd8c22467042bee",
+      "gitBlob": "ddee4d35cf1d31463ab0957dc10d4df153a222e2",
+      "bytes": 5781
+    },
+    {
+      "path": "boundary-lab.mjs",
+      "sha256": "b8b888bf59825a0d32e4f316d3395b55713d57eb81ac612bd7c19c833e34a315",
+      "gitBlob": "ea2bcf210be6c91b42100327e8eae5f3c3f8d91d",
+      "bytes": 5152
+    },
+    {
+      "path": "ablation-lab.mjs",
+      "sha256": "8b4745aff67ac17b74a539f348a86e109545caa0d7773b8b6c2da6d96575726f",
+      "gitBlob": "e7c6aab6a471a42af258c397513cdd042680d966",
+      "bytes": 4991
+    },
+    {
+      "path": "data/boundary-demo.json",
+      "sha256": "f616c0b715bf43775a062b591dbd8cb76fe97a6575e258352c8be11ce2bb5bd0",
+      "gitBlob": "a51414e725ef262c656f0e66f5f6a5bb39bf6d87",
+      "bytes": 4772
+    },
+    {
+      "path": "contradiction-lab.mjs",
+      "sha256": "a3d7426584d57e04c4e6b5f1da6695e408281cabc1168fae891bbba9d989d14b",
+      "gitBlob": "daaba00b784394bcfbb4eb4185ed1117d6f5b227",
+      "bytes": 11976
+    },
+    {
+      "path": "seismic.mjs",
+      "sha256": "30f92a605e04b904c9ceb6f5d5ff20108ae4a786c2cade8bf0d85d230b557c62",
+      "gitBlob": "236555f8eb1b019972ad64abdc8ed48340b3777b",
+      "bytes": 9158
+    },
+    {
+      "path": "nws-alerts.mjs",
+      "sha256": "c144717793107d0aaaf38dc7598afec93d8e5192eee184dfdf00275031e2f009",
+      "gitBlob": "2c1caa03de9d64dc56091f2a588369547218797e",
+      "bytes": 5980
+    }
+  ],
+  "limitations": [
+    "Four dependency modules (facility, workspace, boundary, ablation) contain exact committed calculation prefixes, not their UI tails.",
+    "Synthetic designed cases and deterministic local replay; no authentic source or prospective evidence.",
+    "No complete repository regression rerun or real browser acceptance.",
+    "Coherent alternative original records can pass local replay; no external trust established."
+  ]
+}
