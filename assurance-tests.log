@@ -1,0 +1,17 @@
+test_claim_verdict_distinct_from_replay (test_gaia_assurance.AssuranceTests.test_claim_verdict_distinct_from_replay) ... ok
+test_cli_exclusive_output_and_negative_evidence (test_gaia_assurance.AssuranceTests.test_cli_exclusive_output_and_negative_evidence) ... ok
+test_edit_report_or_binding_rejected (test_gaia_assurance.AssuranceTests.test_edit_report_or_binding_rejected) ... ok
+test_external_anchors_are_session_only (test_gaia_assurance.AssuranceTests.test_external_anchors_are_session_only) ... ok
+test_frozen_cross_runtime_matrix (test_gaia_assurance.AssuranceTests.test_frozen_cross_runtime_matrix) ... ok
+test_cli_contract (test_verify_gaia_proof.CrossRuntime.test_cli_contract) ... ok
+test_frozen_fixture_outcomes (test_verify_gaia_proof.CrossRuntime.test_frozen_fixture_outcomes) ... ok
+test_no_node_required_to_verify_existing_packet (test_verify_gaia_proof.CrossRuntime.test_no_node_required_to_verify_existing_packet) ... ok
+test_nonregular_input_rejected (test_verify_gaia_proof.CrossRuntime.test_nonregular_input_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 12.762s
+
+OK
+{"dossiers": 89, "replay": {"PASS": 74, "FAIL": 13, "INCOMPLETE": 2}}
+{"fixtures":89,"accepted":71,"rejected":16,"inconclusive":2}
+{"crossRuntimeCases": 89, "matches": 71, "rejected": 16, "inconclusive": 2}

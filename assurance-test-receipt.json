@@ -1,0 +1,68 @@
+{
+  "schema": "gaia-assurance-test-receipt-v1",
+  "parentCommit": "4f6de6cba6622b47a01c2bad2265e41ceeb44a3e",
+  "command": "python -m unittest discover -s tests -p 'test_*.py' -v",
+  "python": "Python 3.13.5",
+  "node": "v22.16.0",
+  "testMethods": {
+    "passed": 9,
+    "failed": 0,
+    "new": 5
+  },
+  "dossierMatrix": {
+    "cases": 89,
+    "replayPass": 74,
+    "replayFail": 13,
+    "replayIncomplete": 2,
+    "additionalAnchorMismatches": 3
+  },
+  "priorVerifierMatrix": {
+    "cases": 89,
+    "matched": 71,
+    "rejected": 16,
+    "inconclusive": 2
+  },
+  "files": [
+    {
+      "path": "scripts/gaia_assurance.py",
+      "sha256": "230d93eca923e2bdac166bdff9eb0ae9b2b78e59e20aad0104887df17418b8fd",
+      "gitBlob": "f813a00e4254a1508a3d7491007c077cd1a4fee5",
+      "bytes": 6373
+    },
+    {
+      "path": "tests/test_gaia_assurance.py",
+      "sha256": "26fee718549684e6c2b3b1b06479011f65e5b6acca8598a3ff24e269aa9224d3",
+      "gitBlob": "5f86b27548dd0a5419f3b4e13f260f5bf53fbf65",
+      "bytes": 5876
+    },
+    {
+      "path": "assurance-protocol.json",
+      "sha256": "e44ad6760a9aefbe380ce0dd2d0903c2c9dd20d05c21e0b8696a2605d8360efa",
+      "gitBlob": "c0724a29cda56e8817467c18e103312951477980",
+      "bytes": 702
+    },
+    {
+      "path": "docs/gaia-assurance.md",
+      "sha256": "e09839744b6a7a887425edc8222150168a85b89d63ae657138e2d6a08b478e2f",
+      "gitBlob": "06f62132ac0166e102049ddb9d91dcfc0e3635cf",
+      "bytes": 2504
+    }
+  ],
+  "verifier": {
+    "path": "scripts/verify_gaia_proof.py",
+    "sha256": "d8d7663bad92fad1cebf00f644dd22f37682045f87b683374c2fa193366dbc7f",
+    "gitBlob": "1a261fd8c0e20936e162a395f98633ac467cf714",
+    "bytes": 19883
+  },
+  "log": {
+    "path": "assurance-tests.log",
+    "sha256": "3abea913e7aae0834bd66f2dccf91b8fd3fbcf513cb8fb7a0744dd9f53056254",
+    "gitBlob": "81d25ee5ef419e575193eeda9ab7c02f1582b77f",
+    "bytes": 1352
+  },
+  "limitations": [
+    "Reused designed synthetic fixtures; no independent held-out evaluation",
+    "Partial analytical checkout, not full repository or browser tests",
+    "No authentic live source, trusted chronology or external scientific validation"
+  ]
+}
