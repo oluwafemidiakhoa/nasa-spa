@@ -1,0 +1,13 @@
+{
+  "version": "gaia-discovery-protocol-v1",
+  "question": "Can a user-declared probability for at least K distinct EONET event IDs within a fixed reference-site screening radius be locked, then scored against an exact subsequent source window and a persistence baseline without silently changing the claim or converting missing evidence into a negative outcome?",
+  "scope": "One EONET category, one reference point, one radius, one binary threshold, one prediction per exported lock. No hazard, exposure, causal, or real-world event forecast inference.",
+  "baseline": "Persistence: p=1 if the previous seven complete UTC dates' accepted returned-record count reaches K, otherwise p=0. Withhold lock if prior evidence is capped, has no eligible points, or fails acquisition checks.",
+  "prediction": "User-declared p in [0,1]. No trained model, automatic model selection, or performance claim.",
+  "windows": "Previous seven complete UTC dates preceding declared issue day; target seven complete UTC dates starting the next UTC day. Existing spherical-point-screen-v0.2 uses inclusive start/end instants. Windows do not overlap. No target outcomes are used at lock time.",
+  "outcome": "Binary indicator of whether the matching distinct event ID count reaches K, using the fixed target query and same geography. Accepted capture from target end through 48 hours afterward, inclusive. No scoring when capped or no eligible points. Reject mismatched query, geography, future capture, source reuse, tampering and wrong timestamps.",
+  "primary_endpoint": "Paired Brier losses (p-y)^2 for candidate and persistence, and candidate minus baseline loss. One trial cannot establish model superiority. Synthetic test outcomes are fictional; source and chronology are unauthenticated.",
+  "negative_controls": ["altered lock or score", "capture before target end", "capture after deadline", "wrong category or radius", "same source hash", "future points in baseline", "no eligible points", "source cap", "no trusted timestamp"],
+  "acceptance": "Exact agreement with direct arithmetic on designed fixtures; every negative control handled; existing local tests pass; no fabricated prospective scientific outcome.",
+  "stop_rule": "One bounded local implementation and deterministic evaluation. No automatic monitoring, paid API, external registration, or production writes. Record source hashes and verification boundaries."
+}
