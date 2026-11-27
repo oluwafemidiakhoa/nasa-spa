@@ -1,0 +1,35 @@
+{
+  "schema": "gaia-research-memory-test-receipt-v1",
+  "baseline_commit": "b8b432362905e281bf4cac1f132f970e4f739192",
+  "environment": "Node.js v22.16.0; isolated local regression fixture workspace",
+  "command": "node --test tests/*.test.mjs",
+  "observed": {
+    "tests": 104,
+    "pass": 104,
+    "fail": 0,
+    "skipped": 0
+  },
+  "focused_command": "node --test tests/research-memory.test.mjs",
+  "focused_tests": 9,
+  "fixtures": "Synthetic trial artifacts only; no live outcomes or independent chronology established",
+  "log_sha256": "8d4f7b9ca1494a2258f67f97ce3b778c19fa591e13232f4d2ae31c15a4d8e94d",
+  "files": [
+    {
+      "path": "research-memory.mjs",
+      "sha256": "56c540928cc805842d46a38833ea2f5a52e2686cade1ab73bd113a330965c5e5"
+    },
+    {
+      "path": "research-memory.html",
+      "sha256": "c6c643120f3a7ec33b323aaa3e5e9de9640ed12cf0ea7d9c204f5d929198dd5b"
+    },
+    {
+      "path": "tests/research-memory.test.mjs",
+      "sha256": "9e4b927dafc724dbaf0b63a4d377eb49c1589698f91bd59f8502fe00560ee572"
+    }
+  ],
+  "limitations": [
+    "Available local regression subset; not all repository tests",
+    "Existing facility and workspace calculation cores match committed prefixes; UI tails are not the full checkout",
+    "No live browser verification or production deployment"
+  ]
+}
